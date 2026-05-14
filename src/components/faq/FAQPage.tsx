@@ -57,13 +57,13 @@ function SectionPill({ label, isActive, onClick }: SectionPillProps) {
       onClick={onClick}
       className={
         isActive
-          ? "w-[140px] shrink-0 cursor-pointer rounded-lg border border-teal-brand bg-white px-3 py-3 text-sm font-medium text-teal-brand transition-colors hover:bg-teal-brand/5 whitespace-pre-line te
-          : "w-[140px] shrink-0 cursor-pointer rounded-lg border border-copy-muted/20 bg-white px-3 py-3 text-sm font-medium text-copy-muted transition-colors hover:border-copy-muted/30 hover:text-log
+          ? 'w-[140px] shrink-0 cursor-pointer rounded-lg border border-teal-brand bg-white px-3 py-3 text-sm font-medium text-teal-brand transition-colors hover:bg-teal-brand/5 whitespace-pre-line text-center leading-snug'
+          : 'w-[140px] shrink-0 cursor-pointer rounded-lg border border-copy-muted/20 bg-white px-3 py-3 text-sm font-medium text-copy-muted transition-colors hover:border-copy-muted/30 hover:text-logo whitespace-pre-line text-center leading-snug'
       }
     >
       {label}
     </button>
-  );
+  )
 }
 
 export function FaqPage() {
