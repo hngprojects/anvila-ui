@@ -25,8 +25,8 @@ const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =
 
 const AnvilaLogo = () => (
   <div className="flex items-center justify-center gap-2">
-    <div className="flex h-[35.97px] w-[35.97px] items-center justify-center rounded-full bg-[#005F5A] shadow-sm">
-      <Image src="/images/Logo.svg" alt="Logo" width={200} height={200} />
+    <div className="flex h-[35.97px] w-[35.97px] items-center justify-center ">
+      <Image src="/images/Logo.png" alt="Logo" width={200} height={200} />
     </div>
   </div>
 )

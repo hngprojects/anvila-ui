@@ -13,7 +13,7 @@ export const AuthNavBar = () => {
           {/* Logo */}
           <div className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-full">
         <Image
-              src="/images/Logo.svg"
+              src="/images/Logo.png"
               alt="Logo"
               width={200}
               height={200}
