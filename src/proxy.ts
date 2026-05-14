@@ -1,33 +1,49 @@
-import { NextResponse, type NextProxy } from "next/server";
+import { NextRequest, NextResponse } from 'next/server'
 
-const SECURITY_HEADERS: Record<string, string> = {
-  "X-Frame-Options": "DENY",
-  "X-Content-Type-Options": "nosniff",
-  "Referrer-Policy": "strict-origin-when-cross-origin",
-  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
-};
+const AUTH_ROUTES = ['/login', '/register', '/forgot-password' ]
+const PUBLIC_ROUTES = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/verify-email',
+  '/confirm-email',
+  '/auth/callback/google',
+  '/auth/callback/github',
+  '/reset-password',
+  '/explore',
+  '/pricing',
+  '/about',
+  '/contact',
+]
 
-export const proxy: NextProxy = (request) => {
-  const requestId =
-    request.headers.get("x-request-id") ?? crypto.randomUUID();
+export default async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const refreshToken = request.cookies.get('refresh_token')?.value
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-request-id", requestId);
+  const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r))
+  const isPublicRoute =
+    pathname === '/' || PUBLIC_ROUTES.some((r) => pathname.startsWith(r))
 
-  const response = NextResponse.next({
-    request: { headers: requestHeaders },
-  });
-
-  for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
-    response.headers.set(key, value);
+  if (refreshToken && isAuthRoute) {
+    return NextResponse.redirect(new URL('/generator', request.url))
   }
-  response.headers.set("x-request-id", requestId);
 
-  return response;
-};
+  if (!refreshToken && !isPublicRoute) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  const response = NextResponse.next()
+
+  if (!isPublicRoute) {
+    response.headers.set(
+      'Cache-Control',
+      'no-store, max-age=0, must-revalidate'
+    )
+  }
+
+  return response
+}
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)$).*)",
-  ],
-};
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*|api/).*)'],
+}
