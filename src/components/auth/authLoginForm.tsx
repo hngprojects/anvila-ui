@@ -15,12 +15,9 @@ import { AuthOAuthButtons } from './authOAthButtons'
 
 const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =>
   show ? (
-    <span style={{
-      position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)',
-      color: '#9CA3AF', display: 'flex', alignItems: 'center', pointerEvents: 'none',
-    }}>
-      <Icon size={15} />
-    </span>
+        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center pointer-events-none">
+        <Icon size={15} />
+      </span>
   ) : null
 
 function validate(data: { email: string; password: string }) {
