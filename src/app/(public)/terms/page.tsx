@@ -10,11 +10,11 @@ const TermsOfServicePage = () => {
   const termsData: TermsItem[] = [
     {
       header: "Acceptance of Terms",
-      body: `By accessing or using Anvila (the "Service"), you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree, you may not use the Service. If you use the Serv
+      body: "By accessing or using Anvila (the “Service”), you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree, you may not use the Service. If you use the Serv
     },
     {
       header: "Accounts & Access",
-      body: `Some features require linking a GitHub account. You are responsible for maintaining the security of your account credentials and for all activity that occurs under your account.`,
+      body: "Some features require linking a GitHub account. You are responsible for maintaining the security of your account credentials and for all activity that occurs under your account.",
       subheadings: [
         "You must be at least 13 years old to create an account.",
         "You must provide accurate information when registering.",
@@ -23,15 +23,15 @@ const TermsOfServicePage = () => {
     },
     {
       header: "Agents & Content",
-      body: `"Agents" are packaged AI configurations including identity, soul, and dna files generated, uploaded, or published through the Service. You retain ownership of the Agents you create. By pu
+      body: "“Agents” are packaged AI configurations  including identity, soul, and dna files generated, uploaded, or published through the Service. You retain ownership of the Agents you create.By pu
     },
     {
       header: "Explore",
-      body: `The registry is a public index of community-published Agents. We do not guarantee the accuracy, safety, or fitness for purpose of any third-party Agent. Use Agents from the registry at yo
+      body: "The registry is a public index of community-published Agents. We do not guarantee the accuracy, safety, or fitness for purpose of any third-party Agent. Use Agents from the registry at yo
     },
     {
       header: "Acceptable Use",
-      body: `You agree not to use the Service to:`,
+      body: "You agree not to use the Service to:",
       subheadings: [
         "Generate or distribute Agents that produce illegal, harmful, or malicious output.",
         "Infringe intellectual property, privacy, or publicity rights of others.",
@@ -41,27 +41,27 @@ const TermsOfServicePage = () => {
     },
     {
       header: "Intellectual Property",
-      body: `The Service, including its branding, UI, documentation, and underlying code (other than open source components), is owned by Anvila and protected by applicable IP laws. Nothing in these T
+      body: "The Service, including its branding, UI, documentation, and underlying code (other than open source components), is owned by Anvila and protected by applicable IP laws. Nothing in these T
     },
     {
       header: "Third Party Services",
-      body: `Anvila integrates with third-party services such as GitHub and AI model providers. Your use of those services is governed by their respective terms. We are not responsible for third-party
+      body: "Anvila integrates with third-party services such as GitHub and AI model providers. Your use of those services is governed by their respective terms. We are not responsible for third-party
     },
     {
       header: "Disclaimers",
-      body: `The Service is provided "as is" and "as available", without warranties of any kind. AI generated output may be inaccurate, biased, or unsafe — always review output before relying on it.`,
+      body: "The Service is provided “as is” and “as available”, without warranties of any kind. AI generated output may be inaccurate, biased, or unsafe always review output before relying on it.",
     },
     {
       header: "Limitation of Liability",
-      body: `To the maximum extent permitted by law, Anvila shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits, data, or goodwill ari
+      body: "To the maximum extent permitted by law, Anvila shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits, data, or goodwill ari
     },
     {
       header: "Termination",
-      body: `We may suspend or terminate your access to the Service at any time for violation of these Terms. You may stop using the Service at any time. Sections that by their nature should survive t
+      body: "We may suspend or terminate your access to the Service at any time for violation of these Terms. You may stop using the Service at any time. Sections that by their nature should survive t
     },
     {
       header: "Changes to Terms",
-      body: `We may update these Terms from time to time. Material changes will be announced on the Service. Continued use after changes take effect constitutes acceptance of the updated Terms.`,
+      body: "We may update these Terms from time to time. Material changes will be announced on the Service. Continued use after changes take effect constitutes acceptance of the updated Terms.",
     },
   ];
 
@@ -110,7 +110,7 @@ const TermsOfServicePage = () => {
 
         <div className="space-y-8 text-black md:space-y-10">
           {termsData.map((item, index) => (
-            <TermsCard item={item} index={index} />
+            <TermsCard key={index} item={item} index={index} />
           ))}
 
           <div className="text-base sm:text-lg md:text-xl md:leading-8">
