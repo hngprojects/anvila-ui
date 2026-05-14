@@ -99,7 +99,7 @@ export function AgentCard({ agent, index }: AgentCardProps) {
           <span className="text-base font-semibold text-logo">
             {agent.downloads}
           </span>
-          <span className="block text-xs font-normal text-copy-muted ml-1">
+          <span className="block text-xs font-normal text-copy-muted">
             Downloads
           </span>
         </div>
@@ -192,7 +192,7 @@ export function Explore() {
     <main className="min-h-screen bg-white">
       <HeroSection
         title="Explore Reusable AI Agent Setup Packages"
-        subtitle="Browse public AgentForge packages for marketing, development, research, finance, and operations. Clone a setup, adapt the files, or use it as a starting point for your own agent pack"
+        subtitle="Browse public AgentForge packages for marketing, development, research, finance, and operations. Clone a setup, adapt the files, or use it as a starting point for your own agent pack
       />
 
       <section className="bg-background">
