@@ -14,7 +14,7 @@ function FooterLogoIcon() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M23.5609 6.875L42.1665 6.87499L42.1665 10.9185L27.3415 10.9185C26.4919 14.608 20.9131 15.6323 18.2299 15.6834C19.4193 15.6834 22.7411 15.5172 25.4937 16.5139C28.9345 17.7598 31.5681 21.4099"
+        d="M23.5609 6.875L42.1665 6.87499L42.1665 10.9185L27.3415 10.9185C26.4919 14.608 20.9131 15.6323 18.2299 15.6834C19.4193 15.6834 22.7411 15.5172 25.4937 16.5139C28.9345 17.7598 31.5681 21.4099
         fill="#E7E7E7"
       />
     </svg>
@@ -73,7 +73,7 @@ const SOCIAL_LINKS = [
 
 const LEGAL_LINKS = [
   { label: "Privacy Policy", href: "#" },
-  { label: "Terms of service", href: "#" },
+  { label: "Terms of service", href: "/terms" },
   { label: "Cookies Policy", href: "#" },
 ];
 
