@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Lock, Eye, EyeOff, ChevronLeft } from "lucide-react";
+import Link from 'next/link';
 
 export default function SetNewPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -70,12 +71,13 @@ export default function SetNewPasswordForm() {
           </div>
         </div>
 
-        <button
+        <Link
           type="submit"
-          className="w-full py-3.5 bg-[#004D4D] hover:bg-[#003636] text-white rounded-xl font-semibold text-sm transition-all shadow-sm mt-2"
+          className="block text-center w-full py-3.5 bg-[#004D4D] hover:bg-[#003636] text-white rounded-xl font-semibold text-sm transition-all shadow-sm mt-2"
+          href="/auth/reset-password/success"
         >
           Continue
-        </button>
+        </Link>
       </form>
     </div>
   );
