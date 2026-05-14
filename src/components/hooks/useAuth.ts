@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/components/stores/auth-store'
-import {login, logout, register, getMe, refresh} from "@/components/lib/api/auth"
+import { login, logout, register, getMe, refresh } from '@/components/lib/api/auth'
 import type { LoginInput, RegisterInput } from '../schemas/auth'
 import { AxiosError } from 'axios'
 

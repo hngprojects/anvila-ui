@@ -1,19 +1,18 @@
 'use client'
-import Image from "next/image";
+
+import Image from 'next/image'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowLeft, Eye, EyeOff, Mail, Lock, type LucideIcon } from 'lucide-react'
+import { ArrowLeft, Eye, EyeClosed, Mail, Lock, type LucideIcon } from 'lucide-react'
 import { FaRegCircleCheck } from 'react-icons/fa6'
 import { AxiosError } from 'axios'
 import { LoginSchema, type LoginInput } from '../schemas/auth'
 import { useAuth } from '../hooks/useAuth'
 import { AuthOAuthButtons } from './authOAthButtons'
-import { LuEyeClosed } from "react-icons/lu";
 
-// Prefix icon — shown only when field is empty, disappears on typing
+// ---------- helpers ----------
+
 const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =>
   show ? (
     <span style={{
@@ -24,50 +23,55 @@ const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =
     </span>
   ) : null
 
+function validate(data: { email: string; password: string }) {
+  const result = LoginSchema.safeParse(data)
+  if (result.success) return {}
+  const errs: Partial<Record<keyof LoginInput, string>> = {}
+  for (const issue of result.error.issues) {
+    const key = issue.path[0] as keyof LoginInput
+    if (!errs[key]) errs[key] = issue.message
+  }
+  return errs
+}
 
+// ---------- component ----------
 
 export const AuthLoginForm = () => {
   const router = useRouter()
   const { login } = useAuth()
 
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
   const [remember, setRemember] = useState(false)
+  const [errors, setErrors] = useState<Partial<Record<keyof LoginInput, string>>>({})
+  const [serverError, setServerError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginInput>({ resolver: zodResolver(LoginSchema) })
+  const emailEmpty = email.length === 0
+  const passwordEmpty = password.length === 0
+  const emailValid = !errors.email && email.length > 0
 
   const AnvilaLogo = () => (
-  <div className=" flex items-center justify-center gap-2">
-    
-    {/* Logo container */}
-    <div className="flex h-[35.97px] w-[35.97px] items-center justify-center rounded-full bg-[#005F5A] shadow-sm">
-
- <Image
-      src="/images/Logo.svg"
-      alt="Logo"
-      width={200}
-      height={200}
-    />
-
+    <div className="flex items-center justify-center gap-2">
+      <div className="flex h-[35.97px] w-[35.97px] items-center justify-center rounded-full bg-[#005F5A] shadow-sm">
+        <Image src="/images/Logo.svg" alt="Logo" width={200} height={200} />
+      </div>
     </div>
+  )
 
-  </div>
-)
-
-  const emailValue = watch('email', '')
-  const passwordValue = watch('password', '')
-
-  const emailEmpty = !emailValue || emailValue.length === 0
-  const passwordEmpty = !passwordValue || passwordValue.length === 0
-  const emailValid = !errors.email && emailValue && emailValue.length > 0
-
-  const onSubmit = async (data: LoginInput) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const data = { email, password }
+    const fieldErrors = validate(data)
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors)
+      return
+    }
+    setErrors({})
     setServerError(null)
+    setIsSubmitting(true)
+
     try {
       await login(data)
       router.replace('/generator')
@@ -94,21 +98,21 @@ export const AuthLoginForm = () => {
         }
       }
       setServerError('Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
-
- return (
- <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
-
+  return (
+    <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
 
       {/* Logo — mobile only */}
       <div className="hidden max-[700px]:flex justify-center">
         <AnvilaLogo />
       </div>
-      
-    {/* Back */}
-        <button
+
+      {/* Back */}
+      <button
         type="button"
         onClick={() => router.back()}
         className="hidden cursor-pointer items-center gap-1 self-start border-0 bg-transparent px-0 pb-2 pt-3 text-[16px] font-medium text-[#111] md:flex"
@@ -117,151 +121,122 @@ export const AuthLoginForm = () => {
         <span>Back</span>
       </button>
 
-    {/* Heading */}
-    <div className="mb-6 text-center">
-      <h1 className="mb-1 text-[34px] font-bold text-[#0C0E0D]">
-        Welcome Back
-      </h1>
-
-      <p className="m-0 text-[16px] text-[#A1A1AA]">
-        Enter your details to access your account.
-      </p>
-    </div>
-
-    {/* Server error */}
-    {serverError && (
-      <div className="mb-4 rounded-[6px] border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
-        <p className="m-0 text-[12px] text-[#DC2626]">
-          {serverError}
+      {/* Heading */}
+      <div className="mb-6 text-center">
+        <h1 className="mb-1 text-[34px] font-bold text-[#0C0E0D]">Welcome Back</h1>
+        <p className="m-0 text-[16px] text-[#A1A1AA]">
+          Enter your details to access your account.
         </p>
       </div>
-    )}
 
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      {/* Server error */}
+      {serverError && (
+        <div className="mb-4 rounded-[6px] border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
+          <p className="m-0 text-[12px] text-[#DC2626]">{serverError}</p>
+        </div>
+      )}
 
-      {/* Email */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-[16px] font-medium text-[#000000]">
-          Email
-        </label>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-        <div className="relative">
-          <IconPrefix icon={Mail} show={emailEmpty} />
-
-          <input
-            id="email"
-            type="email"
-            placeholder="Enter email address"
-            aria-invalid={!!errors.email}
-            {...register('email')}
-            className={`w-full rounded-[8px] border bg-[#F6F7F7]  border-[#B1B5B4] py-[11px] text-[16px] text-[#000000] outline-none transition-all placeholder:text[#000000] ${
-              errors.email
-                ? 'border-[#E24B4A]'
-                : emailValid
-                ? 'border-[#0F6E56]'
-                : 'border-[#D1D5DB]'
-            } ${emailEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[12px]'}`}
-          />
-
-          {emailValid && (
-            <span className="absolute right-[10px] top-1/2 flex -translate-y-1/2 text-[#0F6E56]">
-              <FaRegCircleCheck size={14} />
-            </span>
+        {/* Email */}
+        <div className="flex flex-col gap-1">
+          <label htmlFor="email" className="text-[16px] font-medium text-[#000000]">
+            Email
+          </label>
+          <div className="relative">
+            <IconPrefix icon={Mail} show={emailEmpty} />
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              aria-invalid={!!errors.email}
+              className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[16px] text-[#000000] outline-none transition-all placeholder:text-[#000000] ${
+                errors.email ? 'border-[#E24B4A]' : emailValid ? 'border-[#0F6E56]' : 'border-[#D1D5DB]'
+              } ${emailEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[12px]'}`}
+            />
+            {emailValid && (
+              <span className="absolute right-[10px] top-1/2 flex -translate-y-1/2 text-[#0F6E56]">
+                <FaRegCircleCheck size={14} />
+              </span>
+            )}
+          </div>
+          {errors.email && (
+            <p className="m-0 text-[11px] text-[#DC2626]">{errors.email}</p>
           )}
         </div>
 
-        {errors.email && (
-          <p className="m-0 text-[11px] text-[#DC2626]">
-            {errors.email.message}
-          </p>
-        )}
-      </div>
-
-      {/* Password */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="password" className="text-[16px] font-medium text-[#111]">
-          Password
-        </label>
-
-        <div className="relative">
-          <IconPrefix icon={Lock} show={passwordEmpty} />
-
-          <input
-            id="password"
-            type={showPw ? 'text' : 'password'}
-            placeholder="Enter password"
-            aria-invalid={!!errors.password}
-            {...register('password')}
-            className={`w-full rounded-[8px] border bg-[#F6F7F7]  border-[#B1B5B4] py-[11px] text-[16px] text-[#111] outline-none transition-all placeholder:text[#000000]  ${
-              errors.password ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
-            } ${passwordEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[40px]'}`}
-          />
-
-          <button
-            type="button"
-            onClick={() => setShowPw((p) => !p)}
-            aria-label={showPw ? 'Hide password' : 'Show password'}
-            className="absolute text-[#004C48] right-[10px] top-1/2 flex -translate-y-1/2 cursor-pointer border-0 bg-transparent p-0 text-[18px]"
-          >
-            {showPw ? <Eye size={15} /> : <LuEyeClosed size={15} /> }
-          </button>
+        {/* Password */}
+        <div className="flex flex-col gap-1">
+          <label htmlFor="password" className="text-[16px] font-medium text-[#111]">
+            Password
+          </label>
+          <div className="relative">
+            <IconPrefix icon={Lock} show={passwordEmpty} />
+            <input
+              id="password"
+              type={showPw ? 'text' : 'password'}
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              aria-invalid={!!errors.password}
+              className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[16px] text-[#111] outline-none transition-all placeholder:text-[#000000] ${
+                errors.password ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
+              } ${passwordEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[40px]'}`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPw((p) => !p)}
+              aria-label={showPw ? 'Hide password' : 'Show password'}
+              className="absolute text-[#004C48] right-[10px] top-1/2 flex -translate-y-1/2 cursor-pointer border-0 bg-transparent p-0 text-[18px]"
+            >
+              {showPw ? <Eye size={15} /> : <EyeClosed size={15} />}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="m-0 text-[11px] text-[#DC2626]">{errors.password}</p>
+          )}
         </div>
 
-        {errors.password && (
-          <p className="m-0 text-[11px] text-[#DC2626]">
-            {errors.password.message}
-          </p>
-        )}
-      </div>
+        {/* Remember me + Forgot */}
+        <div className="flex items-center justify-between">
+          <label className="flex cursor-pointer items-center gap-[6px] text-[14px] text-[#111]">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              className="h-[12px] w-[12px] accent-[#111]"
+            />
+            Remember me
+          </label>
+          <Link href="/forgot-password" className="text-[14px] text-[#020303] no-underline">
+            Forgot Password?
+          </Link>
+        </div>
 
-      {/* Remember me + Forgot */}
-      <div className="flex items-center justify-between">
-        <label className="flex cursor-pointer items-center gap-[6px] text-[14px] text-[#111]">
-          <input
-            type="checkbox"
-            checked={remember}
-            onChange={(e) => setRemember(e.target.checked)}
-            className="h-[12px] w-[12px] accent-[#111]"
-          />
-          Remember me
-        </label>
-
-        <Link
-          href="/forgot-password"
-          className="text-[14px] text-[#020303] no-underline"
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`w-full rounded-[8px] px-3 py-3 text-[14px] font-medium text-white transition-all ${
+            isSubmitting ? 'cursor-not-allowed bg-[#0F4F4A] opacity-60' : 'cursor-pointer bg-[#0F4F4A]'
+          }`}
         >
-          Forgot Password?
-        </Link>
+          {isSubmitting ? 'Signing in...' : 'Continue'}
+        </button>
+      </form>
+
+      <div className="mt-4">
+        <AuthOAuthButtons />
       </div>
 
-      {/* Submit */}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className={`w-full rounded-[8px] px-3 py-3 text-[14px] font-medium text-white transition-all ${
-          isSubmitting
-            ? 'cursor-not-allowed bg-[#0F4F4A] opacity-60'
-            : 'cursor-pointer bg-[#0F4F4A]'
-        }`}
-      >
-        {isSubmitting ? 'Signing in...' : 'Continue'}
-      </button>
-    </form>
-
-    <div className="mt-4">
-      <AuthOAuthButtons />
+      <p className="mt-4 text-center text-[18px] text-[#000000]">
+        {"Don't Have an Account?"}{' '}
+        <Link href="/register" className="font-semibold text-[#0F6E56] no-underline">
+          Sign Up
+        </Link>
+      </p>
     </div>
-
-    <p className="mt-4 text-center text-[18px] text-[#000000]">
-      {"Don't Have an Account?"}{' '}
-      <Link
-        href="/register"
-        className="font-semibold text-[#0F6E56] no-underline"
-      >
-        Sign Up
-      </Link>
-    </p>
-  </div>
-)
+  )
 }
-

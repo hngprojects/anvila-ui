@@ -1,4 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios'
+import { authStoreSingleton } from '@/components/stores/auth-store'
 
 export const publicClient = axios.create({
   baseURL: '/api',
@@ -12,28 +13,10 @@ export const authClient = axios.create({
   withCredentials: true,
 })
 
-function getAccessToken(): string | null {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { useAuthStore } = require('@/components/stores/auth-store')
-  return useAuthStore.getState().accessToken
-}
-
-function setAccessToken(token: string): void {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { useAuthStore } = require('@/components/stores/auth-store')
-  useAuthStore.getState().setAccessToken(token)
-}
-
-function clearAuth(): void {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { useAuthStore } = require('@/components/stores/auth-store')
-  useAuthStore.getState().clear()
-}
-
 authClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = getAccessToken()
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  const { accessToken } = authStoreSingleton.getState()
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
   }
   return config
 })
@@ -76,19 +59,17 @@ authClient.interceptors.response.use(
     isRefreshing = true
 
     try {
-      const { data } = await publicClient.post<{ access_token: string }>(
-        '/auth/refresh'
-      )
+      const { data } = await publicClient.post<{ access_token: string }>('/auth/refresh')
       const newToken = data.access_token
 
-      setAccessToken(newToken)
+      authStoreSingleton.getState().setAccessToken(newToken)
       processQueue(null, newToken)
 
       originalRequest.headers.Authorization = `Bearer ${newToken}`
       return authClient(originalRequest)
     } catch (refreshError) {
       processQueue(refreshError, null)
-      clearAuth()
+      authStoreSingleton.getState().clear()
       if (typeof window !== 'undefined') {
         window.location.replace('/login')
       }
