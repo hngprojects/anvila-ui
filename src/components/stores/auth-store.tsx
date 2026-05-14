@@ -80,9 +80,6 @@ export function useAuthStore() {
   return ctx
 }
 
-// ---------- Singleton getter for axios interceptors ----------
-// We expose a module-level ref that the provider keeps in sync so that
-// non-React code (axios interceptors) can still read/write the token.
 interface StoreRef {
   getState: () => { accessToken: string | null; setAccessToken: (t: string) => void; clear: () => void }
 }
@@ -93,7 +90,7 @@ export function _registerStoreRef(ref: StoreRef['getState']) {
   _storeRef = ref
 }
 
-/** Used only by axios interceptors — do NOT call inside React components */
+
 export const authStoreSingleton = {
   getState: () => {
     if (!_storeRef) throw new Error('Auth store not yet initialised')
