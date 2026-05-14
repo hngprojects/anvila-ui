@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { TableCheckIcon, TableDashIcon } from "@/components/icons";
 import { PricingCard, PRICING_TIERS } from "./PricingCard";
 import { FAQS, FaqItem } from "./PricingFAQs";
@@ -140,8 +141,8 @@ export function PricingPage() {
         </div>
       </section>
 
-      <section className="w-full bg-[#FAFAFA] py-16 sm:py-20">
-        <div className="w-full max-w-[698px] mx-auto px-5 py-16 sm:px-6 sm:py-20 flex flex-col gap-7">
+      <section className="w-full bg-[#FAFAFA]">
+        <div className="w-full max-w-[698px] mx-auto px-5 py-10 sm:px-6 sm:py-20 flex flex-col gap-7">
           <h2 className="text-[#2D2D2D] font-medium text-[30px] leading-[38px] text-center sm:font-bold sm:text-[48px]">
             Frequently asked
           </h2>
@@ -159,11 +160,13 @@ export function PricingPage() {
           </div>
         </div>
         <div className="w-full flex justify-center px-5 pb-16 sm:pb-20">
-          <button className="w-[358px] h-[48px] rounded-lg border border-teal-brand flex items-center justify-center transition-opacity hover:opacity-80">
-            <span className="text-teal-brand font-medium text-[18px] leading-[100%]">
-              See more
-            </span>
-          </button>
+          <Link href="/faq">
+            <button className="w-[358px] h-[48px] rounded-lg border border-teal-brand flex items-center justify-center transition-opacity hover:opacity-80">
+              <span className="text-teal-brand font-medium text-[18px] leading-[100%]">
+                See more
+              </span>
+            </button>
+          </Link>
         </div>
       </section>
     </main>
