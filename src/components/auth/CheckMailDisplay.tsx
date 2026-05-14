@@ -29,9 +29,11 @@ export default function CheckMailDisplay() {
   return (
     <div className="w-full bg-white md:p-12 md:rounded-[32px] md:border md:border-[#F2F4F7] md:shadow-sm relative">
       {/* Back Button */}
-      <button className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors">
+      <Link 
+        href="/auth/forgot-password"
+        className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors">
         <ChevronLeft size={16} /> Back
-      </button>
+      </Link>
 
       <div className="text-center mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mb-2 tracking-tight">Check your mail</h1>

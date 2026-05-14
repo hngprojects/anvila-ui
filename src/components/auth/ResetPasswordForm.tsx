@@ -10,9 +10,11 @@ export default function SetNewPasswordForm() {
   return (
     <div className="w-full bg-white p-8 rounded-lg shadow-md">
       {/* Back Button */}
-      <button className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors">
+      <Link 
+        href="/auth/forgot-password/check-mail"
+        className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors">
         <ChevronLeft size={16} /> Back
-      </button>
+      </Link>
 
       <div className="text-center mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-[#101828] md:mb-2 tracking-tight">Set a  new Password</h1>
