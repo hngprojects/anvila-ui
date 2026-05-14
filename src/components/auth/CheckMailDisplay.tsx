@@ -1,11 +1,15 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { ChevronLeft } from "lucide-react";
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
-export default function CheckMailDisplay() {
+function CheckMailContent() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isFinished, setIsFinished] = useState(false);
+  const searchParams = useSearchParams();
+  const userEmail = searchParams.get('email') || "";
+
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -19,6 +23,12 @@ export default function CheckMailDisplay() {
 
     return () => clearInterval(timer);
   }, [timeLeft]);
+  
+  const maskEmail = (email: string) => {
+    if (!email) return "your email";
+    const [name, domain] = email.split("@");
+    return `${name.substring(0, 2)}****@${domain}`;
+  };
 
   const handleResend = () => {
     // Reset timer logic
@@ -36,9 +46,9 @@ export default function CheckMailDisplay() {
       </Link>
 
       <div className="text-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mb-2 tracking-tight">Check your mail</h1>
-        <p className="text-xs md:text-sm text-[#667085] px-4">
-          We sent a password reset link to <span className="font-medium text-[#101828]">jo******gmail.com</span>
+        <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mb-2">Check your mail</h1>
+        <p className="text-xs md:text-sm text-[#667085]">
+          We sent a password reset link to <span className="font-medium text-[#101828]">{maskEmail(userEmail)}</span>
         </p>
       </div>
    
@@ -72,5 +82,13 @@ export default function CheckMailDisplay() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function CheckMailDisplay() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CheckMailContent />
+    </Suspense>
   );
 }
