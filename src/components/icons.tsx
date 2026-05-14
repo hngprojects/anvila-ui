@@ -46,13 +46,13 @@ export const GoogleLogo = forwardRef<SVGSVGElement, SVGProps>(
   }
 );
 
+GoogleLogo.displayName = "GoogleLogo";
 
-
-export interface SVGProps extends React.SVGAttributes<SVGSVGElement> {
+export interface GithubSVGProps extends React.SVGAttributes<SVGSVGElement> {
   children?: React.ReactNode;
 }
 
-export const GithubLogo = forwardRef<SVGSVGElement, SVGProps>(
+export const GithubLogo = forwardRef<SVGSVGElement, GithubSVGProps>(
   ({ className = "", ...props }, ref) => {
     return (
       <svg
@@ -70,9 +70,3 @@ export const GithubLogo = forwardRef<SVGSVGElement, SVGProps>(
 );
 
 GithubLogo.displayName = "GithubLogo";
-
-// export default GithubLogo;
-
-GoogleLogo.displayName = "GoogleLogo";
-
-// export default GoogleLogo;
