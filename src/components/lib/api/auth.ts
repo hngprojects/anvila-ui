@@ -55,10 +55,7 @@ export async function refresh(): Promise<AccessTokenResponse> {
 }
 
 // ---------------------------------------------------------------------------
-// Logout — revokes the refresh token on the backend and clears the cookie.
-//
-// Don't call this directly — use useAuth().logout() which also clears the
-// Zustand store regardless of whether the request succeeds.
+
 //
 // Usage (via hook):
 //   const { logout } = useAuth();
@@ -98,6 +95,9 @@ export async function getMe(): Promise<User> {
 //   // show result.message to the user, then redirect to /login
 // ---------------------------------------------------------------------------
 export async function verifyEmail(token: string): Promise<MessageResponse> {
+   if (!token.trim()) {
+    throw new Error('Verification token is missing')
+  }
   const res = await publicClient.get('/auth/verify-email', {
     params: { token },
   })

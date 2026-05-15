@@ -8,7 +8,7 @@ export const AuthNavBar = () => {
         
         <Link
           href="/"
-          className="flex items-center gap-2 no-underline outline-none"
+            className="flex items-center gap-2 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[`#0F6E56`]"
         >
           {/* Logo */}
           <div className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-full">

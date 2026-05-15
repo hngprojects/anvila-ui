@@ -43,6 +43,7 @@ export const AuthLoginForm = () => {
     register,
     handleSubmit,
     watch,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({
     defaultValues: { email: '', password: '' },
@@ -57,7 +58,14 @@ export const AuthLoginForm = () => {
 
   const onSubmit = async (data: LoginInput) => {
     const result = LoginSchema.safeParse(data)
-    if (!result.success) return 
+      if (!result.success) {
+    for (const issue of result.error.issues) {
+      const field = issue.path[0] as keyof LoginInput | undefined
+      if (field) setError(field, { message: issue.message })
+     }
+     setServerError('Please fix the errors below.')
+     return
+    }
 
     setServerError(null)
 

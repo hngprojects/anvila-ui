@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios'
+import axios from 'axios'
 
 interface PydanticErrorDetail {
   loc: (string | number)[]
@@ -49,7 +50,7 @@ export function parseApiError(
   err: unknown,
   fallback = 'Something went wrong. Please try again.'
 ): string {
-  if (err instanceof AxiosError) {
+  if (axios.isAxiosError(err)) {
     const data = err.response?.data
     const status = err.response?.status
 

@@ -26,7 +26,10 @@ export function AuthBootstrap() {
     if (attempted.current) return
     attempted.current = true
 
-    const isPublicPath = PUBLIC_PATHS.some((path) => pathname.startsWith(path))
+     const isPublicPath = PUBLIC_PATHS.some((path) => path === '/'
+       ? pathname === '/'
+       : pathname === path || pathname.startsWith(`${path}/`)
+    )
     if (isPublicPath) return
 
     refresh()

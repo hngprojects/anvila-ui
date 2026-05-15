@@ -169,11 +169,11 @@ export const AuthSignUpForm = () => {
 
           {/* Full Name */}
           <div className="flex flex-col gap-1">
-            <label className="text-[16px] font-medium text-[#111928]">Full name</label>
+            <label  htmlFor="display_name" className="text-[16px] font-medium text-[#111928]">Full name</label>
             <div className="relative">
               <IconPrefix icon={User} show={nameEmpty} />
               <input
-                {...register('display_name')}
+                {...register('display_name')} id="display_name"
                 type="text"
                 placeholder="Enter full name"
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
@@ -188,11 +188,11 @@ export const AuthSignUpForm = () => {
 
           {/* Email */}
           <div className="flex flex-col gap-1">
-            <label className="text-[16px] font-medium text-[#111]">Email</label>
+            <label htmlFor="email" className="text-[16px] font-medium text-[#111]">Email</label>
             <div className="relative">
               <IconPrefix icon={Mail} show={emailEmpty} />
               <input
-                {...register('email')}
+                {...register('email')} id="email"
                 type="email"
                 placeholder="Enter email address"
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
@@ -207,11 +207,11 @@ export const AuthSignUpForm = () => {
 
           {/* Password */}
           <div className="flex flex-col gap-1">
-            <label className="text-[16px] font-medium text-[#111]">Password</label>
+            <label  htmlFor="password" className="text-[16px] font-medium text-[#111]">Password</label>
             <div className="relative">
               <IconPrefix icon={Lock} show={pwEmpty} />
               <input
-                {...register('password')}
+                {...register('password')} id="password"
                 type={showPw ? 'text' : 'password'}
                 placeholder="Enter password"
                 onFocus={() => setPwTouched(true)}
@@ -230,6 +230,7 @@ export const AuthSignUpForm = () => {
                 <button
                   type="button"
                   onClick={() => setShowPw((p) => !p)}
+                   aria-label={showPw ? 'Hide password' : 'Show password'}
                   className="border-0 bg-transparent text-[#9CA3AF]"
                 >
                   {showPw ? <Eye size={15} /> : <EyeClosed size={15} />}
@@ -268,11 +269,11 @@ export const AuthSignUpForm = () => {
 
           {/* Confirm Password */}
           <div className="flex flex-col gap-1">
-            <label className="text-[16px] font-medium text-[#111]">Confirm password</label>
+            <label htmlFor="confirmPassword" className="text-[16px] font-medium text-[#111]">Confirm password</label>
             <div className="relative">
               <IconPrefix icon={Lock} show={cpwEmpty} />
               <input
-                {...register('confirmPassword')}
+                {...register('confirmPassword')} id="confirmPassword"
                 type={showConfirm ? 'text' : 'password'}
                 placeholder="Confirm your password"
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none ${
@@ -282,6 +283,7 @@ export const AuthSignUpForm = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirm((p) => !p)}
+                  aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
                 className="absolute right-[10px] top-1/2 -translate-y-1/2 border-0 bg-transparent text-[#9CA3AF]"
               >
                 {showConfirm ? <Eye size={15} /> : <EyeClosed size={15} />}

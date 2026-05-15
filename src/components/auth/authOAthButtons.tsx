@@ -24,6 +24,7 @@ export const AuthOAuthButtons = () => {
             key={provider}
             type="button"
             onClick={() => { window.location.href = href }}
+            aria-label={`Continue with ${provider === 'google' ? 'Google' : 'GitHub'}`}
             className="flex cursor-pointer items-center justify-center rounded-[8px] border border-[#E7E7E7] bg-[#F6F7F7] p-[11px] transition-colors duration-150 hover"
           >
             <Icon />

@@ -19,11 +19,15 @@ export function useAuth() {
     async (data: LoginInput) => {
       const { access_token } = await login(data)
       setAccessToken(access_token)
-      const me = await getMe()
-      setUser(me)
-      return me
+       try {const me = await getMe()
+       setUser(me)
+        return me
+     } catch (error) {
+       clear()
+        throw error
+      }
     },
-    [setAccessToken, setUser]
+    [setAccessToken, setUser, clear ]
   )
 
   const handleLogout = useCallback(async () => {
