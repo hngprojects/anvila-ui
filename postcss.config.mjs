@@ -3,3 +3,5 @@ export default {
     '@tailwindcss/postcss': {},
   },
 };
+
+export default config;
