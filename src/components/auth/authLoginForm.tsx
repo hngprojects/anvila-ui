@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
 import { ArrowLeft, Eye, EyeClosed, Mail, Lock, type LucideIcon } from 'lucide-react'
 import { FaRegCircleCheck } from 'react-icons/fa6'
 import { AxiosError } from 'axios'
@@ -15,21 +16,18 @@ import { AuthOAuthButtons } from './authOAthButtons'
 
 const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =>
   show ? (
-        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center pointer-events-none">
-        <Icon size={15} />
-      </span>
+    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center pointer-events-none">
+      <Icon size={15} />
+    </span>
   ) : null
 
-function validate(data: { email: string; password: string }) {
-  const result = LoginSchema.safeParse(data)
-  if (result.success) return {}
-  const errs: Partial<Record<keyof LoginInput, string>> = {}
-  for (const issue of result.error.issues) {
-    const key = issue.path[0] as keyof LoginInput
-    if (!errs[key]) errs[key] = issue.message
-  }
-  return errs
-}
+const AnvilaLogo = () => (
+  <div className="flex items-center justify-center gap-2">
+    <div className="flex h-[35.97px] w-[35.97px] items-center justify-center">
+      <Image src="/images/Logo.png" alt="Logo" width={200} height={200} />
+    </div>
+  </div>
+)
 
 // ---------- component ----------
 
@@ -37,37 +35,31 @@ export const AuthLoginForm = () => {
   const router = useRouter()
   const { login } = useAuth()
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [remember, setRemember] = useState(false)
-  const [errors, setErrors] = useState<Partial<Record<keyof LoginInput, string>>>({})
   const [serverError, setServerError] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginInput>({
+    defaultValues: { email: '', password: '' },
+  })
+
+  const email = watch('email')
+  const password = watch('password')
 
   const emailEmpty = email.length === 0
   const passwordEmpty = password.length === 0
   const emailValid = !errors.email && email.length > 0
 
-  const AnvilaLogo = () => (
-    <div className="flex items-center justify-center gap-2">
-      <div className="flex h-[35.97px] w-[35.97px] items-center justify-center">
-        <Image src="/images/Logo.png" alt="Logo" width={200} height={200} />
-      </div>
-    </div>
-  )
+  const onSubmit = async (data: LoginInput) => {
+    const result = LoginSchema.safeParse(data)
+    if (!result.success) return 
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const data = { email, password }
-    const fieldErrors = validate(data)
-    if (Object.keys(fieldErrors).length > 0) {
-      setErrors(fieldErrors)
-      return
-    }
-    setErrors({})
     setServerError(null)
-    setIsSubmitting(true)
 
     try {
       await login(data)
@@ -95,8 +87,6 @@ export const AuthLoginForm = () => {
         }
       }
       setServerError('Something went wrong. Please try again.')
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -133,7 +123,7 @@ export const AuthLoginForm = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
 
         {/* Email */}
         <div className="flex flex-col gap-1">
@@ -143,11 +133,10 @@ export const AuthLoginForm = () => {
           <div className="relative">
             <IconPrefix icon={Mail} show={emailEmpty} />
             <input
+              {...register('email', { validate: (v) => LoginSchema.shape.email.safeParse(v).success || 'Invalid email address' })}
               id="email"
               type="email"
               placeholder="Enter email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               aria-invalid={!!errors.email}
               className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[16px] text-[#000000] outline-none transition-all placeholder:text-[#000000] ${
                 errors.email ? 'border-[#E24B4A]' : emailValid ? 'border-[#0F6E56]' : 'border-[#D1D5DB]'
@@ -160,7 +149,7 @@ export const AuthLoginForm = () => {
             )}
           </div>
           {errors.email && (
-            <p className="m-0 text-[11px] text-[#DC2626]">{errors.email}</p>
+            <p className="m-0 text-[11px] text-[#DC2626]">{errors.email.message}</p>
           )}
         </div>
 
@@ -172,11 +161,10 @@ export const AuthLoginForm = () => {
           <div className="relative">
             <IconPrefix icon={Lock} show={passwordEmpty} />
             <input
+              {...register('password', { required: 'Password is required' })}
               id="password"
               type={showPw ? 'text' : 'password'}
               placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               aria-invalid={!!errors.password}
               className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[16px] text-[#111] outline-none transition-all placeholder:text-[#000000] ${
                 errors.password ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
@@ -192,7 +180,7 @@ export const AuthLoginForm = () => {
             </button>
           </div>
           {errors.password && (
-            <p className="m-0 text-[11px] text-[#DC2626]">{errors.password}</p>
+            <p className="m-0 text-[11px] text-[#DC2626]">{errors.password.message}</p>
           )}
         </div>
 

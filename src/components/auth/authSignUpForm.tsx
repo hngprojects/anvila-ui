@@ -1,9 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { Eye, EyeClosed, ArrowLeft, Check, X, User, Mail, Lock, type LucideIcon } from 'lucide-react'
 import { AxiosError } from 'axios'
 import { RegisterSchema, type RegisterInput } from '../schemas/auth'
@@ -15,14 +16,14 @@ import { AuthOAuthButtons } from './authOAthButtons'
 
 const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =>
   show ? (
-      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center pointer-events-none">
+    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center pointer-events-none">
       <Icon size={15} />
     </span>
   ) : null
 
 const AnvilaLogo = () => (
   <div className="flex items-center justify-center gap-2">
-    <div className="flex h-[35.97px] w-[35.97px] items-center justify-center ">
+    <div className="flex h-[35.97px] w-[35.97px] items-center justify-center">
       <Image src="/images/Logo.png" alt="Logo" width={200} height={200} />
     </div>
   </div>
@@ -49,39 +50,37 @@ const RoundTick = ({ passing }: { passing: boolean }) => (
   </div>
 )
 
-type FieldErrors = Partial<Record<keyof RegisterInput, string>>
-
-function validate(data: RegisterInput): FieldErrors {
-  const result = RegisterSchema.safeParse(data)
-  if (result.success) return {}
-  const errs: FieldErrors = {}
-  for (const issue of result.error.issues) {
-    const key = issue.path[0] as keyof RegisterInput
-    if (!errs[key]) errs[key] = issue.message
-  }
-  return errs
-}
-
 // ---------- component ----------
 
 export const AuthSignUpForm = () => {
   const router = useRouter()
   const { register: registerUser } = useAuth()
 
-  const [displayName, setDisplayName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-
   const [showPw, setShowPw] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [pwTouched, setPwTouched] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
   const [agreed, setAgreed] = useState(false)
-
-  const [errors, setErrors] = useState<FieldErrors>({})
   const [bannerError, setBannerError] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterInput>({
+    defaultValues: {
+      display_name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  })
+
+  const displayName = watch('display_name') ?? ''
+  const email = watch('email')
+  const password = watch('password')
+  const confirmPassword = watch('confirmPassword')
 
   const nameEmpty = displayName.length === 0
   const emailEmpty = email.length === 0
@@ -93,34 +92,26 @@ export const AuthSignUpForm = () => {
   const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'][score]
   const strengthColor =
     score <= 1 ? '#E24B4A' : score === 2 ? '#EF9F27' : score === 3 ? '#EF9F27' : '#0F6E56'
-  const showPwRules = pwTouched && password.length > 0 && !submitted
+  const showPwRules = pwTouched && password.length > 0
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
+ 
+  const onSubmit = async (data: RegisterInput) => {
     if (!agreed) {
       setBannerError('You must agree to the Terms & Conditions.')
       return
     }
 
-    const data: RegisterInput = {
-      display_name: displayName,
-      email,
-      password,
-      confirmPassword,
-    }
-
-    const fieldErrors = validate(data)
-    if (Object.keys(fieldErrors).length > 0) {
-      setErrors(fieldErrors)
+    const result = RegisterSchema.safeParse(data)
+    if (!result.success) {
+      for (const issue of result.error.issues) {
+        const field = issue.path[0] as keyof RegisterInput
+        setError(field, { message: issue.message })
+      }
       setBannerError('Please fix the errors below.')
       return
     }
 
-    setErrors({})
     setBannerError(null)
-    setSubmitted(true)
-    setIsSubmitting(true)
 
     try {
       await registerUser(data)
@@ -129,21 +120,17 @@ export const AuthSignUpForm = () => {
       if (err instanceof AxiosError && err.response?.status === 422) {
         const detail = err.response.data?.detail
         if (Array.isArray(detail)) {
-          const fieldErrs: FieldErrors = {}
           detail.forEach((d: { loc: string[]; msg: string }) => {
             const field = d.loc.at(-1) as keyof RegisterInput | undefined
-            if (field && !fieldErrs[field]) {
-              fieldErrs[field] = d.msg.replace(/^Value error,\s*/i, '')
+            if (field) {
+              setError(field, { message: d.msg.replace(/^Value error,\s*/i, '') })
             }
           })
-          setErrors(fieldErrs)
           setBannerError('Please fix the errors below.')
           return
         }
       }
       setBannerError(parseApiError(err))
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -178,7 +165,7 @@ export const AuthSignUpForm = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-[14px]">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[14px]">
 
           {/* Full Name */}
           <div className="flex flex-col gap-1">
@@ -186,18 +173,16 @@ export const AuthSignUpForm = () => {
             <div className="relative">
               <IconPrefix icon={User} show={nameEmpty} />
               <input
-                id="display_name"
+                {...register('display_name')}
                 type="text"
                 placeholder="Enter full name"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
                   errors.display_name ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
                 } ${nameEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[12px]'}`}
               />
             </div>
             {errors.display_name && (
-              <p className="m-0 text-[11px] text-[#DC2626]">{errors.display_name}</p>
+              <p className="m-0 text-[11px] text-[#DC2626]">{errors.display_name.message}</p>
             )}
           </div>
 
@@ -207,18 +192,16 @@ export const AuthSignUpForm = () => {
             <div className="relative">
               <IconPrefix icon={Mail} show={emailEmpty} />
               <input
-                id="email"
+                {...register('email')}
                 type="email"
                 placeholder="Enter email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
                   errors.email ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
                 } ${emailEmpty ? 'pl-[34px]' : 'pl-[12px]'}`}
               />
             </div>
             {errors.email && (
-              <p className="m-0 text-[11px] text-[#DC2626]">{errors.email}</p>
+              <p className="m-0 text-[11px] text-[#DC2626]">{errors.email.message}</p>
             )}
           </div>
 
@@ -228,15 +211,10 @@ export const AuthSignUpForm = () => {
             <div className="relative">
               <IconPrefix icon={Lock} show={pwEmpty} />
               <input
-                id="password"
+                {...register('password')}
                 type={showPw ? 'text' : 'password'}
                 placeholder="Enter password"
-                value={password}
                 onFocus={() => setPwTouched(true)}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  if (submitted) setSubmitted(false)
-                }}
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
                   errors.password ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
                 } ${pwEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[80px]'}`}
@@ -294,11 +272,9 @@ export const AuthSignUpForm = () => {
             <div className="relative">
               <IconPrefix icon={Lock} show={cpwEmpty} />
               <input
-                id="confirmPassword"
+                {...register('confirmPassword')}
                 type={showConfirm ? 'text' : 'password'}
                 placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none ${
                   errors.confirmPassword ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
                 } ${cpwEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[40px]'}`}
@@ -312,7 +288,7 @@ export const AuthSignUpForm = () => {
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="m-0 text-[11px] text-[#DC2626]">{errors.confirmPassword}</p>
+              <p className="m-0 text-[11px] text-[#DC2626]">{errors.confirmPassword.message}</p>
             )}
           </div>
 
