@@ -60,6 +60,7 @@ export function Contact() {
     },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const enquiryType = watch("enquiryType");
 
   function onSubmit(data: ContactFormData) {
