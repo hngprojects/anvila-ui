@@ -1,59 +1,49 @@
-import { ChevronDownIcon, ChevronUpIcon } from "@/components/icons";
+"use client";
 
-export const FAQS = [
-  {
-    q: 'What does "one-time per agent" mean?',
-    a: "You pay once to turn a specific agent setup private. No recurring subscriptions.",
-  },
-  {
-    q: "Can I make a public agent private later?",
-    a: "Yes, upgrade any public agent to professional at any time.",
-  },
-  {
-    q: "Is there a limit on how many agents I can generate?",
-    a: "No, both plans allow unlimited agent generation.",
-  },
-  {
-    q: "What payment methods do you accept?",
-    a: "All major credit cards, PayPal, and crypto.",
-  },
-  {
-    q: "Do you offer refunds?",
-    a: "Generally no, but contact support for issues.",
-  },
-];
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { FAQS } from "@/data/pricing";
 
-export const FaqItem = ({
-  question,
-  answer,
-  isOpen,
-  onToggle,
+export function PricingFaqs({
+  openFaq,
+  setOpenFaq,
 }: {
-  question: string;
-  answer: string;
-  isOpen: boolean;
-  onToggle: () => void;
-}) => (
-  <div className="rounded-xl border border-[#E4E4E7] bg-white overflow-hidden">
-    <button
-      className="flex w-full items-center justify-between p-4 text-left gap-3"
-      onClick={onToggle}
+  openFaq: string | null;
+  setOpenFaq: (val: string | null) => void;
+}) {
+  return (
+    <Accordion
+      type="single"
+      collapsible
+      value={openFaq ?? ""}
+      onValueChange={(val) => setOpenFaq(val || null)}
+      className="flex flex-col gap-4 border-none"
     >
-      <span
-        className={`font-semibold text-base leading-7 transition-colors ${
-          isOpen ? "text-teal-accent" : "text-[#2D2D2D]"
-        }`}
-      >
-        {question}
-      </span>
-      <span
-        className={`shrink-0 transition-colors ${isOpen ? "text-teal-accent" : "text-[#2D2D2D]"}`}
-      >
-        {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-      </span>
-    </button>
-    {isOpen && (
-      <div className="px-6 pb-5 text-[#2D2D2D] text-sm leading-6">{answer}</div>
-    )}
-  </div>
-);
+      {FAQS.map((faq, i) => {
+        const key = `pricing-faq-${i}`;
+        return (
+          <AccordionItem
+            key={key}
+            value={key}
+            className="border-none rounded-xl overflow-hidden bg-white ring-1 ring-copy-muted/10"
+          >
+            <AccordionTrigger
+              className={`px-4 py-4 text-left text-base font-semibold leading-7 hover:no-underline hover:bg-transparent transition-colors ${
+                openFaq === key ? "text-teal-accent" : "text-logo"
+              }`}
+            >
+              {faq.q}
+            </AccordionTrigger>
+            <AccordionContent className="px-4 pb-5 text-sm leading-6 text-copy-muted">
+              {faq.a}
+            </AccordionContent>
+          </AccordionItem>
+        );
+      })}
+    </Accordion>
+  );
+}

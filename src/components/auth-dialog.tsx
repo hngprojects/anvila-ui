@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import * as React from 'react'
+import Link from "next/link";
+import * as React from "react";
 
 import {
   Dialog,
@@ -10,13 +10,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Github, Google, LogoIcon } from '@/components/icons'
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Github, Google, LogoIcon } from "@/components/icons";
 
 type AuthDialogProps = {
-  trigger: React.ReactNode
-}
+  trigger: React.ReactNode;
+};
 
 export function AuthDialog({ trigger }: AuthDialogProps) {
   return (
@@ -46,7 +46,7 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
               variant="outline"
               className="group h-14 w-full gap-4 rounded-2xl border-copy-muted/20 text-base font-semibold transition-all duration-200 hover:border-copy-muted/30 hover:bg-background"
               onClick={() => {
-                window.location.href = '/api/auth/google'
+                // TODO: Replace with actual auth url
               }}
             >
               <Google className="h-6 w-6 transition-transform group-hover:scale-105" />
@@ -57,7 +57,7 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
               variant="outline"
               className="group h-14 w-full gap-4 rounded-2xl border-copy-muted/20 text-base font-semibold transition-all duration-200 hover:border-copy-muted/30 hover:bg-background"
               onClick={() => {
-                window.location.href = '/api/auth/github'
+                // TODO: Replace with actual auth url
               }}
             >
               <Github className="h-6 w-6 transition-transform group-hover:scale-105" />
@@ -74,14 +74,14 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
             </Link>
 
             <p className="max-w-[280px] text-[11px] leading-normal text-copy-muted/70">
-              By signing up, you agree to our{' '}
+              By signing up, you agree to our
               <Link
                 href="/terms"
                 className="underline underline-offset-2 transition-colors hover:text-copy-muted"
               >
                 Terms
-              </Link>{' '}
-              and{' '}
+              </Link>
+              and
               <Link
                 href="/privacy"
                 className="underline underline-offset-2 transition-colors hover:text-copy-muted"
@@ -94,5 +94,5 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

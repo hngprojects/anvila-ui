@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDownIcon } from "@/components/icons";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@/lib/validator";
+import { contactSchema, type ContactFormData } from "@/lib/schemas";
+import { ContactIcon } from "@/components/icons";
+import { ContactCard } from "@/types";
+import { cn } from "@/lib/utils";
+import { CustomSelect } from "@/components/ui/custom-select";
 
 const ENQUIRY_OPTIONS = [
   "General Enquiry",
@@ -11,18 +16,9 @@ const ENQUIRY_OPTIONS = [
   "Billing & Payments",
 ];
 
-interface ContactCard {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  responseTime?: string;
-  email: string;
-  highlighted?: boolean;
-}
-
 const CONTACT_CARDS: ContactCard[] = [
   {
-    icon: <TechnicalSupportIcon />,
+    icon: <ContactIcon bg="#FCE7F3" stroke="#A41752" />,
     title: "Technical Support",
     description:
       "Struggling with a GitHub sync or the dna.md structure? Our developers are here to help you troubleshoot your Forge.",
@@ -30,7 +26,7 @@ const CONTACT_CARDS: ContactCard[] = [
     email: "anvila.dev@gmail.com",
   },
   {
-    icon: <PartnershipIcon />,
+    icon: <ContactIcon bg="#CCFBF1" stroke="#641BA3" />,
     title: "Partnerships & Enterprise",
     description:
       'Looking for private registries or custom "Agent DNA" for your organization?\n Let\'s build a tailored solution',
@@ -38,7 +34,7 @@ const CONTACT_CARDS: ContactCard[] = [
     highlighted: true,
   },
   {
-    icon: <MediaIcon />,
+    icon: <ContactIcon bg="#F3E8FF" stroke="#0C5D56" />,
     title: "Media & Press",
     description:
       "Interested in featuring Anvila's mission to standardize portable intelligence?",
@@ -46,179 +42,173 @@ const CONTACT_CARDS: ContactCard[] = [
   },
 ];
 
- function TechnicalSupportIcon() {
-  return (
-    <img
-      src="/icons/Icon.png"
-      alt="Technical Support"
-      width={48}
-      height={48}
-    />
-  );
-}
-
-function PartnershipIcon() {
-  return (
-    <img
-      src="/icons/Icon (1).png"
-      alt="Partnerships & Enterprise"
-      width={48}
-      height={48}
-    />
-  );
-}
-
-function MediaIcon() {
-  return (
-    <img
-      src="/icons/Icon (2).png"
-      alt="Media & Press"
-      width={48}
-      height={48}
-    />
-  );
-}
-
 export function Contact() {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedEnquiry, setSelectedEnquiry] = useState("");
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      enquiryType: "",
+      message: "",
+    },
+  });
 
-  const handleSelectEnquiry = (option: string) => {
-    setSelectedEnquiry(option);
-    setIsDropdownOpen(false);
-  };
+  const enquiryType = watch("enquiryType");
+
+  function onSubmit(data: ContactFormData) {
+    console.log("Form submitted:", data);
+    // Handle submission
+  }
+
+  // Helper to show error styling
+  const inputErrorClass = (fieldName: keyof ContactFormData) =>
+    errors[fieldName]
+      ? "border-red-500 focus:border-red-500"
+      : "border-copy-muted/40 focus:border-teal-accent";
+
+  const errorText = (fieldName: keyof ContactFormData) =>
+    errors[fieldName] ? (
+      <p className="mt-1 text-sm font-medium text-red-500">
+        {errors[fieldName]?.message}
+      </p>
+    ) : null;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-    
-      <section className="w-full bg-[#F8FAFC] py-10 sm:py-20">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center gap-4 px-5 text-center sm:px-10 lg:px-20">
-          <div className="flex items-center gap-2 rounded-full border border-[#A1A1AA]/50 px-3 py-1.5">
+    <div className="min-h-screen bg-background">
+      {/* Hero */}
+      <section className="w-full bg-background py-10 sm:py-20">
+        <div className="flex w-full flex-col items-center gap-4 px-5 text-center sm:px-10 lg:px-20">
+          <div className="flex items-center gap-2 rounded-full border border-copy-muted/30 px-3 py-1.5">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-warning" />
             <span className="text-xs font-medium tracking-[0.08em] text-copy-muted">
               CONTACT US
             </span>
           </div>
 
-          <h1 className="font-['Geist',_Inter,_sans-serif] text-2xl font-medium leading-8 text-[#000000] sm:text-4xl sm:leading-tight lg:text-[48px] lg:leading-[56px]">
+          <h1 className="text-2xl font-medium leading-8 text-logo sm:text-4xl sm:leading-tight lg:text-[48px] lg:leading-[56px]">
             Need any help? Contact us
           </h1>
 
           <p className="max-w-lg text-sm leading-6 text-copy-muted sm:text-base">
-            Have questions about the Anvila protocol or need help scaling your AI
-            workforce? Our team of architects is ready to assist.
+            Have questions about the Anvila protocol or need help scaling your
+            AI workforce? Our team of architects is ready to assist.
           </p>
         </div>
       </section>
 
-    
-      <section className="w-full bg-[#F8FAFC] flex justify-center items-center px-4 sm:px-6">
-        <div className="mx-auto w-full max-w-[1063px] rounded-[20px] px-4 py-6 sm:px-10 sm:py-[36px] md:px-[109px] bg-[#FFFFFF]">
-          <h2 className="mb-8 text-center text-[18px] font-bold leading-6 text-[#000000] sm:text-[30px] sm:leading-[38px]">
+      {/* Form */}
+      <section className="flex w-full items-center justify-center bg-background px-4 sm:px-6">
+        <div className="w-full max-w-[1063px] rounded-[20px] bg-white px-4 py-6 sm:px-10 sm:py-9 md:px-[109px]">
+          <h2 className="mb-8 text-center text-lg font-bold leading-6 text-logo sm:text-[30px] sm:leading-[38px]">
             Get in Touch
           </h2>
 
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col items-center gap-6"
-
+            noValidate
           >
-        
+            {/* Row 1 */}
             <div className="grid w-full max-w-[845px] grid-cols-1 gap-6 sm:grid-cols-2">
-
+              {/* Full Name */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[14px] sm:text-[18px] font-medium leading-6 text-[#000000]">
+                <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
                   Full Name<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="Enter full name"
-                  className="h-[44px] w-full rounded-[6px] border border-[#B1B5B4] bg-white p-[10px] text-[14px] sm:text-[18px] font-medium leading-6 text-[#000000] placeholder:text-[#A1A1AA] focus:bo
-
+                  className={cn(
+                    "h-[44px] w-full rounded-md border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
+                    inputErrorClass("fullName"),
+                  )}
+                  {...register("fullName")}
                 />
+                {errorText("fullName")}
               </div>
+
+              {/* Email */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[14px] sm:text-[18px] font-medium leading-6 text-[#111928]">
+                <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
                   Email Address<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
                   placeholder="your@email.com"
-                  className="h-[44px] w-full rounded-[6px] border border-[#B1B5B4] bg-white p-[10px] text-[14px] sm:text-[18px] font-medium leading-6 text-[#000000] placeholder:text-[#A1A1AA] focus:bo
+                  className={cn(
+                    "h-[44px] w-full rounded-md border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
+                    inputErrorClass("email"),
+                  )}
+                  {...register("email")}
                 />
+                {errorText("email")}
               </div>
             </div>
 
-         
+            {/* Row 2 */}
             <div className="grid w-full max-w-[845px] grid-cols-1 gap-6 sm:grid-cols-2">
+              {/* Phone */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[14px] sm:text-[18px] font-medium leading-6 text-[#111928]">
+                <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
                   Phone Number
                 </label>
                 <input
                   type="tel"
                   placeholder="+234- 00000-00000"
-                  className="h-[44px] w-full rounded-[6px] border border-[#B1B5B4] bg-white p-[10px] text-[14px] sm:text-[18px] font-medium leading-6 text-[#000000] placeholder:text-[#A1A1AA] focus:bo
-
+                  className={cn(
+                    "h-[44px] w-full rounded-md border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
+                    inputErrorClass("phone"),
+                  )}
+                  {...register("phone")}
                 />
+                {errorText("phone")}
               </div>
-              <div className="relative flex flex-col gap-1.5">
-                <label className="text-[14px] sm:text-[18px] font-medium leading-6 text-[#111928]">
-                  Enquiry Type
+
+              {/* Enquiry Type */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
+                  Enquiry Type<span className="text-red-500">*</span>
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex h-[44px] w-full items-center justify-between rounded-[6px] border border-[#B1B5B4] bg-white p-[10px] text-[14px] sm:text-[18px] font-medium leading-6 focus:border-tea
-
-                >
-                  <span
-                    className={
-                      selectedEnquiry ? "text-[#000000]" : "text-[#A1A1AA]"
-                    }
-                  >
-                    {selectedEnquiry || "Enquiry"}
-                  </span>
-                  <span
-                    className={`transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
-                  >
-                    <ChevronDownIcon />
-                  </span>
-                </button>
-
-                {isDropdownOpen && (
-                  <ul className="absolute top-full left-0 z-10 mt-1 w-full rounded-[6px] border border-[#B1B5B4] bg-white py-1 shadow-lg">
-                    {ENQUIRY_OPTIONS.map((option) => (
-                      <li key={option}>
-                        <button
-                          type="button"
-                          onClick={() => handleSelectEnquiry(option)}
-                          className="w-full px-[10px] py-2 text-left   text-[16px] font-medium leading-6 text-[#000000] transition-colors hover:bg-[#F4F4F5]"
-                        >
-                          {option}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <CustomSelect
+                  options={ENQUIRY_OPTIONS}
+                  value={enquiryType}
+                  onChange={(val) =>
+                    setValue("enquiryType", val, { shouldValidate: true })
+                  }
+                  placeholder="Enquiry"
+                  error={!!errors.enquiryType}
+                />
+                {errorText("enquiryType")}
               </div>
             </div>
 
-          
+            {/* Message */}
             <div className="flex w-full max-w-[845px] flex-col gap-1.5">
-              <label className="text-[14px] sm:text-[18px] font-medium leading-6 text-[#111928]">
+              <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
                 How can we help you?<span className="text-red-500">*</span>
               </label>
               <textarea
                 placeholder="Write your message here..."
-                className="h-[200px] w-full resize-none rounded-[16px] border border-[#A1A1AA] bg-white p-[10px] text-[14px] sm:text-[18px] font-medium leading-6 text-[#111928] placeholder:text-[#A1A1
+                className={cn(
+                  "h-[200px] w-full resize-none rounded-2xl border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
+                  inputErrorClass("message"),
+                )}
+                {...register("message")}
               />
+              {errorText("message")}
             </div>
 
-          
+            {/* Submit */}
             <button
               type="submit"
-              className="h-[48px] w-full max-w-[845px] rounded-[8px] border-[0.5px] border-[#004C48] bg-[#004C48] px-5 py-3 text-[14px] sm:text-[18px] font-medium leading-6 text-white transition-opaci
+              className="h-[48px] w-full max-w-[845px] rounded-lg border border-primary bg-primary px-5 py-3 text-sm font-medium leading-6 text-white transition-opacity hover:opacity-90 sm:text-lg"
             >
               Send Message
             </button>
@@ -226,46 +216,55 @@ export function Contact() {
         </div>
       </section>
 
-      
-      <section className="w-full py-10 sm:py-16 bg-[#F8FAFC]">
-        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-6 px-5 sm:px-10 md:grid-cols-3 lg:px-20 bg-[#F8FAFC]">
+      {/* Contact Cards */}
+      <section className="w-full bg-background py-10 sm:py-16">
+        <div className="grid w-full grid-cols-1 gap-6 px-5 sm:px-10 md:grid-cols-3 lg:px-20">
           {CONTACT_CARDS.map((card) => (
             <div
               key={card.title}
-              className={`flex flex-col gap-4 rounded-[12px] p-6 ${
+              className={cn(
+                "flex flex-col gap-4 rounded-xl p-6",
                 card.highlighted
                   ? "bg-teal-brand text-white"
-                  : "bg-[#FFFFFF] text-[#111928] border border-[#E4E4E7]"
-              }`}
+                  : "border border-copy-muted/10 bg-white text-logo",
+              )}
             >
               {card.icon}
               <h3
-                className={`text-lg font-semibold ${card.highlighted ? "text-white" : "text-[#111928]"}`}
+                className={cn(
+                  "text-lg font-semibold",
+                  card.highlighted ? "text-white" : "text-logo",
+                )}
               >
                 {card.title}
               </h3>
               <p
-                className={`text-sm leading-relaxed ${card.highlighted ? "text-white/80" : "text-copy-muted"}`}
+                className={cn(
+                  "text-sm leading-relaxed",
+                  card.highlighted ? "text-white/80" : "text-copy-muted",
+                )}
               >
                 {card.description}
               </p>
 
               {card.responseTime && (
                 <p
-                  className={`text-xs font-medium ${card.highlighted ? "text-white/70" : "text-[#0D9488]"}`}
+                  className={cn(
+                    "text-xs font-medium",
+                    card.highlighted ? "text-white/70" : "text-teal-accent",
+                  )}
                 >
-                  <span>
-                    Response time: {card.responseTime}
-                  </span>
+                  Response time: {card.responseTime}
                 </p>
               )}
 
-              {card.highlighted && (
-                <hr className="border-t border-white/30" />
-              )}
+              {card.highlighted && <hr className="border-t border-white/30" />}
 
               <p
-                className={`text-sm font-medium ${card.highlighted ? "text-white" : "text-[#111928]"}`}
+                className={cn(
+                  "text-sm font-medium",
+                  card.highlighted ? "text-white" : "text-logo",
+                )}
               >
                 Email: {card.email}
               </p>

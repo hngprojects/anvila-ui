@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Category, Tag, AgentCardData, AGENTS, CATEGORIES } from "./DummyData";
+import { AGENTS, CATEGORIES } from "@/data/agents"
+import { Category, Tag, AgentCardData } from "@/types";
 import { Github } from "./../icons";
 
 interface CategoryFilterProps {

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { AuthDialog } from "./auth-dialog";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/icons";
+import { NavLinkProps } from "@/types";
 
 const NAVLINKS = [
   { href: "/", label: "Home" },
@@ -15,14 +16,6 @@ const NAVLINKS = [
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact Us" },
 ];
-
-interface NavLinkProps {
-  href: string;
-  label: string;
-  pathname: string;
-  onClick?: () => void;
-  isMobile?: boolean;
-}
 
 const NavLink = ({
   href,
@@ -56,7 +49,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background">
-      <nav className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-3 sm:px-10 lg:px-20">
+      <nav className="flex w-full items-center justify-between px-5 py-3 sm:px-10 lg:px-20">
         <Link
           href="/"
           className="flex items-center gap-2 shrink-0 outline-hidden focus:outline-hidden focus-visible:outline-hidden"
