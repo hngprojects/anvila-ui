@@ -7,7 +7,6 @@ import {
   X,
   Globe,
   Search,
-  LayoutGrid,
   BookMarked,
   ChevronDown,
   MoreHorizontal,
