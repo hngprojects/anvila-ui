@@ -8,7 +8,6 @@ import {
   UserCircle, 
   Share2, 
   Settings2, 
-  AlertCircle,
   FileText,
   Lock,
   Trash2,
@@ -16,31 +15,43 @@ import {
   CheckCircle2,
   Settings
 } from "lucide-react";
-import { ShieldPolicyIcon } from "../icons";
+import { 
+  ShieldPolicyIcon, 
+  DataCollectIcon, 
+  HowWeUseDataIcon, 
+  DataSharingIcon, 
+  DataSecurityIcon, 
+  YourDataIcon,
+  TransparencyIcon,
+  DangerIcon,
+  ManageDataSettingsIcon,
+  DeleteIcon,
+  DownloadIcon
+} from "../icons";
 
 const QUICK_SUMMARY_CARDS = [
   {
-    icon: "/icons/data.png",
+    icon: <DataCollectIcon className="h-10 w-10" />,
     title: "Data We Collect",
     description: "We collect what you provide, usage data, and device info."
   },
   {
-    icon: "/icons/use_data.png",
+    icon: <HowWeUseDataIcon className="h-10 w-10" />,
     title: "How We Use Data",
     description: "To power the AI Agent, improve responses, and personalize your experience."
   },
   {
-    icon: "/icons/sharing.png",
+    icon: <DataSharingIcon className="h-10 w-10" />,
     title: "Data Sharing",
     description: "We don't sell your data. We share with trusted services only as needed."
   },
   {
-    icon: "/icons/security.png",
+    icon: <DataSecurityIcon className="h-10 w-10" />,
     title: "Data Security",
     description: "We use encryption and strict security measures to keep your data safe."
   },
   {
-    icon: "/icons/contact.png",
+    icon: <YourDataIcon className="h-8 w-8" />,
     title: "Your Data",
     description: "You can view, export, or delete your data anytime."
   }
@@ -49,37 +60,37 @@ const QUICK_SUMMARY_CARDS = [
 const DETAILED_ITEMS = [
   {
     id: 1,
-    icon: "/icons/data.png",
+    icon: <DataCollectIcon className="h-10 w-10" />,
     title: "Data we collect",
     description: "Learn about the type of data that we collect to provide and improve our services."
   },
   {
     id: 2,
-    icon: "/icons/use_data.png",
+    icon: <HowWeUseDataIcon className="h-10 w-10" />,
     title: "How we use Data",
     description: "Understand how we use your data to deliver and enhance your experience."
   },
   {
     id: 3,
-    icon: "/icons/sharing.png",
+    icon: <DataSharingIcon className="h-6 w-6" />,
     title: "Data shearing and third parties",
     description: "See when and how we share data with trusted third parties."
   },
   {
     id: 4,
-    icon: "/icons/security.png",
+    icon: <DataSecurityIcon className="h-6 w-6" />,
     title: "Data Storage and security",
     description: "Discover how we store your data and the security measures we use."
   },
   {
     id: 5,
-    icon: "/icons/contact.png",
+    icon: <YourDataIcon className="h-6 w-6" />,
     title: "Your Right & choices",
     description: "Learn about your right and how you can control your data."
   },
   {
     id: 6,
-    icon: "/icons/transparency.png",
+    icon: <TransparencyIcon className="h-6 w-6" />,
     title: "AI Transparency",
     description: "Important information about how our AI works and uses your data."
   }
@@ -94,17 +105,17 @@ const AI_TRANSPARENCY_LIST = [
 
 const DATA_CONTROL_CARDS = [
   {
-    icon: "/icons/settings.png",
+    icon: <ManageDataSettingsIcon className="h-10 w-10" />,
     title: "Manage Data Settings",
     description: "Customize what data we collect and how it's used."
   },
   {
-    icon: "/icons/delete.png",
+    icon: <DeleteIcon className="h-10 w-10" />,
     title: "Delete my Data",
     description: "Permanently delete your account and data."
   },
   {
-    icon: "/icons/download.png",
+    icon: <DownloadIcon className="h-10 w-10" />,
     title: "Download my Data",
     description: "Export a copy of your data anytime."
   }
@@ -133,7 +144,7 @@ export function PrivacyPolicy() {
               animate={{ opacity: 1, x: 0 }}
               className="flex h-20 w-20 items-center justify-center rounded-full md:border md:border-teal-brand/20 md:bg-teal-brand/5 text-teal-brand shrink-0 md:mb-0"
             >
-              <img src="/icons/shield.png" alt="Shield" className="h-[56px] w-[56px] object-contain" />
+              <ShieldPolicyIcon className="h-[56px] w-[56px]" />
             </motion.div>
             
             <motion.h1 
@@ -190,11 +201,7 @@ export function PrivacyPolicy() {
                 style={{ gap: '16px' }}
               >
                 <div>
-                  <img 
-                    src={QUICK_SUMMARY_CARDS[currentCard].icon} 
-                    alt={QUICK_SUMMARY_CARDS[currentCard].title} 
-                    className="h-8 w-8 object-contain" 
-                  />
+                  {QUICK_SUMMARY_CARDS[currentCard].icon}
                 </div>
                 <h3 className="text-sm font-bold text-logo leading-tight">{QUICK_SUMMARY_CARDS[currentCard].title}</h3>
                 <p className="text-[11px] leading-tight text-copy-muted">{QUICK_SUMMARY_CARDS[currentCard].description}</p>
@@ -223,7 +230,7 @@ export function PrivacyPolicy() {
                 className="flex h-[188px] flex-col items-center justify-center rounded-lg border-r border-transparent bg-[#F4F4F5] p-6 text-center transition-all hover:shadow-sm"
               >
                 <div className="mb-4">
-                  <img src={card.icon} alt={card.title} className="h-8 w-8 object-contain" />
+                  {card.icon}
                 </div>
                 <h3 className="mb-2 text-sm font-bold text-logo">{card.title}</h3>
                 <p className="text-[11px] leading-tight text-copy-muted">{card.description}</p>
@@ -238,7 +245,7 @@ export function PrivacyPolicy() {
           viewport={{ once: true }}
           className="mb-12 flex items-center justify-center md:justify-start gap-3 rounded-lg py-2 text-sm font-medium"
         >
-          <img src="/icons/danger_triangle.png" alt="Warning" className="h-5 w-5 object-contain" />
+          <DangerIcon className="h-5 w-5" />
           <p>We never use your conversation for advertising.</p>
         </motion.div>
 
@@ -254,9 +261,9 @@ export function PrivacyPolicy() {
                 className="flex items-center gap-4 rounded-lg bg-[#F4F4F5] p-3 transition-colors hover:bg-gray-100/80"
               >
                 <div 
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F0FDFA] overflow-hidden pt-[8px] pr-[9px] pb-[8px] pl-[10px] gap-[10px]"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F0FDFA] overflow-hidden"
                 >
-                  <img src={item.icon} alt={item.title} className="h-6 w-6 object-contain" />
+                  {item.icon}
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-logo">
@@ -306,10 +313,8 @@ export function PrivacyPolicy() {
                 whileHover={{ y: -4 }}
                 className="group flex cursor-pointer items-center gap-4 rounded-lg border border-transparent bg-white p-6 shadow-sm transition-all hover:border-teal-brand/20 hover:shadow-md"
               >
-                <div 
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-50 transition-colors group-hover:bg-teal-brand/5 pt-[9px] pr-[8px] pb-[7px] pl-[8px] gap-[10px]"
-                >
-                  <img src={card.icon} alt={card.title} className="h-6 w-6 object-contain shrink-0" />
+                <div className="shrink-0">
+                  {card.icon}
                 </div>
                 <div>
                   <h4 className="mb-1 text-sm font-bold text-logo">{card.title}</h4>
