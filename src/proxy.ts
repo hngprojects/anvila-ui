@@ -10,7 +10,6 @@ const SECURITY_HEADERS: Record<string, string> = {
 export const proxy: NextProxy = (request) => {
   const requestId =
     request.headers.get("x-request-id") ?? crypto.randomUUID();
-
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-request-id", requestId);
 
