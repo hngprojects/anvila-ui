@@ -9,7 +9,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: "What is Anvila?",
         answer:
-          "Anvila helps users scaffold reusable AI agent setup packages from a plain-language description. It generates structured Markdown files that define an agent's identity, tone, behavior, worki
+          "Anvila helps users scaffold reusable AI agent setup packages from a plain-language description. It generates structured Markdown files that define an agent's identity, tone, behavior, work"
       },
       {
         question: "How do I create my first package?",
