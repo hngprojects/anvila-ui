@@ -12,18 +12,20 @@ function CheckMailContent() {
 
 
   useEffect(() => {
+  if (isFinished) return;
+  
   const timer = setInterval(() => {
-    setTimeLeft((prev) => prev - 1);
+    setTimeLeft((prev) => {
+      const newTime = prev - 1;
+      if (newTime <= 0) {
+        setIsFinished(true);
+      }
+      return newTime;
+    });
   }, 1000);
 
   return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (timeLeft <= 0) {
-      setIsFinished(true);
-    }
-  }, [timeLeft]);
+  }, [isFinished]);
   
   const maskEmail = (email: string) => {
     if (!email) return "your email";
