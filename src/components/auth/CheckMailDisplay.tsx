@@ -12,16 +12,17 @@ function CheckMailContent() {
 
 
   useEffect(() => {
+  const timer = setInterval(() => {
+    setTimeLeft((prev) => prev - 1);
+  }, 1000);
+
+  return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
     if (timeLeft <= 0) {
       setIsFinished(true);
-      return;
     }
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
   }, [timeLeft]);
   
   const maskEmail = (email: string) => {
@@ -54,7 +55,7 @@ function CheckMailContent() {
    
       <div>
         <p className="text-sm text-[#667085] text-center mb-3">
-          Didn't receive the link?
+         Didn&apos;t receive the link?
         </p>
         {/* Conditional Rendering for Link vs Disabled Button */}
       {isFinished ? (
