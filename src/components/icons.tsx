@@ -275,3 +275,33 @@ export function ContactIcon({ bg, stroke }: { bg: string; stroke: string }) {
     </svg>
   );
 }
+
+export const ShieldPolicyIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 100 100"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    <path
+      d="M50 10C35 15 20 18 15 25C15 45 15 65 50 90C85 65 85 45 85 25C80 18 65 15 50 10Z"
+      stroke="#0C5D56"
+      strokeWidth="4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle
+      cx="50"
+      cy="45"
+      r="12"
+      stroke="#0C5D56"
+      strokeWidth="4"
+    />
+    <path
+      d="M50 57V65M42 65H58"
+      stroke="#0C5D56"
+      strokeWidth="4"
+      strokeLinecap="round"
+    />
+  </svg>
+);
