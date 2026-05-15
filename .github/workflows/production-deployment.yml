@@ -91,6 +91,9 @@ jobs:
 
             tar -xzf anvila-build.tar.gz
             rm -f anvila-build.tar.gz
+            rm -f pnpm-workspace.yaml pnpm-workspace.yml
+            rm -f ../pnpm-workspace.yaml ../pnpm-workspace.yml
+            rm -f ../../pnpm-workspace.yaml ../../pnpm-workspace.yml
 
             pnpm install --prod --ignore-scripts
 
