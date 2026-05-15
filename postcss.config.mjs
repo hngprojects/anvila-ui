@@ -1,5 +1,4 @@
-// Change 'tailwindcss' to '@tailwindcss/postcss'
-export default {
+const config = {
   plugins: {
     '@tailwindcss/postcss': {},
     autoprefixer: {},
