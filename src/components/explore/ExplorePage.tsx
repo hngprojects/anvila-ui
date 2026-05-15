@@ -71,7 +71,7 @@ interface AgentCardProps {
   index: number;
 }
 
-export function AgentCard({ agent, index }: AgentCardProps) {
+export function AgentCard({ agent }: AgentCardProps) {
   return (
     <div
       className="flex flex-col justify-between rounded-xl border border-copy-muted/20 bg-white p-6"
