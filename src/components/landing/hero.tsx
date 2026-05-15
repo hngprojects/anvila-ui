@@ -1,77 +1,32 @@
 'use client'
 
 import { useState } from 'react'
-import { AuthDialog } from '@/components/auth-dialog'
 
 function PlusIconDesktop() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      style={{ flexShrink: 0 }}
-    >
-      <path
-        d="M0.75 6.75H6.75M6.75 6.75H12.75M6.75 6.75V0.75M6.75 6.75V12.75"
-        stroke="black"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M0.75 6.75H6.75M6.75 6.75H12.75M6.75 6.75V0.75M6.75 6.75V12.75" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
 
 function PlusIconMobile() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      style={{ flexShrink: 0 }}
-    >
-      <path
-        d="M6 12H12M12 12H18M12 12V6M12 12V18"
-        stroke="black"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M6 12H12M12 12H18M12 12V6M12 12V18" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
 
 function ArrowUpIcon() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      style={{ flexShrink: 0 }}
-    >
-      <path
-        d="M12 20L12 4M6 10L12 4L18 10"
-        stroke="black"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M12 20L12 4M6 10L12 4L18 10" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
 
-const CAREER_CHIPS = [
-  'AI Developers & Engineers',
-  'Prompt Engineers',
-  'No-Code Builders',
-  'Founders',
-]
+const CAREER_CHIPS = ['AI Developers & Engineers', 'Prompt Engineers', 'No-Code Builders', 'Founders']
 
 export function Hero() {
   const [value, setValue] = useState('')
@@ -79,31 +34,22 @@ export function Hero() {
   return (
     <section
       className="relative w-full overflow-hidden border-t border-zinc-100"
-      style={{
-        backgroundColor: '#FAFAFA',
-      }}
+      style={{ backgroundColor: '#FAFAFA' }}
     >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage:
-            'radial-gradient(circle, #D4D4D8 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(circle, #D4D4D8 1px, transparent 1px)',
           backgroundSize: '24px 24px',
         }}
       />
 
       <div
         className="relative mx-auto flex w-full flex-col items-center justify-center px-6 py-6 md:min-h-[640px] md:px-20 md:py-10"
-        style={{
-          maxWidth: '1438px',
-          gap: '8px',
-        }}
+        style={{ maxWidth: '1438px', gap: '8px' }}
       >
-        <div
-          className="flex w-full flex-col items-center self-stretch"
-          style={{ gap: '12px' }}
-        >
+        <div className="flex w-full flex-col items-center self-stretch" style={{ gap: '12px' }}>
           <div className="hidden flex-col items-center md:flex">
             <h1
               className="text-center"
@@ -151,8 +97,7 @@ export function Hero() {
               width: '728px',
             }}
           >
-            Describe your agent setup in and get a structured package you can
-            publish, share, and reuse.
+            Describe your agent setup in and get a structured package you can publish, share, and reuse.
           </p>
 
           <p
@@ -166,16 +111,11 @@ export function Hero() {
               margin: 0,
             }}
           >
-            Describe your agent setup in and get a structured package you can
-            publish, share, and reuse.
+            Describe your agent setup in and get a structured package you can publish, share, and reuse.
           </p>
         </div>
 
-        <div
-          aria-hidden
-          className="hidden md:block"
-          style={{ height: '24px' }}
-        />
+        <div aria-hidden className="hidden md:block" style={{ height: '24px' }} />
 
         <div
           className="mx-auto hidden w-full md:flex"
@@ -209,23 +149,14 @@ export function Hero() {
               marginLeft: '15px',
             }}
           />
-          <AuthDialog
-            trigger={
-              <button
-                type="button"
-                aria-label="Submit"
-                className="flex items-center justify-center outline-hidden focus:outline-hidden focus-visible:outline-hidden"
-                style={{
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '4px',
-                }}
-              >
-                <ArrowUpIcon />
-              </button>
-            }
-          />
+          <button
+            type="button"
+            aria-label="Submit"
+            className="flex items-center justify-center"
+            style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}
+          >
+            <ArrowUpIcon />
+          </button>
         </div>
 
         <div
@@ -258,36 +189,19 @@ export function Hero() {
               }}
             />
           </div>
-          <AuthDialog
-            trigger={
-              <button
-                type="button"
-                aria-label="Submit"
-                className="flex flex-shrink-0 items-center justify-center outline-hidden focus:outline-hidden focus-visible:outline-hidden"
-                style={{
-                  width: '24px',
-                  height: '24px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                <ArrowUpIcon />
-              </button>
-            }
-          />
+          <button
+            type="button"
+            aria-label="Submit"
+            className="flex flex-shrink-0 items-center justify-center"
+            style={{ width: '24px', height: '24px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}
+          >
+            <ArrowUpIcon />
+          </button>
         </div>
 
-        <div
-          aria-hidden
-          className="hidden md:block"
-          style={{ height: '6px' }}
-        />
+        <div aria-hidden className="hidden md:block" style={{ height: '6px' }} />
 
-        <div
-          className="hidden flex-wrap items-center justify-center md:flex"
-          style={{ gap: '13px' }}
-        >
+        <div className="hidden flex-wrap items-center justify-center md:flex" style={{ gap: '13px' }}>
           {CAREER_CHIPS.map((chip) => (
             <button
               key={`desktop-${chip}`}
@@ -303,7 +217,6 @@ export function Hero() {
                 color: '#52525B',
                 fontFamily: 'Inter',
                 fontSize: '16px',
-                fontStyle: 'normal',
                 fontWeight: 500,
                 lineHeight: 'normal',
                 cursor: 'pointer',
@@ -334,7 +247,6 @@ export function Hero() {
                   color: isActive ? '#0C5D56' : '#52525B',
                   fontFamily: 'Inter',
                   fontSize: '16px',
-                  fontStyle: 'normal',
                   fontWeight: 500,
                   lineHeight: 'normal',
                   cursor: 'pointer',

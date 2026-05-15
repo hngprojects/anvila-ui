@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { AuthDialog } from '@/components/auth-dialog'
 
 export function FinalCTA() {
   return (
@@ -47,33 +46,29 @@ export function FinalCTA() {
           Use Anvila to create, package, and reuse AI agent setups. No technical <br /> expertise needed.
         </p>
 
-        <AuthDialog
-          trigger={
-            <Button
-              className="hover:opacity-90"
-              style={{
-                display: 'inline-flex',
-                width: 'auto',
-                padding: '16px 32px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '8px',
-                borderRadius: '8px',
-                border: '0.5px solid #0C5D56',
-                background: '#0C5D56',
-                color: '#F6F7F7',
-                fontFamily: 'Inter',
-                fontSize: '16px',
-                fontStyle: 'normal',
-                fontWeight: 500,
-                lineHeight: 'normal',
-                height: 'auto',
-              }}
-            >
-              Start Building
-            </Button>
-          }
-        />
+        <Button
+          className="hover:opacity-90"
+          style={{
+            display: 'inline-flex',
+            width: 'auto',
+            padding: '16px 32px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '8px',
+            borderRadius: '8px',
+            border: '0.5px solid #0C5D56',
+            background: '#0C5D56',
+            color: '#F6F7F7',
+            fontFamily: 'Inter',
+            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: 500,
+            lineHeight: 'normal',
+            height: 'auto',
+          }}
+        >
+          Start Building
+        </Button>
       </div>
     </section>
   )
