@@ -15,6 +15,12 @@ export const metadata: Metadata = {
     template: `%s · ${appName}`,
   },
   description: `${appName} — a Next.js 16 starter.`,
+  icons: {
+    icon: [
+      { url: "/favicon-32.svg", sizes: "32x32", type: "image/svg+xml" },
+      { url: "/favicon-64.svg", sizes: "64x64", type: "image/svg+xml" },
+    ],
+  },
 };
 
 export default function RootLayout({
