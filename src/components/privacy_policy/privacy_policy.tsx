@@ -3,19 +3,6 @@
 import React from "react";
 import { motion } from "motion/react";
 import { 
-  Database, 
-  ShieldCheck, 
-  UserCircle, 
-  Share2, 
-  Settings2, 
-  FileText,
-  Lock,
-  Trash2,
-  Download,
-  CheckCircle2,
-  Settings
-} from "lucide-react";
-import { 
   ShieldPolicyIcon, 
   DataCollectIcon, 
   HowWeUseDataIcon, 
