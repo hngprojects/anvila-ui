@@ -1,10 +1,10 @@
 'use client'
 
-import { GoogleLogo, GithubLogo } from '@/components/icons'
+import { Google, Github } from '@/components/icons'
 
 const providers = [
-  { provider: 'google', Icon: GoogleLogo, href: '/api/auth/google' },
-  { provider: 'github', Icon: GithubLogo, href: '/api/auth/github' },
+  { provider: 'google', Icon: Google, href: '/api/auth/google' },
+  { provider: 'github', Icon: Github, href: '/api/auth/github' },
 ] as const
 
 export const AuthOAuthButtons = () => {
@@ -27,7 +27,7 @@ export const AuthOAuthButtons = () => {
             aria-label={`Continue with ${provider === 'google' ? 'Google' : 'GitHub'}`}
             className="flex cursor-pointer items-center justify-center rounded-[8px] border border-[#E7E7E7] bg-[#F6F7F7] p-[11px] transition-colors duration-150 hover"
           >
-            <Icon />
+            <Icon className="w-6 h-6" />
           </button>
         ))}
       </div>

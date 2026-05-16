@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Image from "next/image";
+import {Logo} from "@/components/icons"
 
 export const AuthNavBar = () => {
   return (
@@ -12,12 +12,7 @@ export const AuthNavBar = () => {
         >
           {/* Logo */}
           <div className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-full">
-        <Image
-              src="/images/Logo.png"
-              alt="Logo"
-              width={200}
-              height={200}
-            />
+            <Logo/>
           </div>
 
           {/* Text */}

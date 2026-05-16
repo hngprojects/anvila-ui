@@ -1,16 +1,15 @@
 'use client'
 
-import Image from 'next/image'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { ArrowLeft, Eye, EyeClosed, Mail, Lock, type LucideIcon } from 'lucide-react'
-import { FaRegCircleCheck } from 'react-icons/fa6'
+import { ArrowLeft, Eye, EyeClosed, Mail, Lock,CircleCheck, type LucideIcon } from 'lucide-react'
 import { AxiosError } from 'axios'
 import { LoginSchema, type LoginInput } from '../schemas/auth'
 import { useAuth } from '../hooks/useAuth'
 import { AuthOAuthButtons } from './authOAthButtons'
+import {Logo} from "@/components/icons"
 
 // ---------- helpers ----------
 
@@ -21,13 +20,6 @@ const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =
     </span>
   ) : null
 
-const AnvilaLogo = () => (
-  <div className="flex items-center justify-center gap-2">
-    <div className="flex h-[35.97px] w-[35.97px] items-center justify-center">
-      <Image src="/images/Logo.png" alt="Logo" width={200} height={200} />
-    </div>
-  </div>
-)
 
 // ---------- component ----------
 
@@ -103,7 +95,7 @@ export const AuthLoginForm = () => {
 
       {/* Logo — mobile only */}
       <div className="hidden max-[700px]:flex justify-center">
-        <AnvilaLogo />
+        <Logo />
       </div>
 
       {/* Back */}
@@ -152,7 +144,7 @@ export const AuthLoginForm = () => {
             />
             {emailValid && (
               <span className="absolute right-[10px] top-1/2 flex -translate-y-1/2 text-[#0F6E56]">
-                <FaRegCircleCheck size={14} />
+                <CircleCheck size={14} />
               </span>
             )}
           </div>

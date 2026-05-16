@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -11,6 +11,7 @@ import { RegisterSchema, type RegisterInput } from '../schemas/auth'
 import { useAuth } from '../hooks/useAuth'
 import { parseApiError } from '../lib/api/error'
 import { AuthOAuthButtons } from './authOAthButtons'
+import {Logo} from "@/components/icons"
 
 // ---------- helpers ----------
 
@@ -21,13 +22,6 @@ const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =
     </span>
   ) : null
 
-const AnvilaLogo = () => (
-  <div className="flex items-center justify-center gap-2">
-    <div className="flex h-[35.97px] w-[35.97px] items-center justify-center">
-      <Image src="/images/Logo.png" alt="Logo" width={200} height={200} />
-    </div>
-  </div>
-)
 
 const PW_RULES = [
   { label: 'At least 1 uppercase', test: (v: string) => /[A-Z]/.test(v) },
@@ -140,7 +134,7 @@ export const AuthSignUpForm = () => {
 
         {/* Logo — mobile only */}
         <div className="hidden max-[700px]:flex justify-center">
-          <AnvilaLogo />
+          <Logo />
         </div>
 
         {/* Back */}
