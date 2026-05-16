@@ -10,7 +10,6 @@ const SECURITY_HEADERS: Record<string, string> = {
 export const proxy: NextProxy = (request) => {
   const requestId =
     request.headers.get("x-request-id") ?? crypto.randomUUID();
-
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-request-id", requestId);
 
@@ -27,7 +26,5 @@ export const proxy: NextProxy = (request) => {
 };
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)$).*)",
-  ],
-};
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*|api/).*)'],
+}

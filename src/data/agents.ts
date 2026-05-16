@@ -1,23 +1,4 @@
-export type Category =
-  | "All"
-  | "Marketing"
-  | "Development"
-  | "Research"
-  | "Finance"
-  | "Operation";
-
-export interface Tag {
-  label: string;
-  color: string;
-  bgColor: string;
-}
-export interface AgentCardData {
-  title: string;
-  description: string;
-  tags: Tag[];
-  downloads: string;
-  category: Category[];
-}
+import { AgentCardData, Category } from "@/types";
 
 export const CATEGORIES: Category[] = [
   "All",

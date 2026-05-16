@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Category, Tag, AgentCardData, AGENTS, CATEGORIES } from "./DummyData";
+import { AGENTS, CATEGORIES } from "@/data/agents"
+import { Category, Tag, AgentCardData } from "@/types";
 import { Github } from "./../icons";
 
 interface CategoryFilterProps {
@@ -70,7 +71,7 @@ interface AgentCardProps {
   index: number;
 }
 
-export function AgentCard({ agent, index }: AgentCardProps) {
+export function AgentCard({ agent }: AgentCardProps) {
   return (
     <div
       className="flex flex-col justify-between rounded-xl border border-copy-muted/20 bg-white p-6"
@@ -99,7 +100,7 @@ export function AgentCard({ agent, index }: AgentCardProps) {
           <span className="text-base font-semibold text-logo">
             {agent.downloads}
           </span>
-          <span className="block text-xs font-normal text-copy-muted ml-1">
+          <span className="block text-xs font-normal text-copy-muted">
             Downloads
           </span>
         </div>

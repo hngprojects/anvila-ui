@@ -1,49 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDownIcon, ChevronUpIcon } from "@/components/icons";
-import { FAQ_SECTIONS } from "./FAQData";
-
-interface FaqAccordionProps {
-  question: string;
-  answer: string;
-  isOpen: boolean;
-  onToggle: () => void;
-}
-
-function FaqAccordion({
-  question,
-  answer,
-  isOpen,
-  onToggle,
-}: FaqAccordionProps) {
-  return (
-    <div className="rounded-xl border border-copy-muted/10 bg-white overflow-hidden">
-      <button
-        className="flex w-full items-center justify-between p-4 text-left gap-3"
-        onClick={onToggle}
-      >
-        <span
-          className={`font-semibold text-base leading-7 transition-colors ${
-            isOpen ? "text-teal-accent" : "text-[#2D2D2D]"
-          }`}
-        >
-          {question}
-        </span>
-        <span
-          className={`shrink-0 transition-colors ${isOpen ? "text-teal-accent" : "text-[#2D2D2D]"}`}
-        >
-          {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-        </span>
-      </button>
-      {isOpen && (
-        <div className="px-6 pb-5 text-sm leading-6 text-copy-muted">
-          {answer}
-        </div>
-      )}
-    </div>
-  );
-}
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { FAQ_SECTIONS } from "@/data/faq";
 
 interface SectionPillProps {
   label: string;
@@ -57,13 +21,13 @@ function SectionPill({ label, isActive, onClick }: SectionPillProps) {
       onClick={onClick}
       className={
         isActive
-          ? 'w-[140px] shrink-0 cursor-pointer rounded-lg border border-teal-brand bg-white px-3 py-3 text-sm font-medium text-teal-brand transition-colors hover:bg-teal-brand/5 whitespace-pre-line text-center leading-snug'
-          : 'w-[140px] shrink-0 cursor-pointer rounded-lg border border-copy-muted/20 bg-white px-3 py-3 text-sm font-medium text-copy-muted transition-colors hover:border-copy-muted/30 hover:text-logo whitespace-pre-line text-center leading-snug'
+          ? "w-[140px] shrink-0 cursor-pointer rounded-xl border border-teal-brand bg-white px-3 py-3 text-sm font-medium text-teal-brand transition-colors hover:bg-teal-brand/5 whitespace-pre-line text-center leading-snug"
+          : "w-[140px] shrink-0 cursor-pointer rounded-xl border border-copy-muted/20 bg-white px-3 py-3 text-sm font-medium text-copy-muted transition-colors hover:border-copy-muted/30 hover:text-logo whitespace-pre-line text-center leading-snug"
       }
     >
       {label}
     </button>
-  )
+  );
 }
 
 export function FaqPage() {
@@ -71,10 +35,6 @@ export function FaqPage() {
   const [activeSection, setActiveSection] = useState<string>(
     FAQ_SECTIONS[0].id,
   );
-
-  const toggleFaq = (key: string) => {
-    setOpenFaq(openFaq === key ? null : key);
-  };
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
@@ -94,7 +54,6 @@ export function FaqPage() {
           </span>
         </div>
 
-        {/* Title */}
         <h1 className="text-logo font-medium text-[30px] leading-[38px] text-center sm:font-bold sm:text-[48px]">
           Frequently asked
         </h1>
@@ -125,20 +84,35 @@ export function FaqPage() {
               {section.title}
             </h2>
 
-            <div className="flex flex-col gap-4">
+            <Accordion
+              type="single"
+              collapsible
+              value={openFaq ?? ""}
+              onValueChange={(val) => setOpenFaq(val || null)}
+              className="flex flex-col gap-4 border-none"
+            >
               {section.faqs.map((faq, idx) => {
                 const key = `${section.id}-${idx}`;
                 return (
-                  <FaqAccordion
+                  <AccordionItem
                     key={key}
-                    question={faq.question}
-                    answer={faq.answer}
-                    isOpen={openFaq === key}
-                    onToggle={() => toggleFaq(key)}
-                  />
+                    value={key}
+                    className="border-none rounded-xl overflow-hidden bg-white ring-1 ring-copy-muted/10"
+                  >
+                    <AccordionTrigger
+                      className={`px-4 py-4 text-left text-base font-semibold leading-7 hover:no-underline hover:bg-transparent transition-colors ${
+                        openFaq === key ? "text-teal-accent" : "text-logo"
+                      }`}
+                    >
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-5 text-sm leading-6 text-copy-muted">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
                 );
               })}
-            </div>
+            </Accordion>
           </div>
         ))}
       </section>
