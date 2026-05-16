@@ -2,13 +2,14 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { ChevronLeft } from "lucide-react";
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 function CheckMailContent() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isFinished, setIsFinished] = useState(false);
   const searchParams = useSearchParams();
   const userEmail = searchParams.get('email') || "";
+  const router = useRouter();
 
 
   useEffect(() => {
@@ -39,6 +40,12 @@ function CheckMailContent() {
     setIsFinished(false);
   };
 
+  const handleResendClick = () => {
+  if (!isFinished) return;  
+  handleResend();
+  router.push("/auth/reset-password"); 
+};
+
   return (
     <div className="w-full bg-white md:p-12 md:rounded-[32px] md:border md:border-[#F2F4F7] md:shadow-sm relative">
       {/* Back Button */}
@@ -60,23 +67,21 @@ function CheckMailContent() {
          Didn&apos;t receive the link?
         </p>
         {/* Conditional Rendering for Link vs Disabled Button */}
-      {isFinished ? (
-        <Link
-          href="/auth/reset-password"
-          onClick={handleResend}
-          className="block text-center w-full py-3 bg-[#004D4D] hover:bg-[#003636] text-white rounded-xl text-sm font-semibold transition-all shadow-sm"
-        >
-          Resend Link
-        </Link>
-      ) : (
-        <button
-          disabled
-          className="w-full py-3 bg-[#667085] text-[#F2F4F7] rounded-xl text-sm font-semibold cursor-not-allowed transition-all"
-        >
-          Resend Link 
-        </button>
+      <button
+        type="button"
+        disabled={!isFinished}
+        onClick={handleResendClick}
+        className={`w-full py-3 rounded-xl text-sm font-semibold transition-all text-center ${
+          isFinished
+            ? "bg-[#004D4D] hover:bg-[#003636] text-white shadow-sm cursor-pointer"
+            : "bg-[#667085] text-[#F2F4F7] cursor-not-allowed"
+        }`}
+      >
+        Resend Link
+      </button>
+      {!isFinished && (
+          <p className="text-sm text-[#667085] text-center mt-3">{timeLeft}s</p>
       )}
-      <p className="text-sm text-[#667085] text-center mt-3">{timeLeft}s</p>
       </div>
       
       <div className="mt-10 text-center">
