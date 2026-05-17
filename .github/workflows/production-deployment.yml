@@ -9,7 +9,7 @@ on:
       - main
 concurrency:
   group: deploy-frontend-production
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -75,6 +75,10 @@ jobs:
             set -e
             echo "=== Deploying Frontend Production ==="
             cd ~/anvila/frontend/production
+            if pm2 describe frontend-production > /dev/null 2>&1; then
+              pm2 stop frontend-production
+            fi
+            rm -rf .next
             tar -xzf anvila-build.tar.gz
             rm -f anvila-build.tar.gz
             rm -f pnpm-workspace.yaml pnpm-workspace.yml

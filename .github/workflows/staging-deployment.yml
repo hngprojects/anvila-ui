@@ -75,6 +75,10 @@ jobs:
             set -e
             echo "=== Deploying Frontend Staging ==="
             cd ~/anvila/frontend/staging
+            if pm2 describe frontend-staging > /dev/null 2>&1; then
+              pm2 stop frontend-staging
+            fi
+            rm -rf .next
             tar -xzf anvila-build.tar.gz
             rm -f anvila-build.tar.gz
             rm -f pnpm-workspace.yaml pnpm-workspace.yml
