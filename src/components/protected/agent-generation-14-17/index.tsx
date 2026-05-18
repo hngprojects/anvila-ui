@@ -32,7 +32,7 @@ export default function AgentGenerationFlow() {
       {/* Bot Message 1 */}
       <div className="space-y-2">
         <div className="text-[#1a6b5a] italic bg-[#1a6b5a]/5 rounded-2xl px-4 py-2.5 max-w-[85%] md:max-w-[70%]">
-          I'd love to build this for you! Let me ask a couple of quick questions to make sure I create exactly what you envision...
+          {"I'd love to build this for you! Let me ask a couple of quick questions to make sure I create exactly what you envision..."}
         </div>
         <div className="flex items-center gap-3 text-gray-400 pl-2">
           <button className="hover:text-gray-600"><ThumbsUp size={14} /></button>
@@ -52,7 +52,7 @@ export default function AgentGenerationFlow() {
       {/* Bot Message 2 */}
       <div className="space-y-2">
         <div className="text-[#1a6b5a] bg-[#1a6b5a]/5 rounded-2xl px-4 py-2.5 max-w-[85%] md:max-w-[70%]">
-          Got it - Agent Anatassia Rhodes content creator for a skincare brand. Let's verify some info about your brand before proceeding...
+          {"Got it - Agent Anatassia Rhodes content creator for a skincare brand. Let's verify some info about your brand before proceeding..."}
         </div>
         <div className="flex items-center gap-3 text-gray-400 pl-2">
           <button className="hover:text-gray-600"><ThumbsUp size={14} /></button>
