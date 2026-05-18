@@ -1,29 +1,52 @@
-import { NextResponse, type NextProxy } from "next/server";
+import { NextRequest, NextResponse } from 'next/server'
+import { getTokensFromRequest } from '@/lib/auth/cookies'
 
-const SECURITY_HEADERS: Record<string, string> = {
-  "X-Frame-Options": "DENY",
-  "X-Content-Type-Options": "nosniff",
-  "Referrer-Policy": "strict-origin-when-cross-origin",
-  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
-};
+/**
+ * Public paths — no auth required.
+ * Everything else is protected by default.
+ */
+const PUBLIC_PATHS = new Set([
+  '/',
+  '/login',
+  '/register',
+  '/verify-email',
+  '/confirm-email',
+  '/forgot-password',
+  '/reset-password',
+  '/auth/oauth/callback',
+  "/generator"
+])
 
-export const proxy: NextProxy = (request) => {
-  const requestId =
-    request.headers.get("x-request-id") ?? crypto.randomUUID();
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-request-id", requestId);
+/** Prefixes that are always public (static assets, Next internals, our own API routes) */
+const PUBLIC_PREFIXES = ['/_next', '/favicon', '/api/auth', '/static', '/images']
 
-  const response = NextResponse.next({
-    request: { headers: requestHeaders },
-  });
+function isPublic(pathname: string): boolean {
+  if (PUBLIC_PATHS.has(pathname)) return true
+  if (PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return true
+  return false
+}
 
-  for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
-    response.headers.set(key, value);
+export function proxy(req: NextRequest) {
+  const { pathname } = req.nextUrl
+  const { accessToken } = getTokensFromRequest(req)
+
+  if (accessToken && (pathname === '/login' || pathname === '/register')) {
+    return NextResponse.redirect(new URL('/generator', req.url))
   }
-  response.headers.set("x-request-id", requestId);
 
-  return response;
-};
+  if (isPublic(pathname)) {
+    return NextResponse.next()
+  }
+
+  if (!accessToken) {
+    const loginUrl = new URL('/login', req.url)
+    // Preserve the intended destination so we can redirect after login
+    loginUrl.searchParams.set('next', pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*|api/).*)'],
