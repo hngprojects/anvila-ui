@@ -28,10 +28,11 @@ export function AuthProvider({
   initialUser?: AuthUser | null
 }) {
   const [user, setUser] = useState<AuthUser | null>(initialUser)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(!initialUser)
   const router = useRouter()
+
   useEffect(() => {
-    if (initialUser) return
+    if (user) return
 
     fetch('/api/auth/me')
       .then((r) => (r.ok ? r.json() : null))
@@ -39,7 +40,9 @@ export function AuthProvider({
         if (data?.user) setUser(data.user)
       })
       .catch(() => {})
-  }, [initialUser])
+      .finally(() => setIsLoading(false))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const logout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
