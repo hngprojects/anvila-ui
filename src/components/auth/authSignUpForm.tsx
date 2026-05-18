@@ -126,7 +126,7 @@ export const AuthSignUpForm = () => {
 
   return (
     <>
-      <div className="flex w-full max-w-[520px] flex-col rounded-2xl border-[#E6E6E6] bg-[#F6F7F7] px-6 py-6 sm:px-8 sm:py-8">
+      <div className="flex w-full max-w-[520px] flex-col rounded-2xl  border border-[#E6E6E6] bg-[#F6F7F7] px-6 py-6 sm:px-8 sm:py-8">
 
         {/* Logo — mobile only */}
         <div className="hidden max-[700px]:flex justify-center">
@@ -340,7 +340,12 @@ export const AuthSignUpForm = () => {
           </button>
         </form>
 
-        <div className="mt-4">
+        {/* OR divider */}
+        <div className="mt-4 flex items-center justify-center">
+          <span className="text-[14px] font-bold text-[#111]">OR</span>
+        </div>
+
+        <div className="mt-3">
           <AuthOAuthButtons />
         </div>
 

@@ -27,7 +27,6 @@ export const AuthLoginForm = () => {
   const { login } = useAuth()
 
   const [showPw, setShowPw] = useState(false)
-  const [remember, setRemember] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
 
   const {
@@ -71,7 +70,7 @@ export const AuthLoginForm = () => {
           return
         }
         if (lower.includes('not found') || lower.includes('no user') || lower.includes('does not exist')) {
-          setServerError('Email does not exist.')
++          setServerError('Invalid email or password')
           return
         }
       }
@@ -176,17 +175,8 @@ export const AuthLoginForm = () => {
           )}
         </div>
 
-        {/* Remember me + Forgot */}
-        <div className="flex items-center justify-between">
-          <label className="flex cursor-pointer items-center gap-[6px] text-[14px] text-[#111]">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-              className="h-[12px] w-[12px] accent-[#111]"
-            />
-            Remember me
-          </label>
+        {/* Forgot password */}
+        <div className="flex justify-end">
           <Link href="/forgot-password" className="text-[14px] text-[#020303] no-underline">
             Forgot Password?
           </Link>
@@ -204,7 +194,12 @@ export const AuthLoginForm = () => {
         </button>
       </form>
 
-      <div className="mt-4">
+      {/* OR divider */}
+      <div className="mt-4 flex items-center justify-center">
+        <span className="text-[14px] font-bold text-[#111]">OR</span>
+      </div>
+
+      <div className="mt-3">
         <AuthOAuthButtons />
       </div>
 

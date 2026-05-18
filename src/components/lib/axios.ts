@@ -14,9 +14,9 @@ export const authClient = axios.create({
 })
 
 authClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const { accessToken } = authStoreSingleton.getState()
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`
+  const store = authStoreSingleton.getState()
+  if (store?.accessToken) {
+    config.headers.Authorization = `Bearer ${store.accessToken}`
   }
   return config
 })
@@ -62,14 +62,14 @@ authClient.interceptors.response.use(
       const { data } = await publicClient.post<{ access_token: string }>('/auth/refresh')
       const newToken = data.access_token
 
-      authStoreSingleton.getState().setAccessToken(newToken)
+      authStoreSingleton.getState()?.setAccessToken(newToken)
       processQueue(null, newToken)
 
       originalRequest.headers.Authorization = `Bearer ${newToken}`
       return authClient(originalRequest)
     } catch (refreshError) {
       processQueue(refreshError, null)
-      authStoreSingleton.getState().clear()
+      authStoreSingleton.getState()?.clear()
       if (typeof window !== 'undefined') {
         window.location.replace('/login')
       }

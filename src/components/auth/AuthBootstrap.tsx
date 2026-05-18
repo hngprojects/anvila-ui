@@ -23,14 +23,17 @@ export function AuthBootstrap() {
   const attempted = useRef(false)
 
   useEffect(() => {
+    const isPublicPath = PUBLIC_PATHS.some((path) =>
+      path === '/' ? pathname === '/' : pathname === path || pathname.startsWith(`${path}/`)
+    )
+
+    if (isPublicPath) {
+      attempted.current = false
+      return
+    }
+
     if (attempted.current) return
     attempted.current = true
-
-     const isPublicPath = PUBLIC_PATHS.some((path) => path === '/'
-       ? pathname === '/'
-       : pathname === path || pathname.startsWith(`${path}/`)
-    )
-    if (isPublicPath) return
 
     refresh()
       .then(({ access_token }) => {
@@ -50,8 +53,7 @@ export function AuthBootstrap() {
 
         router.replace('/login')
       })
-  }, []) 
-  
+  }, [pathname, clear, router, setAccessToken, setUser])
 
   return null
 }
