@@ -98,7 +98,7 @@ const STEPS: Step[] = [
     bgClasses: "bg-teal-brand md:bg-[#DCFCE7]",
     title: "Scaffold the files",
     description:
-      "Anvila drafts the personality files, README, and pacakage structure.",
+      "Anvila drafts the personality files, README, and package structure.",
   },
   {
     Icon: AtomIcon,
