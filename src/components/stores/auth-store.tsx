@@ -92,8 +92,5 @@ export function _registerStoreRef(ref: StoreRef['getState']) {
 
 
 export const authStoreSingleton = {
-  getState: () => {
-    if (!_storeRef) throw new Error('Auth store not yet initialised')
-    return _storeRef()
-  },
+   tryGetState: () => (_storeRef ? _storeRef() : null),
 }
