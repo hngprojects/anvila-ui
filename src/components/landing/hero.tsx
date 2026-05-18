@@ -3,16 +3,17 @@
 import { useState } from "react";
 
 function PlusIcon({ size = 14 }: { size?: number }) {
+  const isSmall = size <= 14;
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
-      viewBox={size === 14 ? "0 0 14 14" : "0 0 24 24"}
+      viewBox={isSmall ? "0 0 14 14" : "0 0 24 24"}
       fill="none"
       className="shrink-0"
     >
-      {size === 14 ? (
+      {isSmall ? (
         <path
           d="M0.75 6.75H6.75M6.75 6.75H12.75M6.75 6.75V0.75M6.75 6.75V12.75"
           stroke="black"
