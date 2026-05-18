@@ -1,6 +1,9 @@
-"use client";
-import { useAuth } from "@/context/auth";
-export default function Page() {
-  const { user } = useAuth();
-  return <div>Hi, {user?.email} - {user?.display_name}. Weclome to page</div>;
+import { CreateAgentView } from "@/components/agent-generator/create-agent-view";
+
+export const metadata = {
+  title: "Create Agent",
+};
+
+export default function GeneratorPage() {
+  return <CreateAgentView />;
 }
