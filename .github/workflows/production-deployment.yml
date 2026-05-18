@@ -1,5 +1,4 @@
 name: Production Deployment
-
 on:
   workflow_dispatch:
   workflow_run:
@@ -8,22 +7,18 @@ on:
       - completed
     branches:
       - main
-
 concurrency:
   group: deploy-frontend-production
   cancel-in-progress: false
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     if: |
       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
       github.event.workflow_run.conclusion == 'success'
-
     environment:
       name: "production"
       url: "https://anvila.hng14.com"
-
     steps:
       - name: Resolve build run ID
         id: resolve-run
@@ -40,7 +35,6 @@ jobs:
               --limit=1 \
               --json databaseId \
               --jq '.[0].databaseId')
-
             if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
               echo "No successful 'Build and Upload' run found on main. Push a commit to main first."
               exit 1
@@ -51,7 +45,6 @@ jobs:
             echo "Automated trigger - using workflow_run ID: ${{ github.event.workflow_run.id }}"
             echo "run_id=${{ github.event.workflow_run.id }}" >> "$GITHUB_OUTPUT"
           fi
-
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
@@ -59,11 +52,9 @@ jobs:
           run-id: ${{ steps.resolve-run.outputs.run_id }}
           name: anvila-build
           path: .
-
       - name: Decode and create .env file
         run: |
           echo "${{ secrets.PROD_ENV_BASE64 }}" | base64 -d > .env
-
       - name: Copy to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -72,44 +63,35 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ".env,anvila-build.tar.gz"
           target: "~/anvila/frontend/production"
-
       - name: Delete local artifacts
         run: rm -f anvila-build.tar.gz .env
-
       - name: Deploy on server
         uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script_stop: true
           script: |
             set -e
-
             echo "=== Deploying Frontend Production ==="
             cd ~/anvila/frontend/production
-
             tar -xzf anvila-build.tar.gz
             rm -f anvila-build.tar.gz
             rm -f pnpm-workspace.yaml pnpm-workspace.yml
             rm -f ../pnpm-workspace.yaml ../pnpm-workspace.yml
             rm -f ../../pnpm-workspace.yaml ../../pnpm-workspace.yml
-
             pnpm install --prod --ignore-scripts
-
             pm2 save || true
-
             echo "=== Starting PM2 Process ==="
             if pm2 describe frontend-production > /dev/null 2>&1; then
               pm2 restart frontend-production --update-env
             else
-              pm2 start "pnpm start" --name frontend-production
+              # First deploy: start using the ecosystem config for correct cwd/env.
+              pm2 start ~/anvila/deploy/ecosystem.config.js --only frontend-production
             fi
-
             echo "=== Running Health Check ==="
             MAX_RETRIES=15
             RETRY_COUNT=0
-
             while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
               if curl -sf "http://localhost:3001/" > /dev/null 2>&1; then
                 echo "Health check passed after $((RETRY_COUNT + 1)) attempt(s)"
@@ -119,12 +101,12 @@ jobs:
               echo "Health check attempt ${RETRY_COUNT}/${MAX_RETRIES} failed, retrying in 2s..."
               sleep 2
             done
-
             if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-              echo "Health check failed. Rolling back..."
-              pm2 resurrect || pm2 start "pnpm start" --name frontend-production
+              echo "Health check failed. Dumping PM2 logs for diagnosis..."
+              pm2 logs frontend-production --lines 50 --nostream || true
+              echo "Rolling back..."
+              pm2 resurrect || true
               echo "Deployment FAILED - health check did not pass."
               exit 1
             fi
-
             echo "=== Frontend Production Deployment Complete ==="

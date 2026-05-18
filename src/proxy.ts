@@ -47,9 +47,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  /*
-   * Match all routes except Next.js internals and static files.
-   * The middleware function itself handles the public/private distinction.
-   */
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*|api/).*)'],
 }
