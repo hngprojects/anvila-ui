@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TextAlignJustify } from "lucide-react";
 import Sidebar from "@/components/protected/sideBar";
 import { Logo } from "@/components/icons";
-import { useAuth, AuthProvider } from "@/context/auth";
+import {  AuthProvider } from "@/context/auth";
 
 export default function GeneratorClientLayout({
   children,
