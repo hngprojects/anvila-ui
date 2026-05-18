@@ -14,6 +14,7 @@ const PUBLIC_PATHS = new Set([
   '/forgot-password',
   '/reset-password',
   '/auth/oauth/callback',
+  "/generator"
 ])
 
 /** Prefixes that are always public (static assets, Next internals, our own API routes) */
