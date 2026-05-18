@@ -47,7 +47,7 @@ const STEPS_DATA: Record<StepId, QuestionStep> = {
 export default function AgentFlow() {
   // App context states
   const [isThinking, setIsThinking] = useState(false);
-  const [hasStarted, setHasStarted] = useState(true); 
+const [hasStarted] = useState(true);
   const [inputValue, setInputValue] = useState("");
 
   // Questionnaire flow states
