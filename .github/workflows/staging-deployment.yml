@@ -97,7 +97,7 @@ jobs:
             rm -f pnpm-workspace.yaml pnpm-workspace.yml
             rm -f ../pnpm-workspace.yaml ../pnpm-workspace.yml
             rm -f ../../pnpm-workspace.yaml ../../pnpm-workspace.yml
-            pnpm install
+            pnpm install --prod --ignore-scripts
             pm2 save || true
             echo "=== Starting PM2 Process ==="
             if pm2 describe frontend-staging > /dev/null 2>&1; then
