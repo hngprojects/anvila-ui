@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authApi } from "@/lib/auth/api";
 import { setAuthCookies } from "@/lib/auth/cookies";
 import { LoginSchema } from "@/schemas/auth";
+import { mockAuthData } from "@/data/mockUser";
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,17 +16,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await authApi.login(parsed.data);
+    // const result = await authApi.login(parsed.data);
 
-    if (!result.ok) {
-      return NextResponse.json(
-        { message: result.message },
-        { status: result.status },
-      );
-    }
+    // if (!result.ok) {
+    //   return NextResponse.json(
+    //     { message: result.message },
+    //     { status: result.status },
+    //   );
+    // }
 
-    const { user, tokens } = result.data.data;
-
+    // const { user, tokens } = result.data.data;
+    const { user, tokens } = mockAuthData
     const res = NextResponse.json({ user }, { status: 200 });
     setAuthCookies(res, tokens);
 
