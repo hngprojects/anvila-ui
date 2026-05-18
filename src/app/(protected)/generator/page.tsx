@@ -1,6 +1,14 @@
 "use client";
-import { useAuth } from "@/context/auth";
-export default function Page() {
-  const { user } = useAuth();
-  return <div>Hi, {user?.email} - {user?.display_name}. Weclome to page</div>;
+
+import MainPage from "@/components/protected/mainContent";
+
+export default function AnvilaLayout() {
+  return (
+    <div className="flex h-screen w-full bg-[#FBFBFB] gap-3 font-sans overflow-hidden">
+      {/* Right column */}
+      <div className="flex flex-1 flex-col min-w-0 h-full overflow-hidden">
+        <MainPage />
+      </div>
+    </div>
+  );
 }
