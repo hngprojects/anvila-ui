@@ -3,8 +3,8 @@
 import { Google, Github } from '@/components/icons'
 
 const providers = [
-  { provider: 'google', Icon: Google, href: '/api/auth/google' },
-  { provider: 'github', Icon: Github, href: '/api/auth/github' },
+  { provider: 'google', Icon: Google, href: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/google` },
+  { provider: 'github', Icon: Github, href: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/github` },
 ] as const
 
 export const AuthOAuthButtons = () => {
