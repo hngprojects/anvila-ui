@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Mail, ChevronLeft } from "lucide-react";
 import { useRouter } from 'next/navigation';
@@ -24,30 +25,16 @@ export default function ForgotPasswordForm() {
   const {
     register,
     handleSubmit,
-    setError,
-    clearErrors,
     formState: { errors },
   } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
     },
   });
 
   const handleFormSubmit = (values: FormValues) => {
-    const result = formSchema.safeParse(values);
-
-    if (!result.success) {
-      const formattedErrors = result.error.format();
-      if (formattedErrors.email?._errors[0]) {
-        setError("email", {
-          type: "manual",
-          message: formattedErrors.email._errors[0],
-        });
-      }
-      return;
-    }
-
-    router.push(`/auth/forgot-password/check-mail?email=${encodeURIComponent(result.data.email.trim())}`);
+    router.push(`/auth/forgot-password/check-mail?email=${encodeURIComponent(values.email.trim())}`);
   };
 
   return (
@@ -80,11 +67,7 @@ export default function ForgotPasswordForm() {
               placeholder="Enter email address"
               aria-invalid={!!errors.email}
               className="pl-10 pr-4 w-full"
-              {...register("email", {
-                onChange: () => {
-                  if (errors.email) clearErrors("email");
-                }
-              })}
+              {...register("email")}
             />
           </div>
           
