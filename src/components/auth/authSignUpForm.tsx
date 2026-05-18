@@ -1,6 +1,5 @@
 'use client'
 
-
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -11,7 +10,7 @@ import { RegisterSchema, type RegisterInput } from '../schemas/auth'
 import { useAuth } from '../hooks/useAuth'
 import { parseApiError } from '../lib/api/error'
 import { AuthOAuthButtons } from './authOAthButtons'
-import {Logo} from "@/components/icons"
+import { Logo } from '@/components/icons'
 
 // ---------- helpers ----------
 
@@ -21,7 +20,6 @@ const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =
       <Icon size={15} />
     </span>
   ) : null
-
 
 const PW_RULES = [
   { label: 'At least 1 uppercase', test: (v: string) => /[A-Z]/.test(v) },
@@ -54,6 +52,7 @@ export const AuthSignUpForm = () => {
   const [showConfirm, setShowConfirm] = useState(false)
   const [pwTouched, setPwTouched] = useState(false)
   const [agreed, setAgreed] = useState(false)
+  const [agreedError, setAgreedError] = useState(false)
   const [bannerError, setBannerError] = useState<string | null>(null)
 
   const {
@@ -61,8 +60,9 @@ export const AuthSignUpForm = () => {
     handleSubmit,
     watch,
     setError,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, touchedFields },
   } = useForm<RegisterInput>({
+    mode: 'onBlur',
     defaultValues: {
       display_name: '',
       email: '',
@@ -81,6 +81,11 @@ export const AuthSignUpForm = () => {
   const pwEmpty = password.length === 0
   const cpwEmpty = confirmPassword.length === 0
 
+  const nameValid = touchedFields.display_name && !nameEmpty && !errors.display_name
+  const emailValid = touchedFields.email && !emailEmpty && !errors.email
+  const pwValid = touchedFields.password && !pwEmpty && !errors.password
+  const cpwValid = touchedFields.confirmPassword && !cpwEmpty && !errors.confirmPassword
+
   const score = PW_RULES.filter((r) => r.test(password)).length
   const allPassing = score === 4
   const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'][score]
@@ -88,23 +93,14 @@ export const AuthSignUpForm = () => {
     score <= 1 ? '#E24B4A' : score === 2 ? '#EF9F27' : score === 3 ? '#EF9F27' : '#0F6E56'
   const showPwRules = pwTouched && password.length > 0
 
- 
   const onSubmit = async (data: RegisterInput) => {
     if (!agreed) {
+      setAgreedError(true)
       setBannerError('You must agree to the Terms & Conditions.')
       return
     }
 
-    const result = RegisterSchema.safeParse(data)
-    if (!result.success) {
-      for (const issue of result.error.issues) {
-        const field = issue.path[0] as keyof RegisterInput
-        setError(field, { message: issue.message })
-      }
-      setBannerError('Please fix the errors below.')
-      return
-    }
-
+    setAgreedError(false)
     setBannerError(null)
 
     try {
@@ -163,15 +159,17 @@ export const AuthSignUpForm = () => {
 
           {/* Full Name */}
           <div className="flex flex-col gap-1">
-            <label  htmlFor="display_name" className="text-[16px] font-medium text-[#111928]">Full name</label>
+            <label htmlFor="display_name" className="text-[16px] font-medium text-[#111928]">Full name</label>
             <div className="relative">
               <IconPrefix icon={User} show={nameEmpty} />
               <input
-                {...register('display_name')} id="display_name"
+                {...register('display_name', { required: 'Full name is required' })}
+                id="display_name"
                 type="text"
                 placeholder="Enter full name"
+                aria-invalid={!!errors.display_name}
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
-                  errors.display_name ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
+                  errors.display_name ? 'border-[#E24B4A]' : nameValid ? 'border-[#0F6E56]' : 'border-[#D1D5DB]'
                 } ${nameEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[12px]'}`}
               />
             </div>
@@ -186,11 +184,16 @@ export const AuthSignUpForm = () => {
             <div className="relative">
               <IconPrefix icon={Mail} show={emailEmpty} />
               <input
-                {...register('email')} id="email"
+                {...register('email', {
+                  required: 'Email is required',
+                  validate: (v) => RegisterSchema.shape.email.safeParse(v).success || 'Invalid email address',
+                })}
+                id="email"
                 type="email"
                 placeholder="Enter email address"
+                aria-invalid={!!errors.email}
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
-                  errors.email ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
+                  errors.email ? 'border-[#E24B4A]' : emailValid ? 'border-[#0F6E56]' : 'border-[#D1D5DB]'
                 } ${emailEmpty ? 'pl-[34px]' : 'pl-[12px]'}`}
               />
             </div>
@@ -201,16 +204,22 @@ export const AuthSignUpForm = () => {
 
           {/* Password */}
           <div className="flex flex-col gap-1">
-            <label  htmlFor="password" className="text-[16px] font-medium text-[#111]">Password</label>
+            <label htmlFor="password" className="text-[16px] font-medium text-[#111]">Password</label>
             <div className="relative">
               <IconPrefix icon={Lock} show={pwEmpty} />
               <input
-                {...register('password')} id="password"
+                {...register('password', {
+                  required: 'Password is required',
+                  minLength: { value: 8, message: 'Password must be at least 8 characters' },
+                  validate: (v) => RegisterSchema.shape.password.safeParse(v).success || 'Password does not meet requirements',
+                })}
+                id="password"
                 type={showPw ? 'text' : 'password'}
                 placeholder="Enter password"
                 onFocus={() => setPwTouched(true)}
+                aria-invalid={!!errors.password}
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
-                  errors.password ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
+                  errors.password ? 'border-[#E24B4A]' : pwValid ? 'border-[#0F6E56]' : 'border-[#D1D5DB]'
                 } ${pwEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[80px]'}`}
               />
               <div className="absolute right-[10px] top-1/2 flex -translate-y-1/2 items-center gap-[6px]">
@@ -224,7 +233,7 @@ export const AuthSignUpForm = () => {
                 <button
                   type="button"
                   onClick={() => setShowPw((p) => !p)}
-                   aria-label={showPw ? 'Hide password' : 'Show password'}
+                  aria-label={showPw ? 'Hide password' : 'Show password'}
                   className="border-0 bg-transparent text-[#9CA3AF]"
                 >
                   {showPw ? <Eye size={15} /> : <EyeClosed size={15} />}
@@ -267,17 +276,22 @@ export const AuthSignUpForm = () => {
             <div className="relative">
               <IconPrefix icon={Lock} show={cpwEmpty} />
               <input
-                {...register('confirmPassword')} id="confirmPassword"
+                {...register('confirmPassword', {
+                  required: 'Please confirm your password',
+                  validate: (v) => v === password || "Passwords don't match",
+                })}
+                id="confirmPassword"
                 type={showConfirm ? 'text' : 'password'}
                 placeholder="Confirm your password"
+                aria-invalid={!!errors.confirmPassword}
                 className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none ${
-                  errors.confirmPassword ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
+                  errors.confirmPassword ? 'border-[#E24B4A]' : cpwValid ? 'border-[#0F6E56]' : 'border-[#D1D5DB]'
                 } ${cpwEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[40px]'}`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm((p) => !p)}
-                  aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
+                aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
                 className="absolute right-[10px] top-1/2 -translate-y-1/2 border-0 bg-transparent text-[#9CA3AF]"
               >
                 {showConfirm ? <Eye size={15} /> : <EyeClosed size={15} />}
@@ -289,20 +303,30 @@ export const AuthSignUpForm = () => {
           </div>
 
           {/* Terms */}
-          <label className="flex cursor-pointer items-center gap-2 text-[12px] font-normal text-[#111]">
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="h-[14px] w-[14px] accent-[#111]"
-            />
-            <span className="text-[12px]">
-              I agree to{' '}
-              <Link href="/terms" className="text-[#0F6E56] text-[12px] underline">
-                Terms & Conditions
-              </Link>
-            </span>
-          </label>
+          <div className="flex flex-col gap-1">
+            <label className="flex cursor-pointer items-center gap-2 text-[12px] font-normal text-[#111]">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => {
+                  setAgreed(e.target.checked)
+                  if (e.target.checked) setAgreedError(false)
+                }}
+                className={`h-[14px] w-[14px] accent-[#111] transition-all ${
+                  agreedError ? 'outline outline-1 outline-[#E24B4A]' : agreed ? 'outline outline-1 outline-[#0F6E56]' : ''
+                }`}
+              />
+              <span className="text-[12px]">
+                I agree to{' '}
+                <Link href="/terms" className="text-[#0F6E56] text-[12px] underline">
+                  Terms & Conditions
+                </Link>
+              </span>
+            </label>
+            {agreedError && (
+              <p className="m-0 text-[11px] text-[#DC2626]">You must agree to the Terms & Conditions.</p>
+            )}
+          </div>
 
           {/* Submit */}
           <button

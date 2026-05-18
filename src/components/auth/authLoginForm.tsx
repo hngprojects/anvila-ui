@@ -4,12 +4,12 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { ArrowLeft, Eye, EyeClosed, Mail, Lock,CircleCheck, type LucideIcon } from 'lucide-react'
+import { ArrowLeft, Eye, EyeClosed, Mail, Lock, CircleCheck, type LucideIcon } from 'lucide-react'
 import { AxiosError } from 'axios'
 import { LoginSchema, type LoginInput } from '../schemas/auth'
 import { useAuth } from '../hooks/useAuth'
 import { AuthOAuthButtons } from './authOAthButtons'
-import {Logo} from "@/components/icons"
+import { Logo } from '@/components/icons'
 
 // ---------- helpers ----------
 
@@ -19,7 +19,6 @@ const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =
       <Icon size={15} />
     </span>
   ) : null
-
 
 // ---------- component ----------
 
@@ -35,9 +34,9 @@ export const AuthLoginForm = () => {
     register,
     handleSubmit,
     watch,
-    setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({
+    mode: 'onBlur',
     defaultValues: { email: '', password: '' },
   })
 
@@ -46,19 +45,9 @@ export const AuthLoginForm = () => {
 
   const emailEmpty = email.length === 0
   const passwordEmpty = password.length === 0
-  const emailValid = !errors.email && email.length > 0
+  const emailValid = !errors.email && LoginSchema.shape.email.safeParse(email).success
 
   const onSubmit = async (data: LoginInput) => {
-    const result = LoginSchema.safeParse(data)
-      if (!result.success) {
-    for (const issue of result.error.issues) {
-      const field = issue.path[0] as keyof LoginInput | undefined
-      if (field) setError(field, { message: issue.message })
-     }
-     setServerError('Please fix the errors below.')
-     return
-    }
-
     setServerError(null)
 
     try {
@@ -133,7 +122,10 @@ export const AuthLoginForm = () => {
           <div className="relative">
             <IconPrefix icon={Mail} show={emailEmpty} />
             <input
-              {...register('email', { validate: (v) => LoginSchema.shape.email.safeParse(v).success || 'Invalid email address' })}
+              {...register('email', {
+                required: 'Email is required',
+                validate: (v) => LoginSchema.shape.email.safeParse(v).success || 'Invalid email address',
+              })}
               id="email"
               type="email"
               placeholder="Enter email address"
@@ -167,7 +159,7 @@ export const AuthLoginForm = () => {
               placeholder="Enter password"
               aria-invalid={!!errors.password}
               className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[16px] text-[#111] outline-none transition-all placeholder:text-[#000000] ${
-                errors.password ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
+                errors.password ? 'border-[#E24B4A]' : !passwordEmpty && !errors.password ? 'border-[#0F6E56]' : 'border-[#D1D5DB]'
               } ${passwordEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[40px]'}`}
             />
             <button

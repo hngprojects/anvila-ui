@@ -3,7 +3,7 @@ import {Logo} from "@/components/icons"
 
 export const AuthNavBar = () => {
   return (
-    <header className=" max-[700px]:invisible flex h-[80px] w-full items-center bg-white px-17">
+    <header className=" max-[700px]:invisible flex h-[80px] w-full items-center bg-[#F8FAFC] px-17">
       <div className="mx-auto flex h-full w-full max-w-[1440px] items-center gap-12">
         
         <Link
