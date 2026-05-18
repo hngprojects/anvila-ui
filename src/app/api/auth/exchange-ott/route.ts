@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { authApi } from '@/lib/api'
+import { authApi } from '@/lib/auth/api'
 import { setAuthCookies } from '@/lib/auth/cookies'
 
 export async function POST(req: NextRequest) {

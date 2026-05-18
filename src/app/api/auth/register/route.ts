@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { authApi } from '@/lib/api'
+import { authApi } from '@/lib/auth/api'
 import { RegisterSchema } from '@/schemas/auth'
 
 export async function POST(req: NextRequest) {
