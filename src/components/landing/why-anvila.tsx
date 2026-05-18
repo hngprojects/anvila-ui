@@ -26,7 +26,7 @@ const CARDS: Card[] = [
   {
     title: "Cleaner Agent behaviour",
     description:
-      "Keep the agent's role, tone, rules, limits, workflow and Skils in one structured package.",
+      "Keep the agent's role, tone, rules, limits, workflow and Skills in one structured package.",
   },
 ];
 

@@ -74,7 +74,6 @@ export function Hero() {
       />
 
       <div className="relative mx-auto flex w-full max-w-[1438px] flex-col items-center justify-center gap-2 px-6 py-6 md:min-h-[640px] md:px-20 md:py-10">
-       
         <div className="flex w-full flex-col items-center gap-3 self-stretch">
           <h1 className="m-0 max-w-[805px] text-center text-2xl font-medium leading-8 text-logo md:text-[72px] md:leading-normal">
             <span className="md:hidden">
@@ -88,14 +87,14 @@ export function Hero() {
           </h1>
 
           <p className="m-0 max-w-[728px] text-center text-sm font-normal leading-5 text-copy-muted md:text-base md:leading-6">
-            Describe your agent setup in and get a structured package you can
+            Describe your agent setup in seconds and get a structured package you can
             publish, share, and reuse.
           </p>
         </div>
 
         <div aria-hidden className="hidden h-6 md:block" />
 
-       <div className="mx-auto flex w-full max-w-[800px] items-center justify-between gap-2 rounded-3xl border border-border-subtle bg-white p-4 shadow-[0_6px_18px_-2px_rgba(0,0,0,0.10)] md:h-[77px] md:gap-0.5 md:px-6">
+        <div className="mx-auto flex w-full max-w-[800px] items-center justify-between gap-2 rounded-3xl border border-border-subtle bg-white p-4 shadow-[0_6px_18px_-2px_rgba(0,0,0,0.10)] md:h-[77px] md:gap-0.5 md:px-6">
           <div className="flex flex-1 items-center gap-2 md:gap-0">
             <span className="md:hidden">
               <PlusIcon size={24} />

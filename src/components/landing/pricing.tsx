@@ -143,7 +143,6 @@ export function Pricing() {
             </div>
           </div>
         </div>
-=
         <div className="flex flex-1 flex-col rounded-[20px] border-[2.5px] border-teal-brand bg-teal-brand">
          
           <div className="flex h-[68px] shrink-0 items-center justify-between gap-1.5 self-stretch rounded-t-[20px] bg-teal-brand px-6 py-3">
