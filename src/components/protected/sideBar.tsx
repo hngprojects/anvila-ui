@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-
 import { Logo, Github } from "@/components/icons";
+import { useAuth } from "@/context/auth";
 
 import {
   CirclePlus,
@@ -12,16 +12,9 @@ import {
   ChevronDown,
   MoreHorizontal,
   X,
- PanelLeftClose,
+  PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
-
-import type {
-  SidebarProps,
-  CollapsedSidebarProps,
-  ExpandedSidebarProps,
-  MobileDrawerProps,
-} from "@/types";
 
 /* -------------------------------------------------------------------------- */
 /*                                    DATA                                    */
@@ -60,21 +53,16 @@ function UserAvatar({
     .slice(0, 2)
     .toUpperCase();
 
-  if (showName) {
-    return (
-      <div className="flex items-center gap-2 px-4 py-4 border-t border-gray-100">
-        <div className="w-7 h-7 rounded-full bg-[#1a6b5a] flex items-center justify-center shrink-0">
-          <span className="text-white text-[10px] font-semibold">
-            {initials}
-          </span>
-        </div>
-
-        <span className="text-sm text-gray-700 truncate">{name}</span>
+  return showName ? (
+    <div className="flex items-center gap-2 px-4 py-4 border-t border-gray-100">
+      <div className="w-7 h-7 rounded-full bg-[#1a6b5a] flex items-center justify-center">
+        <span className="text-white text-[10px] font-semibold">
+          {initials}
+        </span>
       </div>
-    );
-  }
-
-  return (
+      <span className="text-sm text-gray-700 truncate">{name}</span>
+    </div>
+  ) : (
     <div className="w-7 h-7 rounded-full bg-[#1a6b5a] flex items-center justify-center">
       <span className="text-white text-[10px] font-semibold">
         {initials}
@@ -121,7 +109,6 @@ function RecentSection() {
         className="w-full flex items-center text-xs text-gray-400 uppercase tracking-wide mb-2"
       >
         Recent
-
         <ChevronDown
           size={13}
           className={`ml-auto transition-transform ${
@@ -136,11 +123,12 @@ function RecentSection() {
             key={item}
             className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer group"
           >
-            <span className="text-sm text-gray-600 truncate">{item}</span>
-
+            <span className="text-sm text-gray-600 truncate">
+              {item}
+            </span>
             <MoreHorizontal
               size={14}
-              className="text-gray-300 group-hover:text-gray-500 shrink-0 ml-1"
+              className="text-gray-300 group-hover:text-gray-500"
             />
           </div>
         ))}
@@ -153,28 +141,30 @@ function RecentSection() {
 /* -------------------------------------------------------------------------- */
 
 function CollapsedSidebar({
-  user,
   onExpand,
-}: CollapsedSidebarProps) {
-  const displayName = user?.display_name ?? user?.email ?? "User";
+}: {
+  onExpand: () => void;
+}) {
+  const { user } = useAuth();
+
+  const displayName =
+    user?.display_name ?? user?.email ?? "User";
 
   return (
     <aside className="hidden md:flex flex-col items-center w-[56px] min-w-[56px] shrink-0 rounded-2xl bg-white border border-gray-200 shadow-sm py-4 gap-2">
-      {/* Expand button */}
       <button
         onClick={onExpand}
-        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-all"
+        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100"
       >
         <PanelLeftOpen size={15} />
       </button>
 
-      {/* Nav icons */}
       <div className="w-full flex flex-col items-center gap-1">
         {NAV_ITEMS.map(({ icon: Icon, label, active }) => (
           <button
             key={label}
             title={label}
-            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${
+            className={`w-8 h-8 flex items-center justify-center rounded-lg ${
               active
                 ? "bg-[#1a6b5a] text-white"
                 : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
@@ -186,8 +176,6 @@ function CollapsedSidebar({
       </div>
 
       <div className="flex-1" />
-
-      {/* User */}
       <UserAvatar name={displayName} />
     </aside>
   );
@@ -198,33 +186,30 @@ function CollapsedSidebar({
 /* -------------------------------------------------------------------------- */
 
 function ExpandedSidebar({
-  user,
   onCollapse,
-}: ExpandedSidebarProps) {
+}: {
+  onCollapse: () => void;
+}) {
+  const { user } = useAuth();
+
   const displayName =
     user?.display_name ?? user?.email ?? "User";
 
   return (
     <aside className="hidden md:flex flex-col w-[224px] min-w-[224px] shrink-0 rounded-2xl bg-[#FBFBFB] border border-gray-200 shadow-sm overflow-hidden">
-      {/* Header */}
       <div className="flex items-center justify-between px-4 pt-5 pb-4">
         <Logo />
 
         <button
           onClick={onCollapse}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-gray-400 hover:text-gray-600"
         >
           <PanelLeftClose size={15} />
         </button>
       </div>
 
-      {/* Navigation */}
       <NavigationItems />
-
-      {/* Recent */}
       <RecentSection />
-
-      {/* User */}
       <UserAvatar name={displayName} showName />
     </aside>
   );
@@ -235,41 +220,32 @@ function ExpandedSidebar({
 /* -------------------------------------------------------------------------- */
 
 function MobileDrawer({
-  user,
   onClose,
-}: MobileDrawerProps) {
+}: {
+  onClose: () => void;
+}) {
+  const { user } = useAuth();
+
   const displayName =
     user?.display_name ?? user?.email ?? "User";
 
   return (
     <div className="fixed inset-0 z-50 flex md:hidden">
-      {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/30"
         onClick={onClose}
       />
 
-      {/* Drawer */}
       <div className="relative w-64 h-full bg-white shadow-xl flex flex-col">
-        {/* Header */}
         <div className="flex items-center justify-between px-4 pt-5 pb-4">
           <Logo />
-
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
+          <button onClick={onClose}>
             <X size={18} />
           </button>
         </div>
 
-        {/* Navigation */}
         <NavigationItems />
-
-        {/* Recent */}
         <RecentSection />
-
-        {/* User */}
         <UserAvatar name={displayName} showName />
       </div>
     </div>
@@ -281,32 +257,23 @@ function MobileDrawer({
 /* -------------------------------------------------------------------------- */
 
 export default function Sidebar({
-  user,
   mobileOpen,
   onMobileClose,
-}: SidebarProps) {
+}: {
+  mobileOpen: boolean;
+  onMobileClose: () => void;
+}) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <>
       {collapsed ? (
-        <CollapsedSidebar
-          user={user}
-          onExpand={() => setCollapsed(false)}
-        />
+        <CollapsedSidebar onExpand={() => setCollapsed(false)} />
       ) : (
-        <ExpandedSidebar
-          user={user}
-          onCollapse={() => setCollapsed(true)}
-        />
+        <ExpandedSidebar onCollapse={() => setCollapsed(true)} />
       )}
 
-      {mobileOpen && (
-        <MobileDrawer
-          user={user}
-          onClose={onMobileClose}
-        />
-      )}
+      {mobileOpen && <MobileDrawer onClose={onMobileClose} />}
     </>
   );
 }

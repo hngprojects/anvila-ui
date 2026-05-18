@@ -1,15 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import type { User } from "@/types";
 import { Plus, ArrowUp } from "lucide-react";
+import { useAuth } from "@/context/auth";
 
-type MainContentProps = {
-  user?: User;
-};
 
-export default function MainPage({ user }: MainContentProps) {
+
+export default function MainPage() {
   const [prompt, setPrompt] = useState("");
+   const { user } = useAuth();
 
   const firstName = user?.display_name?.split(" ")[0] ?? "there";
 
