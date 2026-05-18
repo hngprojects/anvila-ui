@@ -3,30 +3,45 @@ import React, { useState } from "react";
 import { Lock, Eye, EyeOff, ChevronLeft } from "lucide-react";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: "Please confirm your password" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
 export default function SetNewPasswordForm() {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
   
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ResetPasswordValues>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-    // if (password.length < 8) {
-    //   setError("Password must be at least 8 characters");
-    //   return;
-    // }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    setError("");
+  const onSubmit = (data: ResetPasswordValues) => {
     router.push("/auth/reset-password/success");
   };
 
@@ -44,7 +59,7 @@ export default function SetNewPasswordForm() {
         <p className="text-xs md:text-sm text-[#667085]">Choose a strong password for your account</p>
       </div>
 
-      <form className="space-y-3 md:space-y-5" onSubmit={handleSubmit}>
+      <form className="space-y-3 md:space-y-5" onSubmit={handleSubmit(onSubmit)}>
         
         {/* Password Field */}
         <div className="space-y-1.5">
@@ -55,10 +70,13 @@ export default function SetNewPasswordForm() {
             </div>
             <input
               type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...register("password")}
               placeholder="Enter password"
-              className="w-full pl-10 pr-10 py-3 bg-white border border-[#D0D5DD] rounded-xl text-sm focus:ring-2 focus:ring-[#004D4D]/10 focus:border-[#004D4D] outline-none transition-all"
+              className={`w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm outline-none transition-all ${
+                errors.password 
+                  ? "border-red-500 focus:ring-red-100" 
+                  : "border-[#D0D5DD] focus:ring-2 focus:ring-[#004D4D]/10 focus:border-[#004D4D]"
+              }`}
             />
             <button
               type="button"
@@ -68,6 +86,9 @@ export default function SetNewPasswordForm() {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
+          {errors.password && (
+            <p className="text-[11px] text-red-500 font-medium ml-1">{errors.password.message}</p>
+          )}
         </div>
 
         {/* Confirm Password Field */}
@@ -79,13 +100,12 @@ export default function SetNewPasswordForm() {
             </div>
             <input
               type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              {...register("confirmPassword")}
               placeholder="Re-enter password"
               className={`w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm outline-none transition-all ${
-                error && password !== confirmPassword 
-                ? "border-red-500 focus:ring-red-100" 
-                : "border-[#D0D5DD] focus:ring-2 focus:ring-[#004D4D]/10 focus:border-[#004D4D]"
+                errors.confirmPassword 
+                  ? "border-red-500 focus:ring-red-100" 
+                  : "border-[#D0D5DD] focus:ring-2 focus:ring-[#004D4D]/10 focus:border-[#004D4D]"
               }`}
             />
             <button
@@ -96,7 +116,9 @@ export default function SetNewPasswordForm() {
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          {error && <p className="text-[11px] text-red-500 font-medium ml-1">{error}</p>}
+          {errors.confirmPassword && (
+            <p className="text-[11px] text-red-500 font-medium ml-1">{errors.confirmPassword.message}</p>
+          )}
         </div>
 
         <button

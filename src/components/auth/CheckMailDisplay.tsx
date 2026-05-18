@@ -1,8 +1,11 @@
 "use client";
 import React, { useState, useEffect, Suspense } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { maskEmail } from "@/lib/utils";
+
+const RESEND_TIMER_DURATION = 60;
 
 function CheckMailContent() {
   const [timeLeft, setTimeLeft] = useState(60);
@@ -27,16 +30,9 @@ function CheckMailContent() {
 
   return () => clearInterval(timer);
   }, [isFinished]);
-  
-  const maskEmail = (email: string) => {
-    if (!email) return "your email";
-    const [name, domain] = email.split("@");
-    return `${name.substring(0, 2)}****@${domain}`;
-  };
 
   const handleResend = () => {
-    // Reset timer logic
-    setTimeLeft(60);
+    setTimeLeft(RESEND_TIMER_DURATION);
     setIsFinished(false);
   };
 
@@ -66,7 +62,6 @@ function CheckMailContent() {
         <p className="text-sm text-[#667085] text-center mb-3">
          Didn&apos;t receive the link?
         </p>
-        {/* Conditional Rendering for Link vs Disabled Button */}
       <button
         type="button"
         disabled={!isFinished}
@@ -95,7 +90,13 @@ function CheckMailContent() {
 
 export default function CheckMailDisplay() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense 
+      fallback={
+        <div className="flex items-center justify-center min-h-50">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      }
+    >
       <CheckMailContent />
     </Suspense>
   );

@@ -13,8 +13,7 @@ import { Label } from "@/components/ui/label";
 const formSchema = z.object({
   email: z
     .string()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Please enter a valid email address" }),
+    .email({ message: "Invalid email address" }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -66,7 +65,7 @@ export default function ForgotPasswordForm() {
               type="email"
               placeholder="Enter email address"
               aria-invalid={!!errors.email}
-              className="pl-10 pr-4 w-full"
+              className="pl-10 pr-4 w-full rounded-lg"
               {...register("email")}
             />
           </div>
@@ -80,7 +79,7 @@ export default function ForgotPasswordForm() {
 
         <Button
           type="submit"
-          className="w-full py-2.5 bg-[#004D4D] hover:bg-[#003636] text-white font-semibold shadow-sm transition-all"
+          className="w-full py-2.5 bg-[#004D4D] hover:bg-[#003636] text-white shadow-sm transition-all"
         >
           Send Reset Link
         </Button>
