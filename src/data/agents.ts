@@ -212,15 +212,7 @@ export const MANIFEST: ManifestDataProps = {
     "Growth metrics",
     "Web Search",
     "File Generator",
-    "GitHub Push",
-    "Research thesis",
-    "Data analysis",
-    "Experiments",
-    "Solid state",
-    "Growth metrics",
-    "Web Search",
-    "File Generator",
-    "GitHub Push",
+    "GitHub Push"
   ],
 };
 
