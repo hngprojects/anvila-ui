@@ -276,6 +276,20 @@ export function ContactIcon({ bg, stroke }: { bg: string; stroke: string }) {
   );
 }
 
+export const IconPrefix = ({
+  icon: Icon,
+  show,
+}: {
+  icon: React.ElementType;
+  show: boolean;
+}) => {
+  if (!show) return null;
+  return (
+    <span className="absolute left-[10px] top-1/2 -translate-y-1/2 text-[color:var(--color-copy-muted)]">
+      <Icon size={14} />
+    </span>
+  );
+};
 export const ShieldPolicyIcon = ({ className }: { className?: string }) => (
   <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <circle cx="50" cy="50" r="50" fill="#F0FDFA"/>
