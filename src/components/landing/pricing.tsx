@@ -97,34 +97,26 @@ export function Pricing() {
         </p>
       </div>
 
-      
       <div className="mx-auto flex w-full max-w-[800px] flex-col items-stretch gap-6 md:flex-row">
-     
+        {/* Starter Card */}
         <div className="flex flex-1 flex-col rounded-[20px] border-[2.5px] border-border-subtle bg-border-subtle">
-          
           <div className="flex items-center gap-1.5 self-stretch rounded-t-[20px] bg-border-subtle px-6 py-3">
-            <span className="text-lg font-semibold text-zinc-900">
-              Starter
-            </span>
+            <span className="text-lg font-semibold text-zinc-900">Starter</span>
           </div>
-
           <div className="flex flex-1 flex-col items-start gap-4 self-stretch rounded-[20px] border border-white bg-white p-6">
             <div className="flex items-baseline">
               <span className="text-4xl font-semibold text-copy-muted">$0</span>
             </div>
-
             <p className="m-0 min-h-[72px] text-base font-normal leading-6 text-copy-muted">
               Best for trying Anvila and publishing your first public setup
               packages.
             </p>
-
             <button
               type="button"
               className="flex h-[55.65px] cursor-pointer items-center justify-center gap-2.5 self-stretch whitespace-nowrap rounded-[10px] border-none bg-border-subtle px-4 py-4 text-lg font-bold text-zinc-900"
             >
               Create free package
             </button>
-
             <div className="flex flex-col gap-4 self-stretch">
               <span className="text-sm font-semibold text-zinc-900">
                 What&apos;s included:
@@ -143,8 +135,9 @@ export function Pricing() {
             </div>
           </div>
         </div>
+
+        {/* Builder Card */}
         <div className="flex flex-1 flex-col rounded-[20px] border-[2.5px] border-teal-brand bg-teal-brand">
-         
           <div className="flex h-[68px] shrink-0 items-center justify-between gap-1.5 self-stretch rounded-t-[20px] bg-teal-brand px-6 py-3">
             <span className="text-lg font-semibold text-white">Builder</span>
             <div className="flex items-center gap-1 rounded-[20px] bg-white px-2.5 py-1">
@@ -154,30 +147,25 @@ export function Pricing() {
               </span>
             </div>
           </div>
-
-          
           <div className="flex flex-1 flex-col items-start gap-4 self-stretch rounded-[20px] border border-white bg-white p-6">
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-semibold text-copy-muted">$5</span>
               <span className="text-sm text-zinc-500">one time payment</span>
             </div>
-
             <p className="m-0 min-h-[72px] text-base font-normal leading-6 text-copy-muted">
               Best for creating more packages, private setups, client projects,
               and internal workflows.
             </p>
-
             <button
               type="button"
               className="flex h-[55.65px] cursor-pointer items-center justify-center gap-2.5 self-stretch whitespace-nowrap rounded-[10px] border-none bg-teal-brand px-4 py-4 text-lg font-bold text-white"
             >
               Create paid package
             </button>
-
             <div className="flex flex-col gap-4 self-stretch">
               <span className="text-sm font-semibold text-zinc-900">
-  Everything in Builder:
-</span>
+                Everything in Builder:
+              </span>
               <ul className="m-0 flex list-none flex-col gap-3 p-0">
                 {BUILDER_FEATURES.map((f) => (
                   <li
@@ -194,6 +182,7 @@ export function Pricing() {
         </div>
       </div>
 
+      {/* FAQ Section */}
       <div className="mx-auto w-full max-w-4xl px-6 py-20">
         <h2 className="mb-12 text-center text-4xl font-bold text-logo">
           Frequently asked
@@ -204,24 +193,26 @@ export function Pricing() {
               key={faq.q}
               className="rounded-xl border border-border-subtle bg-white"
             >
-             <button
-  className="flex w-full cursor-pointer items-center justify-between p-6 text-left"
-  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-  aria-expanded={openFaq === i}
-  aria-controls={`faq-answer-${i}`}
->
-  <span className="font-semibold text-logo">{faq.q}</span>
+              <button
+                className="flex w-full cursor-pointer items-center justify-between p-6 text-left"
+                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                aria-expanded={openFaq === i}
+                aria-controls={`faq-answer-${i}`}
+              >
+                <span className="font-semibold text-logo">{faq.q}</span>
                 {openFaq === i ? (
                   <ChevronUp size={20} />
                 ) : (
                   <ChevronDown size={20} />
                 )}
               </button>
-            {openFaq === i && (
-  <div id={`faq-answer-${i}`} className="border-t border-border-subtle p-6 text-copy-muted">
-    {faq.a}
-  </div>
-)}
+              {openFaq === i && (
+                <div
+                  id={`faq-answer-${i}`}
+                  className="border-t border-border-subtle p-6 text-copy-muted"
+                >
+                  {faq.a}
+                </div>
               )}
             </div>
           ))}
