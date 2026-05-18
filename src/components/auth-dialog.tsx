@@ -47,6 +47,7 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
               className="group h-14 w-full gap-4 rounded-2xl border-copy-muted/20 text-base font-semibold transition-all duration-200 hover:border-copy-muted/30 hover:bg-background"
               onClick={() => {
                 // TODO: Replace with actual auth url
+                window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/google`;
               }}
             >
               <Google className="h-6 w-6 transition-transform group-hover:scale-105" />
@@ -57,7 +58,7 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
               variant="outline"
               className="group h-14 w-full gap-4 rounded-2xl border-copy-muted/20 text-base font-semibold transition-all duration-200 hover:border-copy-muted/30 hover:bg-background"
               onClick={() => {
-                // TODO: Replace with actual auth url
+                window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/github`;
               }}
             >
               <Github className="h-6 w-6 transition-transform group-hover:scale-105" />
