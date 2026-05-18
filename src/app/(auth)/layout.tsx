@@ -1,20 +1,13 @@
 import type { ReactNode } from "react";
 import { AuthNavBar } from "@/components/auth/navbar";
-import { AuthProvider } from "@/components/AuthProvider";
-import { AuthStoreBridge } from "@/components/authStoreBridge";
-import { AuthBootstrap } from '@/components/auth/AuthBootstrap'
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <AuthProvider>
-       <AuthBootstrap />
-      <AuthStoreBridge />
+    <div className="flex min-h-screen flex-col ">
+      <AuthNavBar />
 
-      <div className="flex min-h-screen flex-col ">
-        <AuthNavBar />
-
-        <div
-          className="
+      <div
+        className="
             flex flex-1 items-center justify-center
             overflow-y-auto
             px-5 py-10
@@ -22,10 +15,10 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             max-md:px-3
             max-md:py-5
           "
-        >
-          {children}
-        </div>
+      >
+        {children}
       </div>
-    </AuthProvider>
+    </div>
   );
 }
+
