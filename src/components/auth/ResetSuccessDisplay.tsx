@@ -19,7 +19,6 @@ export default function ResetSuccessDisplay() {
       </div>
    
         <Link
-          type="submit"
           className="block text-center w-full py-2.5 bg-[#004D4D] hover:bg-[#003636] text-white rounded-lg text-sm transition-all shadow-sm"
           href="/auth/forgot-password"
         >

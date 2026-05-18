@@ -76,7 +76,7 @@ export default function ForgotPasswordForm() {
             
             <Input
               id="email-input"
-              type="text"
+              type="email"
               placeholder="Enter email address"
               aria-invalid={!!errors.email}
               className="pl-10 pr-4 w-full"
