@@ -73,8 +73,25 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
+            DEPLOY_RECOVER=1
+            on_deploy_err() {
+              set +e
+              local code=$?
+              echo "ERROR: deployment failed (exit ${code}) before completion; attempting PM2 rollback..."
+              if [ "${DEPLOY_RECOVER}" = "1" ]; then
+                pm2 resurrect || true
+              fi
+              trap - ERR
+              exit "${code}"
+            }
+            trap 'on_deploy_err' ERR
+
             echo "=== Deploying Frontend Staging ==="
             cd ~/anvila/frontend/staging
+            if pm2 describe frontend-staging > /dev/null 2>&1; then
+              pm2 stop frontend-staging
+            fi
+            rm -rf .next
             tar -xzf anvila-build.tar.gz
             rm -f anvila-build.tar.gz
             rm -f pnpm-workspace.yaml pnpm-workspace.yml
@@ -95,6 +112,8 @@ jobs:
             while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
               if curl -sf "http://localhost:3000/" > /dev/null 2>&1; then
                 echo "Health check passed after $((RETRY_COUNT + 1)) attempt(s)"
+                DEPLOY_RECOVER=0
+                trap - ERR
                 break
               fi
               RETRY_COUNT=$((RETRY_COUNT + 1))
@@ -102,6 +121,8 @@ jobs:
               sleep 2
             done
             if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+              DEPLOY_RECOVER=0
+              trap - ERR
               echo "Health check failed. Dumping PM2 logs for diagnosis..."
               pm2 logs frontend-staging --lines 50 --nostream || true
               echo "Rolling back..."
