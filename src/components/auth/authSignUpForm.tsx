@@ -1,137 +1,133 @@
-'use client'
+"use client";
 
-
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Eye, EyeClosed, ArrowLeft, Check, X, User, Mail, Lock, type LucideIcon } from 'lucide-react'
-import { AxiosError } from 'axios'
-import { RegisterSchema, type RegisterInput } from '../schemas/auth'
-import { useAuth } from '../hooks/useAuth'
-import { parseApiError } from '../lib/api/error'
-import { AuthOAuthButtons } from './authOAthButtons'
-import {Logo} from "@/components/icons"
-
-// ---------- helpers ----------
-
-const IconPrefix = ({ icon: Icon, show }: { icon: LucideIcon; show: boolean }) =>
-  show ? (
-    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center pointer-events-none">
-      <Icon size={15} />
-    </span>
-  ) : null
-
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeClosed,
+  User,
+  Check,
+  X,
+  ArrowLeft,
+} from "lucide-react";
+import { RegisterSchema, type RegisterInput } from "@/schemas/auth";
+import { AuthOAuthButtons } from "./authOAthButtons";
+import { IconPrefix } from "@/components/icons";
+import { Logo } from "@/components/icons";
 
 const PW_RULES = [
-  { label: 'At least 1 uppercase', test: (v: string) => /[A-Z]/.test(v) },
-  { label: 'At least 1 number', test: (v: string) => /[0-9]/.test(v) },
-  { label: 'At least 1 special character', test: (v: string) => /[^A-Za-z0-9]/.test(v) },
-  { label: 'At least 8 characters', test: (v: string) => v.length >= 8 },
-]
+  { label: "At least 8 characters", test: (v: string) => v.length >= 8 },
+  {
+    label: "At least one uppercase letter",
+    test: (v: string) => /[A-Z]/.test(v),
+  },
+  { label: "At least one number", test: (v: string) => /[0-9]/.test(v) },
+  {
+    label: "At least one special character",
+    test: (v: string) => /[^A-Za-z0-9]/.test(v),
+  },
+];
 
-const RoundTick = ({ passing }: { passing: boolean }) => (
-  <div style={{
-    width: '16px', height: '16px', borderRadius: '50%',
-    border: `1.5px solid ${passing ? '#0F6E56' : '#E24B4A'}`,
-    background: passing ? '#0F6E56' : 'transparent',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    flexShrink: 0, transition: 'all 0.2s ease',
-  }}>
-    {passing
-      ? <Check size={9} color="#fff" strokeWidth={3} />
-      : <X size={9} color="#E24B4A" strokeWidth={3} />}
-  </div>
-)
+function getStrength(pw: string) {
+  const score = PW_RULES.filter((r) => r.test(pw)).length;
+  if (score <= 1) return { score, label: "Weak", color: "#ef4444" };
+  if (score === 2) return { score, label: "Fair", color: "#f97316" };
+  if (score === 3) return { score, label: "Good", color: "#eab308" };
+  return { score, label: "Strong", color: "#22c55e" };
+}
 
-// ---------- component ----------
+function RoundTick({ passing }: { passing: boolean }) {
+  return (
+    <div
+      className={`flex h-[14px] w-[14px] items-center justify-center rounded-full border ${
+        passing
+          ? "border-[color:var(--color-teal-accent)] bg-[color:var(--color-teal-accent)]"
+          : "border-red-400"
+      }`}
+    >
+      {passing ? (
+        <Check size={8} color="#fff" />
+      ) : (
+        <X size={8} color="#f87171" />
+      )}
+    </div>
+  );
+}
 
-export const AuthSignUpForm = () => {
-  const router = useRouter()
-  const { register: registerUser } = useAuth()
+export function AuthSignUpForm() {
+  const router = useRouter();
 
-  const [showPw, setShowPw] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
-  const [pwTouched, setPwTouched] = useState(false)
-  const [agreed, setAgreed] = useState(false)
-  const [bannerError, setBannerError] = useState<string | null>(null)
+  const [showPw, setShowPw] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pwTouched, setPwTouched] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const [bannerError, setBannerError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     watch,
-    setError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterInput>({
-    defaultValues: {
-      display_name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-    },
-  })
+    resolver: zodResolver(RegisterSchema),
+    defaultValues: { agreed: false },
+    mode: "onBlur",
+  });
 
-  const displayName = watch('display_name') ?? ''
-  const email = watch('email')
-  const password = watch('password')
-  const confirmPassword = watch('confirmPassword')
+  const nameValue = watch("display_name") ?? "";
+  const emailValue = watch("email") ?? "";
+  const password = watch("password") ?? "";
+  const cpwValue = watch("confirmPassword") ?? "";
 
-  const nameEmpty = displayName.length === 0
-  const emailEmpty = email.length === 0
-  const pwEmpty = password.length === 0
-  const cpwEmpty = confirmPassword.length === 0
+  const nameEmpty = nameValue.length === 0;
+  const emailEmpty = emailValue.length === 0;
+  const pwEmpty = password.length === 0;
+  const cpwEmpty = cpwValue.length === 0;
 
-  const score = PW_RULES.filter((r) => r.test(password)).length
-  const allPassing = score === 4
-  const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'][score]
-  const strengthColor =
-    score <= 1 ? '#E24B4A' : score === 2 ? '#EF9F27' : score === 3 ? '#EF9F27' : '#0F6E56'
-  const showPwRules = pwTouched && password.length > 0
+  const {
+    score,
+    label: strengthLabel,
+    color: strengthColor,
+  } = getStrength(password);
+  const allPassing = score === 4;
+  const showPwRules = pwTouched && password.length > 0;
 
- 
-  const onSubmit = async (data: RegisterInput) => {
-    if (!agreed) {
-      setBannerError('You must agree to the Terms & Conditions.')
-      return
-    }
-
-    const result = RegisterSchema.safeParse(data)
-    if (!result.success) {
-      for (const issue of result.error.issues) {
-        const field = issue.path[0] as keyof RegisterInput
-        setError(field, { message: issue.message })
-      }
-      setBannerError('Please fix the errors below.')
-      return
-    }
-
-    setBannerError(null)
+  async function onSubmit(values: RegisterInput) {
+    setBannerError(null);
 
     try {
-      await registerUser(data)
-      router.replace(`/confirm-email?email=${encodeURIComponent(data.email)}`)
-    } catch (err: unknown) {
-      if (err instanceof AxiosError && err.response?.status === 422) {
-        const detail = err.response.data?.detail
-        if (Array.isArray(detail)) {
-          detail.forEach((d: { loc: string[]; msg: string }) => {
-            const field = d.loc.at(-1) as keyof RegisterInput | undefined
-            if (field) {
-              setError(field, { message: d.msg.replace(/^Value error,\s*/i, '') })
-            }
-          })
-          setBannerError('Please fix the errors below.')
-          return
-        }
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setBannerError(
+          data.message ?? "Registration failed. Please try again.",
+        );
+        return;
       }
-      setBannerError(parseApiError(err))
+
+      // Redirect to verify-email page with masked email as query param
+      const encoded = encodeURIComponent(values.email);
+      router.push(`/verify-email?email=${encoded}`);
+    } catch {
+      setBannerError("Network error. Please check your connection.");
     }
   }
 
   return (
     <>
-      <div className="flex w-full max-w-[520px] flex-col rounded-2xl border-[#E6E6E6] bg-[#F6F7F7] px-6 py-6 sm:px-8 sm:py-8">
-
+      <div className="flex w-full max-w-[520px] flex-col rounded-2xl border border-[color:var(--color-border-subtle)] bg-[color:var(--color-background)] px-6 py-6 sm:px-8 sm:py-8">
         {/* Logo — mobile only */}
         <div className="hidden max-[700px]:flex justify-center">
           <Logo />
@@ -141,7 +137,7 @@ export const AuthSignUpForm = () => {
         <button
           type="button"
           onClick={() => router.back()}
-          className="hidden cursor-pointer items-center gap-1 self-start border-0 bg-transparent px-0 pb-2 pt-3 text-[16px] font-medium text-[#111] md:flex"
+          className="hidden cursor-pointer items-center gap-1 self-start border-0 bg-transparent px-0 pb-2 pt-3 text-base font-medium text-[color:var(--color-copy-heading)] md:flex"
         >
           <ArrowLeft size={13} />
           <span>Back</span>
@@ -149,89 +145,139 @@ export const AuthSignUpForm = () => {
 
         {/* Header */}
         <div className="mb-5 mt-1 text-center">
-          <h1 className="mb-1 text-[32px] font-bold text-[#0C0E0D]">Create account</h1>
-          <p className="m-0 text-[16px] text-[#A1A1AA]">Enter your details to create an account</p>
+          <h1 className="mb-1 text-[32px] font-bold text-[color:var(--color-copy-heading)]">
+            Create account
+          </h1>
+          <p className="m-0 text-base text-[color:var(--color-copy-muted)]">
+            Enter your details to create an account
+          </p>
         </div>
 
         {bannerError && (
-          <div className="mb-3 rounded-[6px] border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
-            <p className="m-0 text-[12px] text-[#DC2626]">{bannerError}</p>
+          <div className="mb-3 rounded-[6px] border border-red-300 bg-red-50 px-3 py-2">
+            <p className="m-0 text-[12px] text-red-600">{bannerError}</p>
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[14px]">
-
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-[14px]"
+          noValidate
+        >
           {/* Full Name */}
           <div className="flex flex-col gap-1">
-            <label  htmlFor="display_name" className="text-[16px] font-medium text-[#111928]">Full name</label>
+            <label
+              htmlFor="display_name"
+              className="text-base font-medium text-[color:var(--color-copy-heading)]"
+            >
+              Full name
+            </label>
             <div className="relative">
               <IconPrefix icon={User} show={nameEmpty} />
               <input
-                {...register('display_name')} id="display_name"
+                {...register("display_name")}
+                id="display_name"
                 type="text"
                 placeholder="Enter full name"
-                className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
-                  errors.display_name ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
-                } ${nameEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[12px]'}`}
+                className={[
+                  "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
+                  errors.display_name
+                    ? "border-red-500"
+                    : "border-[color:var(--color-border-subtle)]",
+                  nameEmpty ? "pl-[34px]" : "pl-[12px] pr-[12px]",
+                ].join(" ")}
               />
             </div>
             {errors.display_name && (
-              <p className="m-0 text-[11px] text-[#DC2626]">{errors.display_name.message}</p>
+              <p className="m-0 text-[11px] text-red-600">
+                {errors.display_name.message}
+              </p>
             )}
           </div>
 
           {/* Email */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="email" className="text-[16px] font-medium text-[#111]">Email</label>
+            <label
+              htmlFor="email"
+              className="text-base font-medium text-[color:var(--color-copy-heading)]"
+            >
+              Email
+            </label>
             <div className="relative">
               <IconPrefix icon={Mail} show={emailEmpty} />
               <input
-                {...register('email')} id="email"
+                {...register("email")}
+                id="email"
                 type="email"
                 placeholder="Enter email address"
-                className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
-                  errors.email ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
-                } ${emailEmpty ? 'pl-[34px]' : 'pl-[12px]'}`}
+                className={[
+                  "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
+                  errors.email
+                    ? "border-red-500"
+                    : "border-[color:var(--color-border-subtle)]",
+                  emailEmpty ? "pl-[34px]" : "pl-[12px]",
+                ].join(" ")}
               />
             </div>
             {errors.email && (
-              <p className="m-0 text-[11px] text-[#DC2626]">{errors.email.message}</p>
+              <p className="m-0 text-[11px] text-red-600">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
           {/* Password */}
           <div className="flex flex-col gap-1">
-            <label  htmlFor="password" className="text-[16px] font-medium text-[#111]">Password</label>
+            <label
+              htmlFor="password"
+              className="text-base font-medium text-[color:var(--color-copy-heading)]"
+            >
+              Password
+            </label>
             <div className="relative">
               <IconPrefix icon={Lock} show={pwEmpty} />
               <input
-                {...register('password')} id="password"
-                type={showPw ? 'text' : 'password'}
+                {...register("password")}
+                id="password"
+                type={showPw ? "text" : "password"}
                 placeholder="Enter password"
                 onFocus={() => setPwTouched(true)}
-                className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none transition-all ${
-                  errors.password ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
-                } ${pwEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[80px]'}`}
+                className={[
+                  "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
+                  errors.password
+                    ? "border-red-500"
+                    : "border-[color:var(--color-border-subtle)]",
+                  pwEmpty ? "pl-[34px]" : "pl-[12px] pr-[80px]",
+                ].join(" ")}
               />
               <div className="absolute right-[10px] top-1/2 flex -translate-y-1/2 items-center gap-[6px]">
                 {showPw && !pwEmpty && (
-                  <div className={`flex h-[18px] w-[18px] items-center justify-center rounded-full border-[1.5px] ${
-                    allPassing ? 'border-[#0F6E56] bg-[#0F6E56]' : 'border-[#E24B4A]'
-                  }`}>
-                    {allPassing ? <Check size={10} color="#fff" /> : <X size={10} color="#E24B4A" />}
+                  <div
+                    className={`flex h-[18px] w-[18px] items-center justify-center rounded-full border-[1.5px] ${
+                      allPassing
+                        ? "border-[color:var(--color-teal-accent)] bg-[color:var(--color-teal-accent)]"
+                        : "border-red-400"
+                    }`}
+                  >
+                    {allPassing ? (
+                      <Check size={10} color="#fff" />
+                    ) : (
+                      <X size={10} color="#f87171" />
+                    )}
                   </div>
                 )}
                 <button
                   type="button"
                   onClick={() => setShowPw((p) => !p)}
-                   aria-label={showPw ? 'Hide password' : 'Show password'}
-                  className="border-0 bg-transparent text-[#9CA3AF]"
+                  aria-label={showPw ? "Hide password" : "Show password"}
+                  className="border-0 bg-transparent text-[color:var(--color-copy-muted)] cursor-pointer"
                 >
                   {showPw ? <Eye size={15} /> : <EyeClosed size={15} />}
                 </button>
               </div>
             </div>
 
+            {/* Strength meter + rules */}
             {showPwRules && (
               <div className="mt-1 flex flex-col gap-[6px]">
                 <div className="flex items-center gap-[6px]">
@@ -239,23 +285,38 @@ export const AuthSignUpForm = () => {
                     <div
                       key={i}
                       className="h-[4px] flex-1 rounded-[2px]"
-                      style={{ background: score >= i ? strengthColor : '#E5E7EB' }}
+                      style={{
+                        background: score >= i ? strengthColor : "#e5e7eb",
+                      }}
                     />
                   ))}
-                  <span className="min-w-[40px] text-right text-[11px]" style={{ color: strengthColor }}>
+                  <span
+                    className="min-w-[40px] text-right text-[11px]"
+                    style={{ color: strengthColor }}
+                  >
                     {strengthLabel}
                   </span>
                 </div>
                 {PW_RULES.map((rule) => {
-                  const passing = rule.test(password)
+                  const passing = rule.test(password);
                   return (
-                    <div key={rule.label} className="flex items-center gap-[6px]">
+                    <div
+                      key={rule.label}
+                      className="flex items-center gap-[6px]"
+                    >
                       <RoundTick passing={passing} />
-                      <span className="text-[12px]" style={{ color: passing ? '#0F6E56' : '#E24B4A' }}>
+                      <span
+                        className="text-[12px]"
+                        style={{
+                          color: passing
+                            ? "var(--color-teal-accent)"
+                            : "#f87171",
+                        }}
+                      >
                         {rule.label}
                       </span>
                     </div>
-                  )
+                  );
                 })}
               </div>
             )}
@@ -263,56 +324,86 @@ export const AuthSignUpForm = () => {
 
           {/* Confirm Password */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="confirmPassword" className="text-[16px] font-medium text-[#111]">Confirm password</label>
+            <label
+              htmlFor="confirmPassword"
+              className="text-base font-medium text-[color:var(--color-copy-heading)]"
+            >
+              Confirm password
+            </label>
             <div className="relative">
               <IconPrefix icon={Lock} show={cpwEmpty} />
               <input
-                {...register('confirmPassword')} id="confirmPassword"
-                type={showConfirm ? 'text' : 'password'}
+                {...register("confirmPassword")}
+                id="confirmPassword"
+                type={showConfirm ? "text" : "password"}
                 placeholder="Confirm your password"
-                className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[14px] text-[#111] outline-none ${
-                  errors.confirmPassword ? 'border-[#E24B4A]' : 'border-[#D1D5DB]'
-                } ${cpwEmpty ? 'pl-[34px]' : 'pl-[12px] pr-[40px]'}`}
+                className={[
+                  "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none placeholder:text-[color:var(--color-copy-muted)]",
+                  errors.confirmPassword
+                    ? "border-red-500"
+                    : "border-[color:var(--color-border-subtle)]",
+                  cpwEmpty ? "pl-[34px]" : "pl-[12px] pr-[40px]",
+                ].join(" ")}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm((p) => !p)}
-                  aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
-                className="absolute right-[10px] top-1/2 -translate-y-1/2 border-0 bg-transparent text-[#9CA3AF]"
+                aria-label={
+                  showConfirm
+                    ? "Hide confirm password"
+                    : "Show confirm password"
+                }
+                className="absolute right-[10px] top-1/2 -translate-y-1/2 border-0 bg-transparent text-[color:var(--color-copy-muted)] cursor-pointer"
               >
                 {showConfirm ? <Eye size={15} /> : <EyeClosed size={15} />}
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="m-0 text-[11px] text-[#DC2626]">{errors.confirmPassword.message}</p>
+              <p className="m-0 text-[11px] text-red-600">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
           {/* Terms */}
-          <label className="flex cursor-pointer items-center gap-2 text-[12px] font-normal text-[#111]">
+          <label className="flex cursor-pointer items-center gap-2 text-[12px] font-normal text-[color:var(--color-copy-heading)]">
             <input
               type="checkbox"
               checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="h-[14px] w-[14px] accent-[#111]"
+              onChange={(e) => {
+                setAgreed(e.target.checked);
+                setValue("agreed", e.target.checked, { shouldValidate: true });
+              }}
+              className="h-[14px] w-[14px] accent-[color:var(--color-primary)]"
             />
             <span className="text-[12px]">
-              I agree to{' '}
-              <Link href="/terms" className="text-[#0F6E56] text-[12px] underline">
+              I agree to{" "}
+              <Link
+                href="/terms"
+                className="text-[color:var(--color-teal-accent)] text-[12px] underline"
+              >
                 Terms & Conditions
               </Link>
             </span>
           </label>
+          {errors.agreed && (
+            <p className="m-0 text-[11px] text-red-600">
+              {errors.agreed.message}
+            </p>
+          )}
 
           {/* Submit */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full rounded-[8px] py-3 text-[14px] font-medium text-white ${
-              isSubmitting ? 'cursor-not-allowed bg-[#0F4F4A] opacity-60' : 'bg-[#0F4F4A]'
-            }`}
+            className={[
+              "w-full rounded-[8px] py-3 text-sm font-medium text-white bg-[color:var(--color-primary)] transition-all",
+              isSubmitting
+                ? "cursor-not-allowed opacity-60"
+                : "cursor-pointer hover:opacity-90",
+            ].join(" ")}
           >
-            {isSubmitting ? 'Creating account…' : 'Sign up'}
+            {isSubmitting ? "Creating account…" : "Sign up"}
           </button>
         </form>
 
@@ -320,13 +411,16 @@ export const AuthSignUpForm = () => {
           <AuthOAuthButtons />
         </div>
 
-        <p className="mt-3 text-center text-[18px] text-[#111]">
-          Already have an account?{' '}
-          <Link href="/login" className="font-semibold text-[#0F6E56]">
+        <p className="mt-3 text-center text-lg text-[color:var(--color-copy-heading)]">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="font-semibold text-[color:var(--color-teal-accent)] no-underline"
+          >
             Sign In
           </Link>
         </p>
       </div>
     </>
-  )
+  );
 }
