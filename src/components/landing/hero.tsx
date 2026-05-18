@@ -102,13 +102,17 @@ export function Hero() {
             <span className="hidden md:inline">
               <PlusIcon size={14} />
             </span>
-            <input
-              type="text"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder="Describe your agent setup"
-              className="flex-1 border-none bg-transparent text-xs font-normal leading-4 text-zinc-400 outline-hidden focus:outline-hidden md:ml-4 md:text-xl md:font-medium md:leading-normal"
-            />
+           <label htmlFor="agent-setup-input" className="sr-only">
+  Describe your agent setup
+</label>
+<input
+  id="agent-setup-input"
+  type="text"
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+  placeholder="Describe your agent setup"
+  className="flex-1 border-none bg-transparent text-xs font-normal leading-4 text-zinc-400 outline-hidden focus:outline-hidden md:ml-4 md:text-xl md:font-medium md:leading-normal"
+/>
           </div>
           <button
             type="button"

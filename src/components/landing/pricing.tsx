@@ -176,8 +176,8 @@ export function Pricing() {
 
             <div className="flex flex-col gap-4 self-stretch">
               <span className="text-sm font-semibold text-zinc-900">
-                Everything in Premium:
-              </span>
+  Everything in Builder:
+</span>
               <ul className="m-0 flex list-none flex-col gap-3 p-0">
                 {BUILDER_FEATURES.map((f) => (
                   <li
@@ -204,21 +204,24 @@ export function Pricing() {
               key={faq.q}
               className="rounded-xl border border-border-subtle bg-white"
             >
-              <button
-                className="flex w-full cursor-pointer items-center justify-between p-6 text-left"
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-              >
-                <span className="font-semibold text-logo">{faq.q}</span>
+             <button
+  className="flex w-full cursor-pointer items-center justify-between p-6 text-left"
+  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+  aria-expanded={openFaq === i}
+  aria-controls={`faq-answer-${i}`}
+>
+  <span className="font-semibold text-logo">{faq.q}</span>
                 {openFaq === i ? (
                   <ChevronUp size={20} />
                 ) : (
                   <ChevronDown size={20} />
                 )}
               </button>
-              {openFaq === i && (
-                <div className="border-t border-border-subtle p-6 text-copy-muted">
-                  {faq.a}
-                </div>
+            {openFaq === i && (
+  <div id={`faq-answer-${i}`} className="border-t border-border-subtle p-6 text-copy-muted">
+    {faq.a}
+  </div>
+)}
               )}
             </div>
           ))}
