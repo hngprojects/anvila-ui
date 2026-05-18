@@ -83,7 +83,7 @@ export const authApi = {
     }),
 
   exchangeOtt: (ott: string) =>
-    apiFetch<FastApiAuthResponse>('/api/v1/auth/oauth/exchange', {
+    apiFetch<FastApiAuthResponse>('/api/v1/auth/token/exchange', {
       method: 'POST',
       body: JSON.stringify({ ott }),
     }),
