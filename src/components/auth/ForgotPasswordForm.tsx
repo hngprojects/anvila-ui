@@ -37,7 +37,7 @@ export default function ForgotPasswordForm() {
   };
 
   return (
-    <div className="w-full bg-white p-8 rounded-lg shadow-md">
+    <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
       {/* Back Link Component */}
       <Link 
         href="/auth/login" 
