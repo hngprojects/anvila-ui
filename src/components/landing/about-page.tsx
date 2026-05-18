@@ -1,10 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import {
-  Menu,
-  X,
   Globe,
   Search,
   BookMarked,
@@ -12,7 +9,6 @@ import {
   MoreHorizontal,
   LucideBook,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const AnvilaLogo = ({
   color = "#0C5D56",

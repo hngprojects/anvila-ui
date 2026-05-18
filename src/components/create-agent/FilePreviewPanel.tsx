@@ -19,9 +19,9 @@ export default function FilePreviewPanel({
   const activeFile = files.find((f) => f.id === activeFileId) ?? files[0];
 
   return (
-    <section className="flex h-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm min-w-0">
+    <section className="flex items-stretch rounded-2xl border border-gray-200 bg-white shadow-sm min-w-0">
       {/* Left: file tree + content */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col">
         {/* Header bar */}
         <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 shrink-0">
           <h2 className="truncate text-sm font-semibold text-gray-800">{activeFile?.name}</h2>
@@ -30,9 +30,9 @@ export default function FilePreviewPanel({
           </button>
         </div>
 
-        <div className="flex min-h-0 flex-1 overflow-hidden">
+        <div className="flex flex-1">
           {/* File tree sidebar */}
-          <aside className="w-44 shrink-0 overflow-y-auto border-r border-gray-100 py-3 px-2">
+          <aside className="w-44 shrink-0 border-r border-gray-100 py-3 px-2">
             <FileTree
               files={files}
               activeId={activeFileId}
@@ -42,14 +42,14 @@ export default function FilePreviewPanel({
           </aside>
 
           {/* Content */}
-          <div className="min-w-0 flex-1 overflow-y-auto px-5 py-4">
+          <div className="min-w-0 flex-1 px-5 py-4">
             <MarkdownPreview content={activeFile?.content ?? ""} />
           </div>
         </div>
       </div>
 
       {/* Right: manifest sidebar */}
-      <aside className="w-[280px] shrink-0 overflow-y-auto border-l border-gray-100 bg-[#FBFBFB]/50 p-4 space-y-4">
+      <aside className="w-[280px] shrink-0 border-l border-gray-100 bg-[#FBFBFB]/50 p-4 space-y-4">
         {/* Manifest */}
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
           <p className="mb-4 text-sm font-medium text-gray-900">

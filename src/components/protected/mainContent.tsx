@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, ArrowUp } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import ChatInput from "../ChatInput";
 
