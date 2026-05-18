@@ -275,3 +275,18 @@ export function ContactIcon({ bg, stroke }: { bg: string; stroke: string }) {
     </svg>
   );
 }
+
+export const IconPrefix = ({
+  icon: Icon,
+  show,
+}: {
+  icon: React.ElementType;
+  show: boolean;
+}) => {
+  if (!show) return null;
+  return (
+    <span className="absolute left-[10px] top-1/2 -translate-y-1/2 text-[color:var(--color-copy-muted)]">
+      <Icon size={14} />
+    </span>
+  );
+};
