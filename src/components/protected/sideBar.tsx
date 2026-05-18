@@ -5,9 +5,9 @@ import { useState } from "react";
 import { Logo, Github } from "@/components/icons";
 
 import {
-  Plus,
+  CirclePlus,
   Search,
-  Compass,
+  Globe,
   Bot,
   ChevronDown,
   MoreHorizontal,
@@ -28,9 +28,9 @@ import type {
 /* -------------------------------------------------------------------------- */
 
 const NAV_ITEMS = [
-  { icon: Plus, label: "Create Agent", active: true },
+  { icon: CirclePlus, label: "Create Agent", active: true },
   { icon: Search, label: "Search" },
-  { icon: Compass, label: "Explore" },
+  { icon: Globe, label: "Explore" },
   { icon: Bot, label: "My Agents" },
   { icon: Github, label: "GitHub" },
 ];
