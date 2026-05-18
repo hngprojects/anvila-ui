@@ -21,7 +21,6 @@ export default function GeneratorClientLayout({
 /* ---------------- INTERNAL COMPONENT ---------------- */
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
