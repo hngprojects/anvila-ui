@@ -31,7 +31,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <div className="px-6 py-5 bg-[#FBFBFB] md:border-t md:border-gray-100 shrink-0">
       <div className="w-full max-w-[917px] mx-auto">
-        <div className="flex items-center border border-[var(--fg-subtle,#A1A1AA)] bg-white shadow-sm focus-within:border-emerald-600/40 focus-within:ring-2 focus-within:ring-emerald-500/5 transition-all w-[917px] max-w-full h-[64px] rounded-[50px] pt-[8px] pr-[24px] pb-[8px] pl-[24px] gap-[10px]">
+        <div className="flex items-center border border-[var(--fg-subtle,#A1A1AA)] bg-white shadow-sm focus-within:border-zinc-400 focus-within:ring-2 focus-within:ring-zinc-200/20 transition-all w-[917px] max-w-full h-[64px] rounded-[50px] pt-[8px] pr-[24px] pb-[8px] pl-[24px] gap-[10px]">
           {/* Plus Icon */}
           <button
             className="text-gray-400 hover:text-gray-600 shrink-0 cursor-pointer bg-transparent border-none"
@@ -47,7 +47,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             onChange={(e) => onChange(e.target.value)}
             placeholder="Describe your agent..."
             disabled={isQuestionnaireActive}
-            className={`flex-1 text-[20px] font-medium leading-[100%] text-center bg-transparent outline-none text-gray-800 placeholder-gray-400 placeholder:text-center tracking-normal font-sans ${
+            className={`flex-1 text-[20px] font-medium leading-[100%] bg-transparent outline-none text-gray-800 placeholder-gray-400 tracking-normal font-sans ${
               isQuestionnaireActive ? "cursor-not-allowed opacity-50" : ""
             }`}
             onKeyDown={handleKeyDown}
