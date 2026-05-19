@@ -25,7 +25,7 @@ const NAV_ITEMS = [
   { icon: CirclePlus, label: "Create Agent", path: "/generator" },
   { icon: Search, label: "Search", path: "/generator/search" },
   { icon: Globe, label: "Explore", path: "/generator/explore" },
-  { icon: Bot, label: "My Agents", path: "/generator/my-agents" },
+  { icon: Bot, label: "My Agents", path: "/generator/agent-screen" },
   { icon: Github, label: "GitHub", path: "/generator/github" },
 ];
 
@@ -83,7 +83,7 @@ function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <nav className="px-3 space-y-1">
       {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
-        const isActive = pathname === path || (path === "/generator" && pathname === "/generator/agent-screen");
+        const isActive = pathname === path;
         return (
           <button
             key={label}
@@ -174,7 +174,7 @@ function CollapsedSidebar({
 
       <div className="w-full flex flex-col items-center gap-1">
         {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
-          const isActive = pathname === path || (path === "/generator" && pathname === "/generator/agent-screen");
+          const isActive = pathname === path;
           return (
             <button
               key={label}
