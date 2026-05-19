@@ -69,6 +69,14 @@ export interface FastApiResendResponse {
   message: string
 }
 
+//forgot password, reset password, similar response structure
+export interface FastApiForgotResetPasswordResponse {
+  success: boolean;
+  message: string;
+  data: null;
+  meta: Record<string, any>;
+}
+
 export const authApi = {
   login: (body: { email: string; password: string }) =>
     apiFetch<FastApiAuthResponse>('/api/v1/auth/login', {
@@ -102,4 +110,17 @@ export const authApi = {
 
   getOAuthUrl: (provider: 'google' | 'github') =>
     apiFetch<FastApiOAuthUrlResponse>(`/api/v1/auth/${provider}`),
+
+  //forgot password, reset password
+  forgotPassword: (body: { email: string }) =>
+    apiFetch<FastApiForgotResetPasswordResponse>('/api/v1/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  resetPassword: (body: { token: string; new_password: string }) =>
+    apiFetch<FastApiForgotResetPasswordResponse>('/api/v1/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
 }
