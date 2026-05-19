@@ -3,6 +3,9 @@ import { Dispatch, SetStateAction } from "react";
 export interface ChatInputProps {
     prompt: string;
     setPrompt: Dispatch<SetStateAction<string>>;
+    hasInput?: boolean;
+    sendBtnClass?: string;
+    handleFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface ChatMessageProps {

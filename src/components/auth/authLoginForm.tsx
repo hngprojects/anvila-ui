@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import {
   ArrowLeft,
   Eye,
@@ -30,14 +30,14 @@ export const AuthLoginForm = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({
     defaultValues: { email: "", password: "" },
   });
 
-  const email = watch("email");
-  const password = watch("password");
+  const email = useWatch({ control, name: "email" }) ?? "";
+  const password = useWatch({ control, name: "password" }) ?? "";
 
   const emailEmpty = email.length === 0;
   const passwordEmpty = password.length === 0;

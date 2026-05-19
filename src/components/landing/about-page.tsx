@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
 import {
   Globe,
   Search,
@@ -32,7 +31,6 @@ const AnvilaLogo = ({
 );
 
 export const AboutPage = () => {
-  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans text-[#1A1A1A]">
