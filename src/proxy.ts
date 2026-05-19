@@ -8,6 +8,7 @@ import { getTokensFromRequest } from '@/lib/auth/cookies'
 const PUBLIC_PATHS = new Set([
   '/',
   '/login',
+  '/waitlist',
   '/register',
   '/verify-email',
   '/confirm-email',

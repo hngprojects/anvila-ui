@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTokensFromRequest, setAuthCookies, clearAuthCookies } from '@/lib/auth/cookies'
 import { authApi } from '@/lib/auth/api'
-
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
+import { BACKEND_URL } from "@/lib/consts";
 
 async function fetchUser(accessToken: string) {
-  const res = await fetch(`${BASE}/api/v1/auth/me`, {
+  const res = await fetch(`${BACKEND_URL}/api/v1/auth/me`, {
     headers: { Authorization: `Bearer ${accessToken}` },
     cache: 'no-store',
   })
