@@ -152,13 +152,10 @@ function RecentSection() {
 
 function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
   const { user } = useAuth();
-  const displayName = user?.display_name ?? user?.email ?? "User";
-  const plan = user?.plan ?? "Free";
   const pathname = usePathname();
   const router = useRouter();
-
-  const displayName =
-    user?.display_name ?? user?.email ?? "User";
+  const displayName = user?.display_name ?? user?.email ?? "User";
+  const plan = user?.plan ?? "Free";
 
   return (
     <aside className="hidden md:flex flex-col items-center w-[56px] min-w-[56px] shrink-0 rounded-2xl bg-white border border-gray-200 shadow-sm py-4 gap-2">
