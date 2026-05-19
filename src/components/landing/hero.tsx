@@ -34,7 +34,7 @@ function PlusIcon({ size = 14 }: { size?: number }) {
   );
 }
 
-function ArrowUpIcon() {
+function ArrowUpIcon({ className = "" }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -42,11 +42,11 @@ function ArrowUpIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="shrink-0"
+      className={`shrink-0 ${className}`}
     >
       <path
         d="M12 20L12 4M6 10L12 4L18 10"
-        stroke="black"
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -75,24 +75,22 @@ export function Hero() {
 
       <div className="relative mx-auto flex w-full max-w-[1438px] flex-col items-center justify-center gap-2 px-6 py-6 md:min-h-[640px] md:px-20 md:py-10">
         <div className="flex w-full flex-col items-center gap-3 self-stretch">
-          <h1 className="m-0 max-w-[805px] text-center text-2xl font-medium leading-8 text-logo md:text-[72px] md:leading-normal">
+          <h1 className="m-0 max-w-[805px] text-center text-xl font-medium leading-8 text-logo md:text-[52px] md:leading-normal">
             <span className="md:hidden">
               Build reusable AI agent packages from one clear setup.
             </span>
             <span className="hidden md:inline">
-              Build reusable AI agent <br />
-              packages from one <br />
-              clear setup.
+              Build reusable AI agent packages from one clear setup.
             </span>
           </h1>
 
           <p className="m-0 max-w-[728px] text-center text-sm font-normal leading-5 text-copy-muted md:text-base md:leading-6">
-            Describe your agent setup in seconds and get a structured package you can
-            publish, share, and reuse.
+            Describe your agent setup in seconds and get a structured package
+            you can publish, share, and reuse.
           </p>
         </div>
 
-        <div aria-hidden className="hidden h-6 md:block" />
+        <div aria-hidden className="h-4 md:h-6" />
 
         <div className="mx-auto flex w-full max-w-[800px] items-center justify-between gap-2 rounded-3xl border border-border-subtle bg-white p-4 shadow-[0_6px_18px_-2px_rgba(0,0,0,0.10)] md:h-[77px] md:gap-0.5 md:px-6">
           <div className="flex flex-1 items-center gap-2 md:gap-0">
@@ -102,22 +100,26 @@ export function Hero() {
             <span className="hidden md:inline">
               <PlusIcon size={14} />
             </span>
-           <label htmlFor="agent-setup-input" className="sr-only">
-  Describe your agent setup
-</label>
-<input
-  id="agent-setup-input"
-  type="text"
-  value={value}
-  onChange={(e) => setValue(e.target.value)}
-  placeholder="Describe your agent setup"
-  className="flex-1 border-none bg-transparent text-xs font-normal leading-4 text-zinc-400 outline-hidden focus:outline-hidden md:ml-4 md:text-xl md:font-medium md:leading-normal"
-/>
+            <label htmlFor="agent-setup-input" className="sr-only">
+              Describe your agent setup
+            </label>
+            <input
+              id="agent-setup-input"
+              type="text"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="Describe your agent setup"
+              className="flex-1 border-none bg-transparent text-xs font-normal leading-4 text-copy-muted outline-hidden focus:outline-hidden md:ml-4 md:text-xl md:font-medium md:leading-normal"
+            />
           </div>
           <button
             type="button"
             aria-label="Submit"
-            className="flex shrink-0 cursor-pointer items-center justify-center border-none bg-transparent p-1"
+            className={`flex shrink-0 cursor-pointer items-center justify-center rounded-full border-none p-4 transition-all ${
+              value.trim().length > 0
+                ? "bg-teal-accent text-white hover:bg-teal-accent/80"
+                : "bg-muted-bg text-copy-heading"
+            }`}
           >
             <ArrowUpIcon />
           </button>

@@ -119,7 +119,7 @@ export function AuthSignUpForm() {
 
       // Redirect to verify-email page with masked email as query param
       const encoded = encodeURIComponent(values.email);
-      router.push(`/verify-email?email=${encoded}`);
+      router.push(`/confirm-email?email=${encoded}`);
     } catch {
       setBannerError("Network error. Please check your connection.");
     }

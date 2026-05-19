@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo, Github } from "@/components/icons";
 import { useAuth } from "@/context/auth";
 
@@ -17,15 +18,15 @@ import {
 } from "lucide-react";
 
 /* -------------------------------------------------------------------------- */
-/*                                    DATA                                    */
+/* DATA                                    */
 /* -------------------------------------------------------------------------- */
 
 const NAV_ITEMS = [
-  { icon: CirclePlus, label: "Create Agent", active: true },
-  { icon: Search, label: "Search" },
-  { icon: Globe, label: "Explore" },
-  { icon: Bot, label: "My Agents" },
-  { icon: Github, label: "GitHub" },
+  { icon: CirclePlus, label: "Create Agent", path: "/generator" },
+  { icon: Search, label: "Search", path: "/generator/search" },
+  { icon: Globe, label: "Explore", path: "/generator/explore" },
+  { icon: Bot, label: "My Agents", path: "/generator/agent-screen" },
+  { icon: Github, label: "GitHub", path: "/generator/github" },
 ];
 
 const RECENT_ITEMS = [
@@ -36,14 +37,16 @@ const RECENT_ITEMS = [
 ];
 
 /* -------------------------------------------------------------------------- */
-/*                                 USER AVATAR                                */
+/* USER AVATAR                                */
 /* -------------------------------------------------------------------------- */
 
 function UserAvatar({
   name,
+  plan,
   showName,
 }: {
   name: string;
+  plan: string;
   showName?: boolean;
 }) {
   const initials = name
@@ -54,49 +57,58 @@ function UserAvatar({
     .toUpperCase();
 
   return showName ? (
-    <div className="flex items-center gap-2 px-4 py-4 border-t border-gray-100">
-      <div className="w-7 h-7 rounded-full bg-[#1a6b5a] flex items-center justify-center">
-        <span className="text-white text-[10px] font-semibold">
-          {initials}
-        </span>
+    <div className="flex items-center gap-3 px-4 py-4 border-t border-gray-100">
+      <div className="w-8 h-8 rounded-full bg-[#1a6b5a] flex items-center justify-center shrink-0">
+        <span className="text-white text-[11px] font-semibold">{initials}</span>
       </div>
-      <span className="text-sm text-gray-700 truncate">{name}</span>
+      <div className="flex flex-col min-w-0">
+        <span className="text-sm font-medium text-gray-800 truncate">{name}</span>
+        <span className="text-xs text-gray-400 truncate capitalize">{plan}</span>
+      </div>
     </div>
   ) : (
     <div className="w-7 h-7 rounded-full bg-[#1a6b5a] flex items-center justify-center">
-      <span className="text-white text-[10px] font-semibold">
-        {initials}
-      </span>
+      <span className="text-white text-[10px] font-semibold">{initials}</span>
     </div>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*                               NAVIGATION LIST                              */
+/* NAVIGATION LIST                              */
 /* -------------------------------------------------------------------------- */
 
-function NavigationItems() {
+function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
+  const pathname = usePathname();
+  const router = useRouter();
+
   return (
     <nav className="px-3 space-y-1">
-      {NAV_ITEMS.map(({ icon: Icon, label, active }) => (
-        <button
-          key={label}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
-            active
-              ? "bg-[#1a6b5a] text-white"
-              : "text-gray-600 hover:bg-gray-100"
-          }`}
-        >
-          <Icon size={15} />
-          {label}
-        </button>
-      ))}
+      {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
+        const isActive = pathname === path;
+        return (
+          <button
+            key={label}
+            onClick={() => {
+              router.push(path);
+              if (onNavigate) onNavigate();
+            }}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
+              isActive
+                ? "bg-[#1a6b5a] text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <Icon size={15} />
+            {label}
+          </button>
+        );
+      })}
     </nav>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                RECENT ITEMS                                */
+/* RECENT ITEMS                                */
 /* -------------------------------------------------------------------------- */
 
 function RecentSection() {
@@ -123,9 +135,7 @@ function RecentSection() {
             key={item}
             className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer group"
           >
-            <span className="text-sm text-gray-600 truncate">
-              {item}
-            </span>
+            <span className="text-sm text-gray-600 truncate">{item}</span>
             <MoreHorizontal
               size={14}
               className="text-gray-300 group-hover:text-gray-500"
@@ -137,18 +147,15 @@ function RecentSection() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                              COLLAPSED SIDEBAR                             */
+/* COLLAPSED SIDEBAR                             */
 /* -------------------------------------------------------------------------- */
 
-function CollapsedSidebar({
-  onExpand,
-}: {
-  onExpand: () => void;
-}) {
+function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
   const { user } = useAuth();
-
-  const displayName =
-    user?.display_name ?? user?.email ?? "User";
+  const pathname = usePathname();
+  const router = useRouter();
+  const displayName = user?.display_name ?? user?.email ?? "User";
+  const plan = user?.plan ?? "Free";
 
   return (
     <aside className="hidden md:flex flex-col items-center w-[56px] min-w-[56px] shrink-0 rounded-2xl bg-white border border-gray-200 shadow-sm py-4 gap-2">
@@ -160,46 +167,44 @@ function CollapsedSidebar({
       </button>
 
       <div className="w-full flex flex-col items-center gap-1">
-        {NAV_ITEMS.map(({ icon: Icon, label, active }) => (
-          <button
-            key={label}
-            title={label}
-            className={`w-8 h-8 flex items-center justify-center rounded-lg ${
-              active
-                ? "bg-[#1a6b5a] text-white"
-                : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            <Icon size={15} />
-          </button>
-        ))}
+        {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
+          const isActive = pathname === path;
+          return (
+            <button
+              key={label}
+              title={label}
+              onClick={() => router.push(path)}
+              className={`w-8 h-8 flex items-center justify-center rounded-lg ${
+                isActive
+                  ? "bg-[#1a6b5a] text-white"
+                  : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              <Icon size={15} />
+            </button>
+          );
+        })}
       </div>
 
       <div className="flex-1" />
-      <UserAvatar name={displayName} />
+      <UserAvatar name={displayName} plan={plan} />
     </aside>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*                               EXPANDED SIDEBAR                             */
+/* EXPANDED SIDEBAR                             */
 /* -------------------------------------------------------------------------- */
 
-function ExpandedSidebar({
-  onCollapse,
-}: {
-  onCollapse: () => void;
-}) {
+function ExpandedSidebar({ onCollapse }: { onCollapse: () => void }) {
   const { user } = useAuth();
-
-  const displayName =
-    user?.display_name ?? user?.email ?? "User";
+  const displayName = user?.display_name ?? user?.email ?? "User";
+  const plan = user?.plan ?? "Free";
 
   return (
     <aside className="hidden md:flex flex-col w-[224px] min-w-[224px] shrink-0 rounded-2xl bg-[#FBFBFB] border border-gray-200 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-5 pb-4">
         <Logo />
-
         <button
           onClick={onCollapse}
           className="text-gray-400 hover:text-gray-600"
@@ -210,31 +215,23 @@ function ExpandedSidebar({
 
       <NavigationItems />
       <RecentSection />
-      <UserAvatar name={displayName} showName />
+      <UserAvatar name={displayName} plan={plan} showName />
     </aside>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*                               MOBILE DRAWER                                */
+/* MOBILE DRAWER                              */
 /* -------------------------------------------------------------------------- */
 
-function MobileDrawer({
-  onClose,
-}: {
-  onClose: () => void;
-}) {
+function MobileDrawer({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
-
-  const displayName =
-    user?.display_name ?? user?.email ?? "User";
+  const displayName = user?.display_name ?? user?.email ?? "User";
+  const plan = user?.plan ?? "Free";
 
   return (
     <div className="fixed inset-0 z-50 flex md:hidden">
-      <div
-        className="absolute inset-0 bg-black/30"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
 
       <div className="relative w-64 h-full bg-white shadow-xl flex flex-col">
         <div className="flex items-center justify-between px-4 pt-5 pb-4">
@@ -244,16 +241,16 @@ function MobileDrawer({
           </button>
         </div>
 
-        <NavigationItems />
+        <NavigationItems onNavigate={onClose} />
         <RecentSection />
-        <UserAvatar name={displayName} showName />
+        <UserAvatar name={displayName} plan={plan} showName />
       </div>
     </div>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                   SIDEBAR                                  */
+/* SIDEBAR                                  */
 /* -------------------------------------------------------------------------- */
 
 export default function Sidebar({
