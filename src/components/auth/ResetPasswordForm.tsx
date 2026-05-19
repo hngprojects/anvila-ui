@@ -42,13 +42,13 @@ export default function SetNewPasswordForm() {
   });
 
   const onSubmit = (data: ResetPasswordValues) => {
-    router.push("/auth/reset-password/success");
+    router.push("/reset-password/success");
   };
 
   return (
-    <div className="w-full bg-white p-8 rounded-lg shadow-md">
+    <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
       <Link 
-        href="/auth/forgot-password/check-mail"
+        href="forgot-password/check-mail"
         className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors"
       >
         <ChevronLeft size={16} /> Back

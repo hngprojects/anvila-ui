@@ -33,14 +33,14 @@ export default function ForgotPasswordForm() {
   });
 
   const handleFormSubmit = (values: FormValues) => {
-    router.push(`/auth/forgot-password/check-mail?email=${encodeURIComponent(values.email.trim())}`);
+    router.push(`/forgot-password/check-mail?email=${encodeURIComponent(values.email.trim())}`);
   };
 
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
       {/* Back Link Component */}
       <Link 
-        href="/auth/login" 
+        href="/login" 
         className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors"
       >
         <ChevronLeft size={16} /> Back
