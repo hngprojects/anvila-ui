@@ -44,6 +44,7 @@ const steps: Step[] = [
 
 export default function GenerationTimeoutEmptyState({
   onRetry,
+  onHelp,
 }: GenerationTimeoutEmptyStateProps) {
 
 
@@ -54,6 +55,10 @@ export default function GenerationTimeoutEmptyState({
   }
 
   function handleHelp() {
+    if (onHelp) {
+      onHelp();
+      return;
+    }
     const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
       SUPPORT_SUBJECT
     )}&body=${encodeURIComponent(SUPPORT_BODY)}`;
@@ -77,15 +82,15 @@ export default function GenerationTimeoutEmptyState({
 
         {/* Badge */}
         <div className="inline-flex items-center gap-2 bg-[#0C5D56] border border-green-50 text-white text-xs font-medium px-3 py-1.5 rounded-full mb-5">
-          <span className="w-1.5 h-1.5  text-white rounded-full bg-green-50" />
+          <span className="w-1.5 h-1.5 rounded-full bg-green-50" />
           Generation timed out
         </div>
 
         {/* Heading */}
-        <h1 className="text-xl font-semibold text-black-900 mb-3">
+        <h1 className="text-xl font-semibold text-gray-900 mb-3">
           Taking longer than expected
         </h1>
-        <p className="text-sm text-black-500 leading-relaxed mb-8">
+        <p className="text-sm text-gray-500 leading-relaxed mb-8">
           Your first generation hit a timeout. No worries — this is common on
           slow connections or heavy requests. Here&apos;s how to get up and running.
         </p>
