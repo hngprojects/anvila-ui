@@ -5,9 +5,6 @@ import {
   Plus,
   ArrowUp,
   Square,
-  ThumbsUp,
-  ThumbsDown,
-  Copy,
   MoreHorizontal,
   Edit2,
   RotateCw,
@@ -19,6 +16,12 @@ import {
   Loader2,
   Sparkles,
 } from "lucide-react";
+import {
+  ThumbsUpIcon,
+  ThumbsDownIcon,
+  CopyIcon,
+  FileIcon,
+} from "@/components/icons";
 
 interface ChatMessage {
   id: string;
@@ -488,16 +491,16 @@ export default function AgentScreen() {
                 </div>
                 <div className="flex items-center gap-3.5 text-zinc-400">
                   <button className="hover:text-zinc-600 transition-colors cursor-pointer">
-                    <ThumbsUp size={14} />
+                    <ThumbsUpIcon className="w-[14px] h-[14px]" />
                   </button>
                   <button className="hover:text-zinc-600 transition-colors cursor-pointer">
-                    <ThumbsDown size={14} />
+                    <ThumbsDownIcon className="w-[14px] h-[14px]" />
                   </button>
                   <button
                     onClick={() => handleCopy(msg.text || "", msg.id)}
                     className="hover:text-zinc-600 transition-colors relative cursor-pointer"
                   >
-                    <Copy size={14} />
+                    <CopyIcon classname="w-[14px] h-[14px]" />
                     {copiedId === msg.id && (
                       <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] bg-black text-white px-1.5 py-0.5 rounded">
                         Copied!
@@ -852,13 +855,13 @@ export default function AgentScreen() {
                   </div>
                   <div className="flex items-center gap-3.5 pl-1 text-zinc-400">
                     <button className="hover:text-zinc-600 transition-colors cursor-pointer bg-transparent border-none">
-                      <ThumbsUp size={14} />
+                      <ThumbsUpIcon className="w-[14px] h-[14px]" />
                     </button>
                     <button className="hover:text-zinc-600 transition-colors cursor-pointer bg-transparent border-none">
-                      <ThumbsDown size={14} />
+                      <ThumbsDownIcon className="w-[14px] h-[14px]" />
                     </button>
                     <button className="hover:text-zinc-600 transition-colors cursor-pointer bg-transparent border-none">
-                      <Copy size={14} />
+                      <CopyIcon classname="w-[14px] h-[14px]" />
                     </button>
                     <button className="hover:text-zinc-600 transition-colors cursor-pointer bg-transparent border-none">
                       <MoreHorizontal size={14} />
@@ -918,13 +921,16 @@ export default function AgentScreen() {
                 </div>
 
                 {/* Forged Anatassia Success Card */}
-                <div className="w-[380px] max-w-full bg-white border border-gray-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#1a6b5a] shrink-0">
-                      <Sparkles size={20} />
+                <div 
+                  className="bg-white flex items-center justify-between px-5 shadow-sm border-[2.5px] border-[#A1A1AA] rounded-[15px]"
+                  style={{ width: "685px", maxWidth: "100%", height: "75px" }}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="shrink-0 flex items-center justify-center">
+                      <FileIcon className="w-12 h-12 text-black" />
                     </div>
                     <div className="min-w-0 text-left">
-                      <h4 className="text-sm font-semibold text-gray-700 truncate">
+                      <h4 className="text-sm font-semibold text-gray-800 truncate">
                         Forged Anatassia
                       </h4>
                       <p className="text-xs text-gray-400 truncate">
@@ -932,7 +938,10 @@ export default function AgentScreen() {
                       </p>
                     </div>
                   </div>
-                  <button className="px-4 py-1.5 rounded-full text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all shrink-0 cursor-pointer">
+                  <button 
+                    className="text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all shrink-0 cursor-pointer flex items-center justify-center rounded-[16px]"
+                    style={{ width: "95px", height: "40px" }}
+                  >
                     Preview
                   </button>
                 </div>
@@ -940,13 +949,13 @@ export default function AgentScreen() {
                 {/* Actions */}
                 <div className="flex items-center gap-3.5 text-gray-400">
                   <button className="hover:text-gray-600 transition-colors cursor-pointer bg-transparent border-none">
-                    <ThumbsUp size={14} />
+                    <ThumbsUpIcon className="w-[14px] h-[14px]" />
                   </button>
                   <button className="hover:text-gray-600 transition-colors cursor-pointer bg-transparent border-none">
-                    <ThumbsDown size={14} />
+                    <ThumbsDownIcon className="w-[14px] h-[14px]" />
                   </button>
                   <button className="hover:text-gray-600 transition-colors cursor-pointer bg-transparent border-none">
-                    <Copy size={14} />
+                    <CopyIcon classname="w-[14px] h-[14px]" />
                   </button>
                   <button className="hover:text-gray-600 transition-colors cursor-pointer bg-transparent border-none">
                     <MoreHorizontal size={14} />
