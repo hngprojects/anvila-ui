@@ -41,7 +41,7 @@ const NavLink = ({
   );
 };
 
-export default function Navbar({ waitlist = true }: { waitlist?: boolean }) {
+export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
