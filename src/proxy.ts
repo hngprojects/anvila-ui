@@ -15,10 +15,10 @@ const PUBLIC_PATHS = new Set([
   '/forgot-password',
   '/reset-password',
   '/auth/oauth/callback',
+
   "/generator",
   '/generator/agent-screen',
   
-])
 
 /** Prefixes that are always public (static assets, Next internals, our own API routes) */
 const PUBLIC_PREFIXES = ['/_next', '/favicon', '/api/auth', '/static', '/images']
