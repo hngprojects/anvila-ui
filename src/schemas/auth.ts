@@ -38,6 +38,7 @@ export const UserSchema = z.object({
   email_verified: z.boolean(),
   is_active: z.boolean(),
   created_at: z.string(),
+  plan: z.string().optional(),
 });
 
 export const TokensSchema = z.object({
