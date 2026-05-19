@@ -242,22 +242,32 @@ export default function AgentScreen() {
       type: "text",
     };
 
-    // 3. Assistant transition reply
-    const transitionMsg: ChatMessage = {
-      id: `a-radio-trans-${Date.now()}`,
-      sender: "assistant",
-      text: "Got it - Agent Anatassia Rhodes content creator for a skincare brand. Let's verify some info about your brand before proceeding...",
-      type: "text",
-    };
+    // 3. Check if any radio question used "other" — if so, show the short-answer brand card
+    const userChoseOther = Object.values(selectedRadioOptions).some(
+      (val) => val === "other"
+    );
 
-    // 4. Append short-answer verification card
-    const verificationCardMsg: ChatMessage = {
-      id: `a-verify-card-${Date.now()}`,
-      sender: "assistant",
-      type: "verification-card",
-    };
+    if (userChoseOther) {
+      // Assistant transition reply before short-answer card
+      const transitionMsg: ChatMessage = {
+        id: `a-radio-trans-${Date.now()}`,
+        sender: "assistant",
+        text: "Got it - Agent Anatassia Rhodes content creator for a skincare brand. Let's verify some info about your brand before proceeding...",
+        type: "text",
+      };
 
-    setMessages((prev) => [...prev, summaryMsg, transitionMsg, verificationCardMsg]);
+      const verificationCardMsg: ChatMessage = {
+        id: `a-verify-card-${Date.now()}`,
+        sender: "assistant",
+        type: "verification-card",
+      };
+
+      setMessages((prev) => [...prev, summaryMsg, transitionMsg, verificationCardMsg]);
+    } else {
+      // No "other" selected — go straight to forging
+      setMessages((prev) => [...prev, summaryMsg]);
+      triggerForgingSequence();
+    }
   };
 
   // Short Answer verification navigation
@@ -275,12 +285,16 @@ export default function AgentScreen() {
   };
 
   const triggerForgingSequence = () => {
-    // 1. Remove active short answer verification card
+    // 1. Remove active short answer verification card (safe even if none exists)
     setMessages((prev) => prev.filter((m) => m.type !== "verification-card"));
 
-    // 2. Add verification final summary message
-    const brandName = textAnswers[1] || "Nior";
-    const brandAudience = textAnswers[2] || "middle aged women";
+    // 2. Build forging intro — use text answers if available, else fall back to radio choices
+    const brandName = textAnswers[1]?.trim() ||
+      (selectedRadioOptions[1] !== "other" ? selectedRadioOptions[1] : radioOtherText[1]) ||
+      "Nior";
+    const brandAudience = textAnswers[2]?.trim() ||
+      (selectedRadioOptions[3] !== "other" ? selectedRadioOptions[3] : radioOtherText[3]) ||
+      "middle aged women";
 
     const forgeIntroMsg: ChatMessage = {
       id: `a-forge-intro-${Date.now()}`,
@@ -617,11 +631,15 @@ export default function AgentScreen() {
                     </button>
                     <button
                       onClick={handleNextRadio}
-                      disabled={!selectedRadioOptions[radioStep]}
-                      className={`rounded-lg px-5 py-2 text-xs font-bold text-white transition-all shadow-sm cursor-pointer border-none ${
-                        selectedRadioOptions[radioStep]
-                          ? "bg-[#0c5d56] hover:bg-[#0a4d47] active:scale-[0.98]"
-                          : "bg-[#0c5d56]/40 text-white cursor-not-allowed opacity-60"
+                      disabled={
+                        !selectedRadioOptions[radioStep] ||
+                        (selectedRadioOptions[radioStep] === "other" && !radioOtherText[radioStep]?.trim())
+                      }
+                      className={`rounded-lg px-5 py-2 text-xs font-bold text-white transition-all shadow-sm border-none ${
+                        selectedRadioOptions[radioStep] &&
+                        !(selectedRadioOptions[radioStep] === "other" && !radioOtherText[radioStep]?.trim())
+                          ? "bg-[#0c5d56] hover:bg-[#0a4d47] active:scale-[0.98] cursor-pointer"
+                          : "bg-[#0c5d56]/40 cursor-not-allowed opacity-60"
                       }`}
                     >
                       Next
