@@ -1,14 +1,15 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Mail, ChevronLeft } from "lucide-react";
+import { Mail, ChevronLeft, Loader2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { authApi } from "@/lib/auth/api";
 
 const formSchema = z.object({
   email: z
@@ -20,6 +21,8 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const {
     register,
@@ -32,8 +35,20 @@ export default function ForgotPasswordForm() {
     },
   });
 
-  const handleFormSubmit = (values: FormValues) => {
-    router.push(`/forgot-password/check-mail?email=${encodeURIComponent(values.email.trim())}`);
+  const handleFormSubmit = async(values: FormValues) => {
+    setIsLoading(true);
+    setApiError(null);
+
+    const formattedEmail = values.email.trim();
+
+    const result = await authApi.forgotPassword({ email: formattedEmail });
+
+    if (result.ok) {
+      router.push(`/forgot-password/check-mail?email=${encodeURIComponent(formattedEmail)}`);
+    } else {
+      setApiError(result.message);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -65,6 +80,7 @@ export default function ForgotPasswordForm() {
               type="email"
               placeholder="Enter email address"
               aria-invalid={!!errors.email}
+              disabled={isLoading}
               className="pl-10 pr-4 w-full rounded-lg"
               {...register("email")}
             />
@@ -75,13 +91,26 @@ export default function ForgotPasswordForm() {
               {errors.email.message}
             </p>
           )}
+
+          {apiError && (
+            <p className="text-[10px] text-destructive font-medium pl-1 mt-1">
+              {apiError}
+            </p>
+          )}
         </div>
 
         <Button
           type="submit"
           className="w-full py-2.5 bg-[#004D4D] hover:bg-[#003636] text-white shadow-sm transition-all"
         >
-          Send Reset Link
+          {isLoading ? (
+            <>
+              <Loader2 className="animate-spin h-4 w-4" />
+              Sending...
+            </>
+          ) : (
+            "Send Reset Link"
+          )}
         </Button>
       </form>
     </div>
