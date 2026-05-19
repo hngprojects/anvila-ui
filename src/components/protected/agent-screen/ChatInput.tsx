@@ -32,7 +32,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     <div className="px-6 py-5 bg-[#FBFBFB] md:border-t md:border-gray-100 shrink-0">
       <div className="w-full max-w-[917px] mx-auto">
         <div className="flex items-center border border-[var(--fg-subtle,#A1A1AA)] bg-white shadow-sm focus-within:border-zinc-400 focus-within:ring-2 focus-within:ring-zinc-200/20 transition-all w-[917px] max-w-full h-[64px] rounded-[50px] pt-[8px] pr-[24px] pb-[8px] pl-[24px] gap-[10px]">
-          {/* Plus Icon */}
           <button
             className="text-gray-400 hover:text-gray-600 shrink-0 cursor-pointer bg-transparent border-none"
             title="Attach file"
@@ -40,7 +39,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             <Plus size={18} />
           </button>
 
-          {/* Input field */}
           <input
             type="text"
             value={value}
@@ -53,7 +51,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             onKeyDown={handleKeyDown}
           />
 
-          {/* Stop or Send Action Button */}
           {isThinking || isForgingActive ? (
             <button
               onClick={onInterrupt}

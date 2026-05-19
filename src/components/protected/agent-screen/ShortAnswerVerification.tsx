@@ -23,13 +23,11 @@ export const ShortAnswerVerification: React.FC<ShortAnswerVerificationProps> = (
 }) => {
   return (
     <div className="max-w-full flex flex-col justify-between shadow-sm w-[579px] h-[208px] rounded-[15px] border-[2.5px] border-[#B1B5B4] bg-[var(--bg-muted,#F4F4F5)] pt-[16px] pb-[16px] px-[20px] opacity-100">
-      {/* Header */}
       <div className="flex items-center justify-between border-b border-zinc-200 pb-1.5 text-xs font-semibold text-black">
         <span>Questions</span>
         <span className="font-mono text-zinc-500">{textStep}/3</span>
       </div>
 
-      {/* Question */}
       <div className="flex-1 min-h-0 flex flex-col justify-center py-1.5">
         <div className="flex items-center justify-between text-black mb-2 font-sans font-semibold text-[12px] leading-[100%] tracking-[0px]">
           <span>{title}</span>
@@ -38,7 +36,6 @@ export const ShortAnswerVerification: React.FC<ShortAnswerVerificationProps> = (
           </span>
         </div>
 
-        {/* Text input container & field */}
         <div className="mt-2 transition-all duration-200 border flex items-center shadow-sm w-[537px] max-w-full h-[48px] rounded-[6px] border-[1px] border-[#E4E4E4] pt-[12px] pr-[16px] pb-[12px] pl-[16px] gap-[8px] bg-[#EEEFEEB2]">
           <input
             type="text"
@@ -55,7 +52,6 @@ export const ShortAnswerVerification: React.FC<ShortAnswerVerificationProps> = (
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex items-center justify-end gap-6 pt-1.5 border-t border-zinc-100">
         <button
           onClick={onSkip}

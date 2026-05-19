@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ChevronDown, ChevronRight, FileText, AlertCircle } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText} from "lucide-react";
 import { ThinkingAgentIcon, ThumbsUpIcon, ThumbsDownIcon, CopyIcon, ThreeDottedIcon } from "@/components/icons";
 
 interface ForgingIdentityCardProps {
@@ -27,20 +27,9 @@ export const ForgingIdentityCard: React.FC<ForgingIdentityCardProps> = ({
 
   if (isInterrupted) {
     return (
-      <div className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in">
-        <div className="flex items-center gap-2.5 text-sm text-[#000000] font-medium">
-          <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
-            <ThinkingAgentIcon fill="#0C5D56" className="w-[14px] h-[14px]" />
-          </div>
-          <span className="italic">
-            Generating Identity <span className="text-gray-400">files...</span>
-          </span>
-          <ChevronDown size={15} className="text-gray-400" />
-        </div>
-
-        {/* Interrupted Card Content */}
-        <div className="w-[450px] max-w-full bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[300px]">
-          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+      <div className="flex flex-col items-start gap-4 max-w-2xl mr-auto pl-2">
+        <div className="w-[522px] max-w-full h-[320px] rounded-[15px] border-[2.5px] border-[#E4E4E7] bg-white shadow-[0px_25px_50px_-12px_rgba(142,81,255,0.1)] flex flex-col overflow-hidden gap-[8px]">
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100 shrink-0">
             <FileText size={18} className="text-gray-500 shrink-0" />
             <h3 className="font-semibold text-gray-700 text-sm truncate">
               Skincare brand AI content creator agent
@@ -69,11 +58,10 @@ export const ForgingIdentityCard: React.FC<ForgingIdentityCardProps> = ({
           </div>
         </div>
 
-        {/* Interrupted Alert */}
         <div className="w-full space-y-2 text-left">
-          <div className="text-red-500 text-sm font-medium italic pl-1 flex items-center gap-1.5 animate-bounce">
-            <AlertCircle size={14} className="shrink-0" />
-            Agent Forge response was interrupted!
+          <div className="pl-1 flex items-center gap-1.5 font-sans font-normal italic text-[18px] leading-[100%] text-[#E86E6E]">
+           
+            Anvila response was interrupted!
           </div>
           <div className="flex items-center gap-3.5 pl-1 text-zinc-400">
             <button className="hover:text-zinc-600 transition-colors cursor-pointer bg-transparent border-none">
@@ -103,8 +91,7 @@ export const ForgingIdentityCard: React.FC<ForgingIdentityCardProps> = ({
   }
 
   return (
-    <div className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in">
-      {/* Expandable Accordion Header */}
+    <div className="flex flex-col items-start gap-4 max-w-2xl mr-auto pl-2">
       <button
         onClick={onToggleExpand}
         className="flex items-center gap-2.5 text-sm text-[#000000] font-medium bg-transparent border-none cursor-pointer"
@@ -118,10 +105,9 @@ export const ForgingIdentityCard: React.FC<ForgingIdentityCardProps> = ({
         {identityExpanded ? <ChevronDown size={15} className="text-gray-400" /> : <ChevronRight size={15} className="text-gray-400" />}
       </button>
 
-      {/* Forged Identity Card Content */}
       {identityExpanded && (
-        <div className="w-[450px] max-w-full bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[350px]">
-          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+        <div className="w-[522px] max-w-full h-[320px] rounded-[15px] border-[2.5px] border-[#E4E4E7] bg-white shadow-[0px_25px_50px_-12px_rgba(142,81,255,0.1)] flex flex-col overflow-hidden gap-[8px]">
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100 shrink-0">
             <FileText size={18} className="text-gray-500 shrink-0" />
             <h3 className="font-semibold text-gray-700 text-sm truncate">
               Skincare brand AI content creator agent

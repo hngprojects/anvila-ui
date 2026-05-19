@@ -1,4 +1,3 @@
-export { WelcomeState } from "./WelcomeState";
 export { UserMessage } from "./UserMessage";
 export { TextMessage } from "./TextMessage";
 export { RadioQuestionnaire } from "./RadioQuestionnaire";

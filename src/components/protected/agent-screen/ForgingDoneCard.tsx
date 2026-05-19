@@ -22,7 +22,6 @@ export const ForgingDoneCard: React.FC<ForgingDoneCardProps> = ({
         {successText}
       </div>
 
-      {/* Forged Anatassia Success Card */}
       <div className="bg-white flex items-center justify-between px-5 shadow-sm border-[2.5px] border-[#A1A1AA] rounded-[15px] w-[685px] max-w-full h-[75px]">
         <div className="flex items-center gap-3.5">
           <div className="shrink-0 flex items-center justify-center">
@@ -42,7 +41,6 @@ export const ForgingDoneCard: React.FC<ForgingDoneCardProps> = ({
         </button>
       </div>
 
-      {/* Actions */}
       <div className="flex items-center gap-3.5 text-gray-400">
         <button className="hover:text-gray-600 transition-colors cursor-pointer bg-transparent border-none">
           <ThumbsUpIcon className="w-[14px] h-[14px]" />

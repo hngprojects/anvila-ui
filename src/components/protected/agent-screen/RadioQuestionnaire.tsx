@@ -32,13 +32,11 @@ export const RadioQuestionnaire: React.FC<RadioQuestionnaireProps> = ({
 
   return (
     <div className="max-w-full flex flex-col w-[593px] min-h-[296px] h-auto rounded-[15px] border border-[var(--border-default,#E4E4E7)] bg-[var(--bg-muted,#F4F4F5)] pt-[1px] pb-[1px] px-[20px] shadow-sm opacity-100">
-      {/* Header */}
       <div className="flex items-center justify-between border-b border-zinc-200 pt-3.5 pb-1.5 text-xs font-semibold text-black">
         <span>Questions</span>
         <span className="font-mono text-zinc-500">{radioStep}/3</span>
       </div>
 
-      {/* Title */}
       <div className="flex items-center justify-between text-black mt-3 mb-1.5 font-sans font-semibold text-[12px] leading-[100%] tracking-[0px]">
         <span>{title}</span>
         <span className="text-[10px] font-normal text-zinc-500 font-sans">
@@ -46,7 +44,6 @@ export const RadioQuestionnaire: React.FC<RadioQuestionnaireProps> = ({
         </span>
       </div>
 
-      {/* Options List — no overflow, no fixed height, grows naturally */}
       <div className="flex flex-col w-[593px] -ml-[20px] pl-[20px] opacity-100">
         {options.map((option) => {
           const isSelected = selectedOption === option;
@@ -76,7 +73,6 @@ export const RadioQuestionnaire: React.FC<RadioQuestionnaireProps> = ({
           );
         })}
 
-        {/* "Other" option row */}
         {hasOther && (
           <>
             <label
@@ -101,7 +97,6 @@ export const RadioQuestionnaire: React.FC<RadioQuestionnaireProps> = ({
               <span>other</span>
             </label>
 
-            {/* Input field — directly below "other", only when selected */}
             {otherSelected && (
               <div className="pl-[16px] pb-[10px] pt-[2px]">
                 <input
@@ -117,7 +112,6 @@ export const RadioQuestionnaire: React.FC<RadioQuestionnaireProps> = ({
         )}
       </div>
 
-      {/* Actions */}
       <div className="flex items-center justify-end gap-6 mt-auto pt-2 pb-3.5 border-t border-zinc-100">
         <button
           onClick={onSkip}
