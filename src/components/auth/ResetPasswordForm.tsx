@@ -41,7 +41,7 @@ export default function SetNewPasswordForm() {
     },
   });
 
-  const onSubmit = (data: ResetPasswordValues) => {
+  const onSubmit = (_data: ResetPasswordValues) => {
     router.push("/auth/reset-password/success");
   };
 

@@ -37,7 +37,7 @@ export const TextMessage: React.FC<TextMessageProps> = ({
           onClick={() => onCopy(text, id)}
           className="hover:text-zinc-600 transition-colors relative cursor-pointer bg-transparent border-none"
         >
-          <CopyIcon classname="w-[14px] h-[14px]" />
+          <CopyIcon className="w-[14px] h-[14px]" />
           {copiedId === id && (
             <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] bg-black text-white px-1.5 py-0.5 rounded font-sans">
               Copied!

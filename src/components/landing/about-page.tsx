@@ -1,18 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
+import React from "react";
 import {
-  Menu,
-  X,
-  Globe,
   Search,
+  Globe,
   BookMarked,
   ChevronDown,
   MoreHorizontal,
   LucideBook,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const AnvilaLogo = ({
   color = "#0C5D56",
@@ -36,7 +32,6 @@ const AnvilaLogo = ({
 );
 
 export const AboutPage = () => {
-  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans text-[#1A1A1A]">

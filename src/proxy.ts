@@ -18,7 +18,7 @@ const PUBLIC_PATHS = new Set([
 
   "/generator",
   '/generator/agent-screen',
-  
+])
 
 /** Prefixes that are always public (static assets, Next internals, our own API routes) */
 const PUBLIC_PREFIXES = ['/_next', '/favicon', '/api/auth', '/static', '/images']
