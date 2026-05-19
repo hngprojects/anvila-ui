@@ -20,7 +20,7 @@ import {
  
 
 const NAV_ITEMS = [
-  { icon: CirclePlus, label: "Create Agent", path: "/generator/agent-screen" },
+  { icon: CirclePlus, label: "Create Agent", path: "/generator/create-agent" },
   { icon: Search, label: "Search", path: "/generator/search" },
   { icon: Globe, label: "Explore", path: "/generator/explore" },
   { icon: Bot, label: "My Agents", path: "#" },
