@@ -5,3 +5,4 @@ import { CreateAgentChat } from "@/components/protected/create-agent/createAgent
 export default function CreateAgentPage() {
   return <CreateAgentChat />;
 }
+
