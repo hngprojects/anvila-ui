@@ -17,15 +17,13 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 
-/* -------------------------------------------------------------------------- */
-/* DATA                                    */
-/* -------------------------------------------------------------------------- */
+ 
 
 const NAV_ITEMS = [
-  { icon: CirclePlus, label: "Create Agent", path: "/generator" },
+  { icon: CirclePlus, label: "Create Agent", path: "/generator/agent-screen" },
   { icon: Search, label: "Search", path: "/generator/search" },
   { icon: Globe, label: "Explore", path: "/generator/explore" },
-  { icon: Bot, label: "My Agents", path: "/generator/agent-screen" },
+  { icon: Bot, label: "My Agents", path: "#" },
   { icon: Github, label: "GitHub", path: "/generator/github" },
 ];
 
@@ -36,9 +34,7 @@ const RECENT_ITEMS = [
   "Landing page copy for...",
 ];
 
-/* -------------------------------------------------------------------------- */
-/* USER AVATAR                                */
-/* -------------------------------------------------------------------------- */
+
 
 function UserAvatar({
   name,
