@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { inter } from "@/components/lib/fonts";
 import { AuthProvider } from "@/context/auth";
 import { getServerTokens } from "@/lib/auth/cookies";
+import { BACKEND_URL } from "@/lib/consts";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 const appName = "Anvila";
@@ -52,10 +53,8 @@ async function getInitialUser() {
   const { accessToken } = await getServerTokens()
   if (!accessToken) return null
  
-  const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
- 
   try {
-    const res = await fetch(`${BASE}/api/v1/auth/me`, {
+    const res = await fetch(`${BACKEND_URL}/api/v1/auth/me`, {
       headers: { Authorization: `Bearer ${accessToken}` },
       cache: 'no-store',
     })

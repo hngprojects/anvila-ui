@@ -1,4 +1,4 @@
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
+import { BACKEND_URL } from "@/lib/consts";
 
 type ApiResult<T> =
   | { ok: true; data: T }
@@ -9,7 +9,7 @@ async function apiFetch<T>(
   init: RequestInit = {}
 ): Promise<ApiResult<T>> {
   try {
-    const res = await fetch(`${BASE}${path}`, {
+    const res = await fetch(`${BACKEND_URL}${path}`, {
       ...init,
       headers: {
         'Content-Type': 'application/json',

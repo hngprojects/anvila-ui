@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+import { BACKEND_URL } from "@/lib/consts";
+import { emailRegex } from "@/schemas/auth";
 
 const Schema = z.object({
   full_name: z.string().min(1),
@@ -24,7 +22,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const res = await fetch(`${BASE}/api/v1/leads/waitlist`, {
+    const res = await fetch(`${BACKEND_URL}/api/v1/leads/waitlist`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(parsed.data),
