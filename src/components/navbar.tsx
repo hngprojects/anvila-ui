@@ -41,7 +41,7 @@ const NavLink = ({
   );
 };
 
-export default function Navbar() {
+export default function Navbar({ waitlist = true }: { waitlist?: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -74,24 +74,35 @@ export default function Navbar() {
         </ul>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <AuthDialog
-            trigger={
-              <Button
-                variant="ghost"
-                className="h-10 px-10 items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo transition-opacity hover:opacity-80"
-              >
-                Log in
-              </Button>
-            }
-          />
+          {waitlist ? (
+            <Link
+              href="/waitlist"
+              className="inline-flex h-10 items-center justify-center rounded-lg border border-primary bg-primary px-10 font-medium text-base text-white transition-opacity hover:opacity-90"
+            >
+              Join Waitlist
+            </Link>
+          ) : (
+            <>
+              <AuthDialog
+                trigger={
+                  <Button
+                    variant="ghost"
+                    className="h-10 px-10 items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo transition-opacity hover:opacity-80"
+                  >
+                    Log in
+                  </Button>
+                }
+              />
 
-          <AuthDialog
-            trigger={
-              <Button className="h-10 px-10 items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white transition-opacity hover:opacity-90">
-                Get Started
-              </Button>
-            }
-          />
+              <AuthDialog
+                trigger={
+                  <Button className="h-10 px-10 items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white transition-opacity hover:opacity-90">
+                    Get Started
+                  </Button>
+                }
+              />
+            </>
+          )}
         </div>
 
         <button
@@ -145,23 +156,34 @@ export default function Navbar() {
           </ul>
 
           <div className="mt-6 flex flex-col gap-3 border-t border-copy-muted/10 pt-6">
-            <AuthDialog
-              trigger={
-                <Button
-                  variant="ghost"
-                  className="h-10 w-full items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo"
-                >
-                  Log in
-                </Button>
-              }
-            />
-            <AuthDialog
-              trigger={
-                <Button className="h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white">
-                  Get Started
-                </Button>
-              }
-            />
+            {waitlist ? (
+              <Link
+                href="/waitlist"
+                className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white"
+              >
+                Join Waitlist
+              </Link>
+            ) : (
+              <>
+                <AuthDialog
+                  trigger={
+                    <Button
+                      variant="ghost"
+                      className="h-10 w-full items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo"
+                    >
+                      Log in
+                    </Button>
+                  }
+                />
+                <AuthDialog
+                  trigger={
+                    <Button className="h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white">
+                      Get Started
+                    </Button>
+                  }
+                />
+              </>
+            )}
           </div>
         </div>
       )}
