@@ -1,158 +1,139 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
 
-type Status = 'verifying' | 'success' | 'error'
+const RESEND_COOLDOWN = 60
 
-export default function EmailVerificationPage() {
+function maskEmail(email: string): string {
+  const [local, domain] = email.split('@')
+  if (!domain) return email
+  const visible = local.slice(0, 2)
+  const masked = '*'.repeat(Math.max(local.length - 2, 3))
+  return `${visible}${masked}@${domain}`
+}
+
+export default function VerifyEmailPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const attempted = useRef(false)
 
-  const [status, setStatus] = useState<Status>('verifying')
-  const [errorMessage, setErrorMessage] = useState<string>('Verification failed. The link may have expired.')
+  const email = searchParams.get('email') ?? ''
+  const masked = email ? maskEmail(decodeURIComponent(email)) : 'your email'
+
+  const [countdown, setCountdown] = useState(RESEND_COOLDOWN)
+  const [isResending, setIsResending] = useState(false)
+  const [resendMessage, setResendMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   useEffect(() => {
-    if (attempted.current) return
-    attempted.current = true
+    if (countdown <= 0) return
+    const t = setTimeout(() => setCountdown((c) => c - 1), 1000)
+    return () => clearTimeout(t)
+  }, [countdown])
 
-    const token = searchParams.get('token')
+  const handleResend = useCallback(async () => {
+    if (countdown > 0 || isResending || !email) return
 
-    if (!token) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setErrorMessage('No verification token found. Please check your link.')
-      setStatus('error')
-      return
-    }
+    setIsResending(true)
+    setResendMessage(null)
 
-    async function verify() {
-      try {
-        const res = await fetch(`/api/auth/verify-email`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token }),
-        })
+    try {
+      const res = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: decodeURIComponent(email) }),
+      })
 
-        const data = await res.json()
+      const data = await res.json()
 
-        if (!res.ok) {
-          setErrorMessage(data.detail ?? data.message ?? 'Verification failed. The link may have expired.')
-          setStatus('error')
-          return
-        }
-
-        setStatus('success')
-
-        // Redirect to login after a short delay so user sees the success state
-        setTimeout(() => {
-          router.replace('/login')
-        }, 2500)
-      } catch {
-        setErrorMessage('Network error. Please check your connection and try again.')
-        setStatus('error')
+      if (res.ok) {
+        setResendMessage({ type: 'success', text: data.message ?? 'Verification link resent!' })
+        setCountdown(RESEND_COOLDOWN)
+      } else {
+        setResendMessage({ type: 'error', text: data.message ?? 'Failed to resend. Try again.' })
       }
+    } catch {
+      setResendMessage({ type: 'error', text: 'Network error. Please try again.' })
+    } finally {
+      setIsResending(false)
     }
+  }, [countdown, isResending, email])
 
-    verify()
-  }, [searchParams, router])
+  const canResend = countdown === 0 && !isResending
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[color:var(--color-background)] px-4">
       <div
-        className="flex w-full max-w-[652px] flex-col items-center rounded-2xl bg-[color:var(--color-background)] px-10 py-16 text-center"
+        className="flex w-full max-w-[652px] flex-col items-center rounded-2xl bg-[color:var(--color-background)] px-10 py-12"
         style={{ boxShadow: '0 2px 24px 0 rgba(0,0,0,0.06)' }}
       >
-        {/* Verifying */}
-        {status === 'verifying' && (
-          <>
-            <Loader2
-              size={56}
-              className="mb-6 animate-spin text-[color:var(--color-primary)]"
-            />
-            <h1
-              className="mb-3 text-[color:var(--color-copy-heading)]"
-              style={{ fontWeight: 700, fontSize: '48px', lineHeight: 1.1 }}
-            >
-              Verifying
-            </h1>
-            <p
-              className="text-[color:var(--color-copy-muted)]"
-              style={{ fontSize: '16px', lineHeight: 1.6 }}
-            >
-              Please wait while we verify your email address…
-            </p>
-          </>
+        {/* Back button */}
+        <button
+          type="button"
+          onClick={() => router.push('/login')}
+          className="mb-8 flex cursor-pointer items-center gap-1.5 self-start border-0 bg-transparent p-0 text-sm font-medium text-[color:var(--color-copy-muted)] transition-colors hover:text-[color:var(--color-copy-heading)]"
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.75 11.5L4.25 7L8.75 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Back
+        </button>
+
+        {/* Heading */}
+        <h1
+          className="mb-4 text-center text-[34px] font-bold text-[#0C0E0D]"
+        >
+          Verification
+        </h1>
+
+        {/* Subtext */}
+        <p
+          className="mb-10 max-w-[460px] text-center text-[16px] font-medium text-copy-muted"
+        >
+          Click the link sent to your email{' '}
+          <span className="font-medium text-[color:var(--color-copy-heading)]">{masked}</span>
+          {' '}to verify your account
+        </p>
+
+        {/* Feedback */}
+        {resendMessage && (
+          <div
+            className={`mb-6 w-full rounded-lg border px-4 py-3 text-sm ${
+              resendMessage.type === 'success'
+                ? 'border-green-200 bg-green-50 text-green-700'
+                : 'border-red-200 bg-red-50 text-red-600'
+            }`}
+          >
+            {resendMessage.text}
+          </div>
         )}
 
-        {/* Success */}
-        {status === 'success' && (
-          <>
-            <CheckCircle
-              size={56}
-              className="mb-6 text-[color:var(--color-teal-accent)]"
-            />
-            <h1
-              className="mb-3 text-[color:var(--color-copy-heading)]"
-              style={{ fontWeight: 700, fontSize: '48px', lineHeight: 1.1 }}
-            >
-              Verified!
-            </h1>
-            <p
-              className="mb-8 text-[color:var(--color-copy-muted)]"
-              style={{ fontSize: '16px', lineHeight: 1.6 }}
-            >
-              Your email has been verified successfully. Redirecting you to login…
-            </p>
-            <button
-              type="button"
-              onClick={() => router.replace('/login')}
-              className="w-full cursor-pointer rounded-[8px] bg-[color:var(--color-primary)] py-3 text-sm font-medium text-white transition-all hover:opacity-90"
-            >
-              Go to login
-            </button>
-          </>
+        {/* Countdown */}
+        {countdown > 0 && (
+          <p className="mb-4 text-sm text-[color:var(--color-copy-muted)]">
+            Resend available in{' '}
+            <span className="tabular-nums font-semibold text-[color:var(--color-copy-heading)]">
+              {String(Math.floor(countdown / 60)).padStart(2, '0')}:
+              {String(countdown % 60).padStart(2, '0')}
+            </span>
+          </p>
         )}
 
-        {/* Error */}
-        {status === 'error' && (
-          <>
-            <XCircle
-              size={56}
-              className="mb-6 text-red-500"
-            />
-            <h1
-              className="mb-3 text-[color:var(--color-copy-heading)]"
-              style={{ fontWeight: 700, fontSize: '48px', lineHeight: 1.1 }}
-            >
-              Failed
-            </h1>
-            <p
-              className="mb-8 text-[color:var(--color-copy-muted)]"
-              style={{ fontSize: '16px', lineHeight: 1.6 }}
-            >
-              {errorMessage}
-            </p>
-            <div className="flex w-full flex-col gap-3">
-              <button
-                type="button"
-                onClick={() => router.replace('/verify-email')}
-                className="w-full cursor-pointer rounded-[8px] bg-[color:var(--color-primary)] py-3 text-sm font-medium text-white transition-all hover:opacity-90"
-              >
-                Resend verification email
-              </button>
-              <button
-                type="button"
-                onClick={() => router.replace('/login')}
-                className="w-full cursor-pointer rounded-[8px] border border-[color:var(--color-border-subtle)] bg-transparent py-3 text-sm font-medium text-[color:var(--color-copy-heading)] transition-all hover:bg-[color:var(--color-muted-bg)]"
-              >
-                Back to login
-              </button>
-            </div>
-          </>
-        )}
+        {/* Resend button */}
+        <button
+          type="button"
+          onClick={handleResend}
+          disabled={!canResend}
+          className={[
+            'w-full rounded-[8px] py-3 text-sm font-medium text-white transition-all',
+            canResend
+              ? 'cursor-pointer bg-[color:var(--color-primary)] hover:opacity-90'
+              : 'cursor-not-allowed bg-[color:var(--color-primary)] opacity-50',
+          ].join(' ')}
+        >
+          {isResending ? 'Sending…' : 'Resend link'}
+        </button>
       </div>
     </div>
   )
 }
+

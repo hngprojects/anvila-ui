@@ -8,6 +8,7 @@ import { getTokensFromRequest } from '@/lib/auth/cookies'
 const PUBLIC_PATHS = new Set([
   '/',
   '/login',
+  '/waitlist',
   '/register',
   '/verify-email',
   '/confirm-email',
@@ -15,7 +16,6 @@ const PUBLIC_PATHS = new Set([
   '/reset-password',
   '/auth/oauth/callback',
   "/generator",
-  '/agent-flow-14-17',
 ])
 
 /** Prefixes that are always public (static assets, Next internals, our own API routes) */
@@ -54,4 +54,3 @@ export const config = {
 }
 
 
- 
