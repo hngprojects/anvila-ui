@@ -21,6 +21,9 @@ import {
   ThumbsDownIcon,
   CopyIcon,
   FileIcon,
+  ThreeDottedIcon,
+  PencilIcon,
+  RestartIcon,
 } from "@/components/icons";
 
 interface ChatMessage {
@@ -452,14 +455,14 @@ export default function AgentScreen() {
                     className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                     title="Edit prompt"
                   >
-                    <Edit2 size={14} />
+                    <PencilIcon className="w-3.5 h-3.5" />
                   </button>
                   <button
                     className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                     title="Retry prompt"
                     onClick={handleSendPrompt}
                   >
-                    <RotateCw size={14} />
+                    <RestartIcon className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -508,7 +511,7 @@ export default function AgentScreen() {
                     )}
                   </button>
                   <button className="hover:text-zinc-600 transition-colors cursor-pointer">
-                    <MoreHorizontal size={14} />
+                    <ThreeDottedIcon className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -864,7 +867,7 @@ export default function AgentScreen() {
                       <CopyIcon classname="w-[14px] h-[14px]" />
                     </button>
                     <button className="hover:text-zinc-600 transition-colors cursor-pointer bg-transparent border-none">
-                      <MoreHorizontal size={14} />
+                      <ThreeDottedIcon className="w-[14px] h-[14px]" />
                     </button>
                   </div>
                 </div>
@@ -939,8 +942,13 @@ export default function AgentScreen() {
                     </div>
                   </div>
                   <button 
-                    className="text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all shrink-0 cursor-pointer flex items-center justify-center rounded-[16px]"
-                    style={{ width: "95px", height: "40px" }}
+                    className="text-xs font-semibold text-[#52525B] bg-white transition-all shrink-0 cursor-pointer flex items-center justify-center border-[0.5px] border-[#52525B] rounded-[8px]"
+                    style={{ 
+                      width: "95px", 
+                      height: "40px",
+                      padding: "12px 20px",
+                      gap: "8px"
+                    }}
                   >
                     Preview
                   </button>
@@ -958,7 +966,7 @@ export default function AgentScreen() {
                     <CopyIcon classname="w-[14px] h-[14px]" />
                   </button>
                   <button className="hover:text-gray-600 transition-colors cursor-pointer bg-transparent border-none">
-                    <MoreHorizontal size={14} />
+                    <ThreeDottedIcon className="w-[14px] h-[14px]" />
                   </button>
                 </div>
               </div>
