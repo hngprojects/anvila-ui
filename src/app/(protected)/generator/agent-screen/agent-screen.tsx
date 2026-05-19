@@ -24,7 +24,16 @@ interface ChatMessage {
   id: string;
   sender: "user" | "assistant";
   text?: string;
-  type: "text" | "thinking" | "questionnaire" | "transition" | "forging-identity" | "forging-skills" | "forging-personalities" | "forging-done" | "forging-interrupted";
+  type:
+    | "text"
+    | "thinking"
+    | "questionnaire"
+    | "verification-card"
+    | "forging-identity"
+    | "forging-skills"
+    | "forging-personalities"
+    | "forging-done"
+    | "forging-interrupted";
 }
 
 interface RadioQuestion {
@@ -33,14 +42,15 @@ interface RadioQuestion {
   hasOther?: boolean;
 }
 
+interface TextQuestion {
+  title: string;
+  placeholder: string;
+}
+
 const RADIO_QUESTIONS: Record<number, RadioQuestion> = {
   1: {
     title: "What's the goal of this agent?",
-    options: [
-      "Drive conversions sales",
-      "Boost engagement",
-      "Educate audience",
-    ],
+    options: ["Drive conversions sales", "Boost engagement", "Educate audience"],
     hasOther: true,
   },
   2: {
@@ -55,24 +65,52 @@ const RADIO_QUESTIONS: Record<number, RadioQuestion> = {
   },
 };
 
+const TEXT_QUESTIONS: Record<number, TextQuestion> = {
+  1: {
+    title: "What is the name of your skincarebrand",
+    placeholder: "e.g @nior",
+  },
+  2: {
+    title: "Who is your target audience",
+    placeholder: "e.g Nior",
+  },
+  3: {
+    title: "How often do you want to post?",
+    placeholder: "e.g Nior",
+  },
+};
+
 export default function AgentScreen() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Questionnaire States
-  const [currentStep, setCurrentStep] = useState<number>(1);
-  const [selectedOptions, setSelectedOptions] = useState<Record<number, string>>({
+  // Radio Questionnaire States
+  const [radioStep, setRadioStep] = useState<number>(1);
+  const [selectedRadioOptions, setSelectedRadioOptions] = useState<
+    Record<number, string>
+  >({
     1: "",
     2: "",
     3: "",
   });
-  const [otherText, setOtherText] = useState<Record<number, string>>({
+  const [radioOtherText, setRadioOtherText] = useState<Record<number, string>>({
     1: "",
     2: "",
     3: "",
   });
+
+  // Short Answer Verification Card States
+  const [textStep, setTextStep] = useState<number>(1);
+  const [textAnswers, setTextAnswers] = useState<Record<number, string>>({
+    1: "",
+    2: "",
+    3: "",
+  });
+
+  // Identity expanded accordion state
+  const [identityExpanded, setIdentityExpanded] = useState(true);
 
   // Forging timer references to allow cancellation
   const forgingTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -103,7 +141,7 @@ export default function AgentScreen() {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, currentStep]);
+  }, [messages, radioStep, textStep]);
 
   // Clean up timers on unmount
   useEffect(() => {
@@ -118,8 +156,8 @@ export default function AgentScreen() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleOptionChange = (step: number, option: string) => {
-    setSelectedOptions((prev) => ({ ...prev, [step]: option }));
+  const handleRadioOptionChange = (step: number, option: string) => {
+    setSelectedRadioOptions((prev) => ({ ...prev, [step]: option }));
   };
 
   // Main input submission
@@ -127,10 +165,14 @@ export default function AgentScreen() {
     const prompt = inputValue.trim() || "Build a content creator for skincare brand";
     setInputValue("");
 
-    // Reset questionnaire selections
-    setSelectedOptions({ 1: "", 2: "", 3: "" });
-    setOtherText({ 1: "", 2: "", 3: "" });
-    setCurrentStep(1);
+    // Reset all questionnaire and forging states
+    setSelectedRadioOptions({ 1: "", 2: "", 3: "" });
+    setRadioOtherText({ 1: "", 2: "", 3: "" });
+    setRadioStep(1);
+
+    setTextAnswers({ 1: "", 2: "", 3: "" });
+    setTextStep(1);
+    setIdentityExpanded(true);
 
     const newUserMsg: ChatMessage = {
       id: `u-${Date.now()}`,
@@ -147,10 +189,9 @@ export default function AgentScreen() {
 
     setMessages([newUserMsg, newThinkingMsg]);
 
-    // Transition from Thinking to Questionnaire after 1.5s
+    // Transition from Thinking to Radio Questionnaire after 1.5s
     forgingTimerRef.current = setTimeout(() => {
       setMessages((prev) => {
-        // Replace thinking with welcoming intro message
         const filtered = prev.filter((m) => m.type !== "thinking");
         return [
           ...filtered,
@@ -161,7 +202,7 @@ export default function AgentScreen() {
             type: "text",
           },
           {
-            id: `a-quest-${Date.now()}`,
+            id: `a-radio-quest-${Date.now()}`,
             sender: "assistant",
             type: "questionnaire",
           },
@@ -170,31 +211,32 @@ export default function AgentScreen() {
     }, 1500);
   };
 
-  // Questionnaire navigation
-  const handleNextQuestion = () => {
-    if (currentStep < 3) {
-      setCurrentStep((prev) => prev + 1);
+  // Radio Choice Questionnaire Card Next Navigation
+  const handleNextRadio = () => {
+    if (radioStep < 3) {
+      setRadioStep((prev) => prev + 1);
     } else {
-      // Finished all questionnaire steps! Transition to Forging
-      triggerForgingTransition();
+      // Finished all multiple choice questions! Transition to Short-Answer Brand verification
+      triggerShortAnswerVerification();
     }
   };
 
-  const handleSkipAll = () => {
-    triggerForgingTransition();
+  const handleSkipAllRadio = () => {
+    triggerShortAnswerVerification();
   };
 
-  const triggerForgingTransition = () => {
-    // 1. Remove active questionnaire card
+  const triggerShortAnswerVerification = () => {
+    // 1. Remove active radio questionnaire card
     setMessages((prev) => prev.filter((m) => m.type !== "questionnaire"));
 
     // 2. Summary of choices
-    const chosenGoal = selectedOptions[1] === "other" ? (otherText[1] || "Pinterest post") : (selectedOptions[1] || "Drive conversions sales");
-    const chosenFormat = selectedOptions[2] === "other" ? (otherText[2] || "Snapchat") : (selectedOptions[2] || "Snapchat post");
-    
-    // Construct user reply summary
+    const chosenFormat =
+      selectedRadioOptions[2] === "other"
+        ? radioOtherText[2] || "Snapchat post"
+        : selectedRadioOptions[2] || "snapchat";
+
     const summaryMsg: ChatMessage = {
-      id: `u-summary-${Date.now()}`,
+      id: `u-radio-summary-${Date.now()}`,
       sender: "user",
       text: `Agent type: content creator for a skincare brand and automates ${chosenFormat.toLowerCase()}`,
       type: "text",
@@ -202,19 +244,54 @@ export default function AgentScreen() {
 
     // 3. Assistant transition reply
     const transitionMsg: ChatMessage = {
-      id: `a-trans-${Date.now()}`,
+      id: `a-radio-trans-${Date.now()}`,
       sender: "assistant",
       text: "Got it - Agent Anatassia Rhodes content creator for a skincare brand. Let's verify some info about your brand before proceeding...",
       type: "text",
     };
 
-    setMessages((prev) => [...prev, summaryMsg, transitionMsg]);
+    // 4. Append short-answer verification card
+    const verificationCardMsg: ChatMessage = {
+      id: `a-verify-card-${Date.now()}`,
+      sender: "assistant",
+      type: "verification-card",
+    };
 
-    // 4. Trigger Forging sequence
-    startForgingSequence();
+    setMessages((prev) => [...prev, summaryMsg, transitionMsg, verificationCardMsg]);
   };
 
-  const startForgingSequence = () => {
+  // Short Answer verification navigation
+  const handleNextShortAnswer = () => {
+    if (textStep < 3) {
+      setTextStep((prev) => prev + 1);
+    } else {
+      // Completed brand verification questions! Start actual Forging animations
+      triggerForgingSequence();
+    }
+  };
+
+  const handleSkipAllShortAnswer = () => {
+    triggerForgingSequence();
+  };
+
+  const triggerForgingSequence = () => {
+    // 1. Remove active short answer verification card
+    setMessages((prev) => prev.filter((m) => m.type !== "verification-card"));
+
+    // 2. Add verification final summary message
+    const brandName = textAnswers[1] || "Nior";
+    const brandAudience = textAnswers[2] || "middle aged women";
+
+    const forgeIntroMsg: ChatMessage = {
+      id: `a-forge-intro-${Date.now()}`,
+      sender: "assistant",
+      text: `Got it- ${brandName} is a skincare brand for ${brandAudience.toLowerCase()}. Forging agent...`,
+      type: "text",
+    };
+
+    setMessages((prev) => [...prev, forgeIntroMsg]);
+
+    // 3. Trigger incremental forging animations
     // Stage 1: Forging Identity
     forgingTimerRef.current = setTimeout(() => {
       setMessages((prev) => [
@@ -248,10 +325,10 @@ export default function AgentScreen() {
             },
           ]);
 
-          // Stage 4: Forging Complete / Done
+          // Stage 4: Forging Complete / Success Card
           forgingTimerRef.current = setTimeout(() => {
             setMessages((prev) => {
-              // Filter out intermediate status spinners
+              // Filter out active loading spinners
               const filtered = prev.filter(
                 (m) =>
                   m.type !== "forging-skills" &&
@@ -272,13 +349,13 @@ export default function AgentScreen() {
     }, 1500);
   };
 
-  // Stop/Interrupt generation
+  // Interrupt / Stop response
   const handleInterrupt = () => {
     if (forgingTimerRef.current) {
       clearTimeout(forgingTimerRef.current);
     }
     setMessages((prev) => {
-      // Remove temporary spinners and append interrupted status
+      // Remove loading status blocks and append interrupted alert
       const filtered = prev.filter(
         (m) =>
           m.type !== "forging-skills" &&
@@ -295,15 +372,22 @@ export default function AgentScreen() {
     });
   };
 
-  // Helper flags
+  // Flag states to control bottom input send button
   const isThinking = messages.some((m) => m.type === "thinking");
-  const isQuestionnaireActive = messages.some((m) => m.type === "questionnaire");
-  const isForgingActive = messages.some(
-    (m) =>
-      m.type === "forging-identity" ||
-      m.type === "forging-skills" ||
-      m.type === "forging-personalities"
-  ) && !messages.some((m) => m.type === "forging-done" || m.type === "forging-interrupted");
+  const isRadioActive = messages.some((m) => m.type === "questionnaire");
+  const isVerifyActive = messages.some((m) => m.type === "verification-card");
+  const isQuestionnaireActive = isRadioActive || isVerifyActive;
+
+  const isForgingActive =
+    messages.some(
+      (m) =>
+        m.type === "forging-identity" ||
+        m.type === "forging-skills" ||
+        m.type === "forging-personalities"
+    ) &&
+    !messages.some(
+      (m) => m.type === "forging-done" || m.type === "forging-interrupted"
+    );
 
   return (
     <main className="h-full flex-1 bg-[#FBFBFB] md:rounded-[24px] md:border md:border-[#E7E8EA] md:shadow-sm flex flex-col min-h-0 overflow-hidden relative">
@@ -414,6 +498,7 @@ export default function AgentScreen() {
             );
           }
 
+          // Radio Questionnaire Card Phase
           if (msg.type === "questionnaire") {
             return (
               <div
@@ -424,13 +509,13 @@ export default function AgentScreen() {
                   {/* Header */}
                   <div className="flex items-center justify-between border-b border-zinc-200 pb-3 text-sm font-semibold text-black">
                     <span>Questions</span>
-                    <span className="font-mono text-zinc-500">{currentStep}/3</span>
+                    <span className="font-mono text-zinc-500">{radioStep}/3</span>
                   </div>
 
                   {/* Title */}
                   <div className="py-4">
                     <div className="flex items-center justify-between text-sm font-semibold text-black mb-4">
-                      <span>{RADIO_QUESTIONS[currentStep].title}</span>
+                      <span>{RADIO_QUESTIONS[radioStep].title}</span>
                       <span className="text-[11px] font-normal text-zinc-500">
                         Select one answer
                       </span>
@@ -438,9 +523,9 @@ export default function AgentScreen() {
 
                     {/* Options List */}
                     <div className="space-y-3">
-                      {RADIO_QUESTIONS[currentStep].options.map((option) => {
-                        const isSelected = selectedOptions[currentStep] === option;
-                        const hasSelection = selectedOptions[currentStep] !== "";
+                      {RADIO_QUESTIONS[radioStep].options.map((option) => {
+                        const isSelected = selectedRadioOptions[radioStep] === option;
+                        const hasSelection = selectedRadioOptions[radioStep] !== "";
                         return (
                           <label
                             key={option}
@@ -452,9 +537,9 @@ export default function AgentScreen() {
                           >
                             <input
                               type="radio"
-                              name={`step-${currentStep}`}
+                              name={`radio-${radioStep}`}
                               checked={isSelected}
-                              onChange={() => handleOptionChange(currentStep, option)}
+                              onChange={() => handleRadioOptionChange(radioStep, option)}
                               className="sr-only"
                             />
                             <span
@@ -474,26 +559,26 @@ export default function AgentScreen() {
                       })}
 
                       {/* "Other" Option */}
-                      {RADIO_QUESTIONS[currentStep].hasOther && (
+                      {RADIO_QUESTIONS[radioStep].hasOther && (
                         <div className="space-y-3">
                           <label
                             className={`flex items-center gap-3.5 cursor-pointer text-sm transition-colors ${
-                              selectedOptions[currentStep] !== "" &&
-                              selectedOptions[currentStep] !== "other"
+                              selectedRadioOptions[radioStep] !== "" &&
+                              selectedRadioOptions[radioStep] !== "other"
                                 ? "text-zinc-400"
                                 : "text-zinc-950 font-medium"
                             }`}
                           >
                             <input
                               type="radio"
-                              name={`step-${currentStep}`}
-                              checked={selectedOptions[currentStep] === "other"}
-                              onChange={() => handleOptionChange(currentStep, "other")}
+                              name={`radio-${radioStep}`}
+                              checked={selectedRadioOptions[radioStep] === "other"}
+                              onChange={() => handleRadioOptionChange(radioStep, "other")}
                               className="sr-only"
                             />
                             <span
                               className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-zinc-900 transition-all ${
-                                selectedOptions[currentStep] === "other"
+                                selectedRadioOptions[radioStep] === "other"
                                   ? "bg-white ring-[4px] ring-zinc-950"
                                   : "bg-white"
                               }`}
@@ -501,16 +586,16 @@ export default function AgentScreen() {
                             <span>other</span>
                           </label>
 
-                          {selectedOptions[currentStep] === "other" && (
+                          {selectedRadioOptions[radioStep] === "other" && (
                             <div className="pl-8 transition-all duration-200 animate-fade-in">
                               <input
                                 type="text"
-                                placeholder="Type alternative answer..."
-                                value={otherText[currentStep]}
+                                placeholder="pinterest post"
+                                value={radioOtherText[radioStep]}
                                 onChange={(e) =>
-                                  setOtherText((prev) => ({
+                                  setRadioOtherText((prev) => ({
                                     ...prev,
-                                    [currentStep]: e.target.value,
+                                    [radioStep]: e.target.value,
                                   }))
                                 }
                                 className="w-[220px] rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-zinc-300"
@@ -525,16 +610,16 @@ export default function AgentScreen() {
                   {/* Actions */}
                   <div className="flex items-center justify-end gap-6 pt-2">
                     <button
-                      onClick={handleSkipAll}
-                      className="text-xs font-semibold text-black hover:underline cursor-pointer"
+                      onClick={handleSkipAllRadio}
+                      className="text-xs font-semibold text-black hover:underline cursor-pointer bg-transparent border-none"
                     >
                       Skip all
                     </button>
                     <button
-                      onClick={handleNextQuestion}
-                      disabled={!selectedOptions[currentStep]}
-                      className={`rounded-lg px-5 py-2 text-xs font-bold text-white transition-all shadow-sm cursor-pointer ${
-                        selectedOptions[currentStep]
+                      onClick={handleNextRadio}
+                      disabled={!selectedRadioOptions[radioStep]}
+                      className={`rounded-lg px-5 py-2 text-xs font-bold text-white transition-all shadow-sm cursor-pointer border-none ${
+                        selectedRadioOptions[radioStep]
                           ? "bg-[#0c5d56] hover:bg-[#0a4d47] active:scale-[0.98]"
                           : "bg-[#0c5d56]/40 text-white cursor-not-allowed opacity-60"
                       }`}
@@ -547,72 +632,153 @@ export default function AgentScreen() {
             );
           }
 
-          // Forging States
-          if (msg.type === "forging-identity") {
-            const chosenGoal = selectedOptions[1] === "other" ? (otherText[1] || "Custom goal") : (selectedOptions[1] || "Drive conversions sales");
-            const chosenFormat = selectedOptions[2] === "other" ? (otherText[2] || "Custom post") : (selectedOptions[2] || "Snapchat post");
-            const chosenAudience = selectedOptions[3] === "other" ? (otherText[3] || "Custom target") : (selectedOptions[3] || "Professionals / B2B");
-
+          // Short-Answer Verification Card Phase
+          if (msg.type === "verification-card") {
             return (
               <div
                 key={msg.id}
                 className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in"
               >
-                <div className="flex items-center gap-2.5 text-sm text-[#0c5d56] font-medium">
-                  <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
-                    <Users size={13} className="animate-pulse" />
-                  </div>
-                  <span className="italic">
-                    Generating Identity <span className="text-gray-400">files...</span>
-                  </span>
-                  <ChevronDown size={15} className="text-gray-400" />
-                </div>
-
-                {/* Forged Identity Card */}
-                <div className="w-full bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[300px]">
-                  <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
-                    <FileText size={18} className="text-gray-500 shrink-0" />
-                    <h3 className="font-semibold text-gray-700 text-sm truncate">
-                      Skincare brand AI content creator agent
-                    </h3>
+                <div className="w-[450px] max-w-full rounded-2xl border border-zinc-200 bg-[#F4F4F5] p-5 shadow-sm">
+                  {/* Header */}
+                  <div className="flex items-center justify-between border-b border-zinc-200 pb-3 text-sm font-semibold text-black">
+                    <span>Questions</span>
+                    <span className="font-mono text-zinc-500">{textStep}/3</span>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto p-5 font-mono text-[13px] text-gray-600 leading-relaxed bg-[#FAFAFA]/55">
-                    <div className="space-y-4">
-                      <div>
-                        <span className="text-gray-400"># Identity</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-400"># Core Purpose</span>
-                        <p className="mt-1 text-gray-700 font-sans">
-                          You are a content creator designed for a skincare brand.
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-gray-400"># Primary Responsibilities</span>
-                        <ol className="mt-1 list-decimal pl-5 space-y-1 font-sans text-gray-700">
-                          <li>Generate multiple content assets focusing on {chosenFormat.toLowerCase()}</li>
-                          <li>Drive product sales and {chosenGoal.toLowerCase()} campaigns</li>
-                          <li>Tailor campaigns for {chosenAudience.toLowerCase()}</li>
-                        </ol>
-                      </div>
-                      <div>
-                        <span className="text-gray-400">## Communication Style</span>
-                        <p className="mt-1 text-gray-700 font-sans">
-                          Professional, insightful, and results-oriented.
-                        </p>
-                      </div>
+                  {/* Question */}
+                  <div className="py-4">
+                    <div className="flex items-center justify-between text-sm font-semibold text-black mb-4">
+                      <span>{TEXT_QUESTIONS[textStep].title}</span>
+                      <span className="text-[11px] font-normal text-zinc-500">
+                        Writ short answer
+                      </span>
                     </div>
+
+                    {/* Text input */}
+                    <div className="transition-all duration-200">
+                      <input
+                        type="text"
+                        placeholder={TEXT_QUESTIONS[textStep].placeholder}
+                        value={textAnswers[textStep]}
+                        onChange={(e) =>
+                          setTextAnswers((prev) => ({
+                            ...prev,
+                            [textStep]: e.target.value,
+                          }))
+                        }
+                        className="w-full rounded-lg border border-zinc-200 bg-white px-3.5 py-3.5 text-sm text-gray-800 placeholder-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-300"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && textAnswers[textStep].trim()) {
+                            handleNextShortAnswer();
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-end gap-6 pt-2">
+                    <button
+                      onClick={handleSkipAllShortAnswer}
+                      className="text-xs font-semibold text-black hover:underline cursor-pointer bg-transparent border-none"
+                    >
+                      Skip all
+                    </button>
+                    <button
+                      onClick={handleNextShortAnswer}
+                      disabled={!textAnswers[textStep].trim()}
+                      className={`rounded-lg px-5 py-2 text-xs font-bold text-white transition-all shadow-sm cursor-pointer border-none ${
+                        textAnswers[textStep].trim()
+                          ? "bg-[#0c5d56] hover:bg-[#0a4d47] active:scale-[0.98]"
+                          : "bg-[#0c5d56]/40 text-white cursor-not-allowed opacity-60"
+                      }`}
+                    >
+                      Next
+                    </button>
                   </div>
                 </div>
               </div>
             );
           }
 
+          // Forging Identity Stage
+          if (msg.type === "forging-identity") {
+            const brandName = textAnswers[1] || "Nior";
+            const brandAudience = textAnswers[2] || "middle aged women";
+            const chosenGoal =
+              selectedRadioOptions[1] === "other"
+                ? radioOtherText[1] || "pinterest post"
+                : selectedRadioOptions[1] || "Drive conversions sales";
+            const chosenFormat =
+              selectedRadioOptions[2] === "other"
+                ? radioOtherText[2] || "Snapchat post"
+                : selectedRadioOptions[2] || "Snapchat post";
+
+            return (
+              <div
+                key={msg.id}
+                className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in"
+              >
+                {/* Expandable Accordion Header */}
+                <button
+                  onClick={() => setIdentityExpanded((prev) => !prev)}
+                  className="flex items-center gap-2.5 text-sm text-[#0c5d56] font-medium bg-transparent border-none cursor-pointer"
+                >
+                  <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+                    <Users size={13} />
+                  </div>
+                  <span className="italic">
+                    Generating Identity <span className="text-gray-400">files...</span>
+                  </span>
+                  {identityExpanded ? <ChevronDown size={15} className="text-gray-400" /> : <ChevronRight size={15} className="text-gray-400" />}
+                </button>
+
+                {/* Forged Identity Card Content */}
+                {identityExpanded && (
+                  <div className="w-[450px] max-w-full bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[350px]">
+                    <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+                      <FileText size={18} className="text-gray-500 shrink-0" />
+                      <h3 className="font-semibold text-gray-700 text-sm truncate">
+                        Skincare brand AI content creator agent
+                      </h3>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-5 font-mono text-[13px] text-gray-600 leading-relaxed bg-[#FAFAFA]/55">
+                      <div className="space-y-4 text-left">
+                        <div>
+                          <span className="text-gray-400"># Identity</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400"># Core Purpose</span>
+                          <p className="mt-1 text-gray-700 font-sans">
+                            You are a content creator designed for a skincare brand {brandName}.
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">#Primary Responsibilities</span>
+                          <ol className="mt-1 list-decimal pl-5 space-y-1 font-sans text-gray-700">
+                            <li>Generate multiple content materials</li>
+                            <li>Automate product campaigns for new collections</li>
+                            <li>Stay current with industry best practices and emerging trends</li>
+                          </ol>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">## Communication Style</span>
+                          <p className="mt-1 text-gray-700 font-sans">
+                            Professional, insightful, and results-oriented.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
           if (msg.type === "forging-interrupted") {
-            const chosenFormat = selectedOptions[2] || "Snapchat post";
-            const chosenGoal = selectedOptions[1] || "Drive conversions sales";
-            const chosenAudience = selectedOptions[3] || "Professionals / B2B";
+            const brandName = textAnswers[1] || "Nior";
 
             return (
               <div
@@ -630,14 +796,14 @@ export default function AgentScreen() {
                 </div>
 
                 {/* Interrupted Card */}
-                <div className="w-full bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[300px]">
+                <div className="w-[450px] max-w-full bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[300px]">
                   <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
                     <FileText size={18} className="text-gray-500 shrink-0" />
                     <h3 className="font-semibold text-gray-700 text-sm truncate">
                       Skincare brand AI content creator agent
                     </h3>
                   </div>
-                  <div className="flex-1 overflow-y-auto p-5 font-mono text-[13px] text-gray-600 leading-relaxed bg-[#FAFAFA]/55">
+                  <div className="flex-1 overflow-y-auto p-5 font-mono text-[13px] text-gray-600 leading-relaxed bg-[#FAFAFA]/55 text-left">
                     <div className="space-y-4">
                       <div>
                         <span className="text-gray-400"># Identity</span>
@@ -645,15 +811,15 @@ export default function AgentScreen() {
                       <div>
                         <span className="text-gray-400"># Core Purpose</span>
                         <p className="mt-1 text-gray-700 font-sans">
-                          You are a content creator designed for a skincare brand.
+                          You are a content creator designed for a skincare brand {brandName}.
                         </p>
                       </div>
                       <div>
-                        <span className="text-gray-400"># Primary Responsibilities</span>
+                        <span className="text-gray-400">#Primary Responsibilities</span>
                         <ol className="mt-1 list-decimal pl-5 space-y-1 font-sans text-gray-700">
-                          <li>Generate multiple content assets focusing on {chosenFormat.toLowerCase()}</li>
-                          <li>Drive product sales and {chosenGoal.toLowerCase()} campaigns</li>
-                          <li>Tailor campaigns for {chosenAudience.toLowerCase()}</li>
+                          <li>Generate multiple content materials</li>
+                          <li>Automate product campaigns for new collections</li>
+                          <li>Stay current with industry best practices and emerging trends</li>
                         </ol>
                       </div>
                     </div>
@@ -661,22 +827,22 @@ export default function AgentScreen() {
                 </div>
 
                 {/* Interrupted Alert */}
-                <div className="w-full space-y-2">
+                <div className="w-full space-y-2 text-left">
                   <div className="text-red-500 text-sm font-medium italic pl-1 flex items-center gap-1.5 animate-bounce">
                     <AlertCircle size={14} className="shrink-0" />
                     Agent Forge response was interrupted!
                   </div>
                   <div className="flex items-center gap-3.5 pl-1 text-zinc-400">
-                    <button className="hover:text-zinc-600 transition-colors cursor-pointer">
+                    <button className="hover:text-zinc-600 transition-colors cursor-pointer bg-transparent border-none">
                       <ThumbsUp size={14} />
                     </button>
-                    <button className="hover:text-zinc-600 transition-colors cursor-pointer">
+                    <button className="hover:text-zinc-600 transition-colors cursor-pointer bg-transparent border-none">
                       <ThumbsDown size={14} />
                     </button>
-                    <button className="hover:text-zinc-600 transition-colors cursor-pointer">
+                    <button className="hover:text-zinc-600 transition-colors cursor-pointer bg-transparent border-none">
                       <Copy size={14} />
                     </button>
-                    <button className="hover:text-zinc-600 transition-colors cursor-pointer">
+                    <button className="hover:text-zinc-600 transition-colors cursor-pointer bg-transparent border-none">
                       <MoreHorizontal size={14} />
                     </button>
                   </div>
@@ -739,7 +905,7 @@ export default function AgentScreen() {
                     <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#1a6b5a] shrink-0">
                       <Sparkles size={20} />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 text-left">
                       <h4 className="text-sm font-semibold text-gray-700 truncate">
                         Forged Anatassia
                       </h4>
@@ -755,16 +921,16 @@ export default function AgentScreen() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-3.5 text-gray-400">
-                  <button className="hover:text-gray-600 transition-colors cursor-pointer">
+                  <button className="hover:text-gray-600 transition-colors cursor-pointer bg-transparent border-none">
                     <ThumbsUp size={14} />
                   </button>
-                  <button className="hover:text-gray-600 transition-colors cursor-pointer">
+                  <button className="hover:text-gray-600 transition-colors cursor-pointer bg-transparent border-none">
                     <ThumbsDown size={14} />
                   </button>
-                  <button className="hover:text-gray-600 transition-colors cursor-pointer">
+                  <button className="hover:text-gray-600 transition-colors cursor-pointer bg-transparent border-none">
                     <Copy size={14} />
                   </button>
-                  <button className="hover:text-gray-600 transition-colors cursor-pointer">
+                  <button className="hover:text-gray-600 transition-colors cursor-pointer bg-transparent border-none">
                     <MoreHorizontal size={14} />
                   </button>
                 </div>
@@ -784,7 +950,7 @@ export default function AgentScreen() {
           <div className="flex items-center gap-2 border border-gray-200 rounded-full px-5 py-3.5 bg-white shadow-sm focus-within:border-emerald-600/40 focus-within:ring-2 focus-within:ring-emerald-500/5 transition-all">
             {/* Plus Icon */}
             <button
-              className="text-gray-400 hover:text-gray-600 shrink-0 cursor-pointer"
+              className="text-gray-400 hover:text-gray-600 shrink-0 cursor-pointer bg-transparent border-none"
               title="Attach file"
             >
               <Plus size={18} />
@@ -811,7 +977,7 @@ export default function AgentScreen() {
             {isThinking || isForgingActive ? (
               <button
                 onClick={handleInterrupt}
-                className="w-9 h-9 rounded-full bg-[#1a6b5a] text-white flex items-center justify-center shadow-md hover:bg-[#124e42] transition-all shrink-0 cursor-pointer"
+                className="w-9 h-9 rounded-full bg-[#1a6b5a] text-white flex items-center justify-center shadow-md hover:bg-[#124e42] transition-all shrink-0 cursor-pointer border-none"
                 title="Stop generation"
               >
                 <Square size={13} fill="white" className="text-white" />
@@ -820,7 +986,7 @@ export default function AgentScreen() {
               <button
                 onClick={handleSendPrompt}
                 disabled={isQuestionnaireActive}
-                className={`w-9 h-9 rounded-full flex items-center justify-center shadow-sm transition-all shrink-0 cursor-pointer ${
+                className={`w-9 h-9 rounded-full flex items-center justify-center shadow-sm transition-all shrink-0 cursor-pointer border-none ${
                   isQuestionnaireActive
                     ? "bg-zinc-200 text-zinc-400 cursor-not-allowed"
                     : "bg-[#1a6b5a] text-white hover:bg-[#124e42] active:scale-95"
