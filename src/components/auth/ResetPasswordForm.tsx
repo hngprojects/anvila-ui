@@ -1,11 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import { Lock, Eye, EyeOff, ChevronLeft } from "lucide-react";
+import { Lock, Eye, EyeOff, ChevronLeft, Loader2 } from "lucide-react";
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { authApi } from "@/lib/auth/api";
 
 const resetPasswordSchema = z
   .object({
@@ -26,8 +27,13 @@ type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 export default function SetNewPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+  ;
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const {
     register,
@@ -41,8 +47,26 @@ export default function SetNewPasswordForm() {
     },
   });
 
-  const onSubmit = (data: ResetPasswordValues) => {
-    router.push("/reset-password/success");
+  const onSubmit = async (data: ResetPasswordValues) => {
+    if (!token) {
+      setApiError("Reset token missing. Please check your email and click the link again.");
+      return;
+    }
+
+    setIsLoading(true);
+    setApiError(null);
+
+    const result = await authApi.resetPassword({
+      token: token,
+      new_password: data.password.trim(),
+    });
+
+    if (result.ok) {
+      router.push("/reset-password/success");
+    } else {
+      setApiError(result.message);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -60,7 +84,13 @@ export default function SetNewPasswordForm() {
       </div>
 
       <form className="space-y-3 md:space-y-5" onSubmit={handleSubmit(onSubmit)}>
-        
+        {/* Token Alert Guard Display */}
+        {!token && (
+          <div className="p-3 text-xs font-medium text-amber-700 bg-amber-50 rounded-xl border border-amber-200">
+            Warning: Secure verification token not detected from link.
+          </div>
+        )}
+
         {/* Password Field */}
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-[#344054]">Password</label>
@@ -70,6 +100,7 @@ export default function SetNewPasswordForm() {
             </div>
             <input
               type={showPassword ? "text" : "password"}
+              disabled={isLoading || !token} 
               {...register("password")}
               placeholder="Enter password"
               className={`w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm outline-none transition-all ${
@@ -100,6 +131,7 @@ export default function SetNewPasswordForm() {
             </div>
             <input
               type={showConfirmPassword ? "text" : "password"}
+              disabled={isLoading || !token}
               {...register("confirmPassword")}
               placeholder="Re-enter password"
               className={`w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm outline-none transition-all ${
@@ -119,13 +151,25 @@ export default function SetNewPasswordForm() {
           {errors.confirmPassword && (
             <p className="text-[11px] text-red-500 font-medium ml-1">{errors.confirmPassword.message}</p>
           )}
+
+          {apiError && (
+            <p className="text-[11px] text-red-500 font-medium ml-1 mt-1">{apiError}</p>
+          )}
         </div>
 
         <button
           type="submit"
-          className="block text-center w-full py-3.5 bg-[#004D4D] hover:bg-[#003636] text-white rounded-xl font-semibold text-sm transition-all shadow-sm mt-2"
+          disabled={isLoading || !token}
+          className="flex items-center justify-center gap-2 w-full py-3.5 bg-[#004D4D] hover:bg-[#003636] text-white rounded-xl font-semibold text-sm transition-all shadow-sm mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Continue
+          {isLoading ? (
+            <>
+              <Loader2 className="animate-spin h-4 w-4" />
+              Resetting Password...
+            </>
+          ) : (
+            "Continue"
+          )}
         </button>
       </form>
     </div>
