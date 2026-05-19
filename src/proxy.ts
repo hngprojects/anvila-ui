@@ -17,7 +17,7 @@ const PUBLIC_PATHS = new Set([
   '/auth/oauth/callback',
   "/generator",
   '/generator/agent-screen',
-  '/generator/agent-generation-14-17',
+  
 ])
 
 /** Prefixes that are always public (static assets, Next internals, our own API routes) */

@@ -17,26 +17,46 @@ import {
   Users,
   AlertCircle,
   Loader2,
+  MessageSquare,
 } from "lucide-react";
 
-// Flow states: Questionnaire Wizard (1-3) -> Forging sequence (4-8)
+// Flow states: 
+// 1. Short Answer Questionnaire (Text Inputs 1-3)
+// 2. Transition State
+// 3. Radio Choice Questionnaire (Radio Buttons 1-3)
+// 4. Forging sequence (Identity -> Interrupted -> Skills -> Personalities -> Success)
 type FlowState =
-  | "questionnaire-1" // Goal
-  | "questionnaire-2" // Asset Format
-  | "questionnaire-3" // Target Audience
-  | "forging-identity" // Forging State 1
-  | "forging-interrupted" // Forging State 2
-  | "forging-skills" // Forging State 3
-  | "forging-personalities" // Forging State 4
-  | "forging-done"; // Forging State 5 (Success)
+  | "text-questionnaire-1" // "What is the name of your skincarebrand"
+  | "text-questionnaire-2" // "Who is your target audience"
+  | "text-questionnaire-3" // "What is your brand tone"
+  | "transition-message"    // "Got it - Agent Anatassia Rhodes... Lets verify some info..."
+  | "radio-questionnaire-1" // "What's the goal of this agent?"
+  | "radio-questionnaire-2" // "What are you creating?"
+  | "radio-questionnaire-3" // "Who is this for?"
+  | "forging-identity"      // Generating Identity
+  | "forging-interrupted"   // Interrupted
+  | "forging-skills"        // Matching Skills
+  | "forging-personalities" // Generating Personalities
+  | "forging-done";         // Done (Success)
 
-interface QuestionStep {
+interface TextQuestion {
+  question: string;
+  placeholder: string;
+}
+
+const TEXT_QUESTIONS: TextQuestion[] = [
+  { question: "What is the name of your skincarebrand", placeholder: "e.g. @nior" },
+  { question: "Who is your target audience", placeholder: "e.g. Nior" },
+  { question: "What is your brand tone", placeholder: "e.g. playful and bold" },
+];
+
+interface RadioQuestion {
   title: string;
   options: string[];
   hasOther?: boolean;
 }
 
-const STEPS_DATA: Record<number, QuestionStep> = {
+const RADIO_QUESTIONS: Record<number, RadioQuestion> = {
   1: {
     title: "What's the goal of this agent?",
     options: [
@@ -59,12 +79,15 @@ const STEPS_DATA: Record<number, QuestionStep> = {
 };
 
 export default function AgentScreen() {
-  const [flowState, setFlowState] = useState<FlowState>("questionnaire-1");
+  const [flowState, setFlowState] = useState<FlowState>("text-questionnaire-1");
   const [inputValue, setInputValue] = useState("");
   const [copied, setCopied] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Questionnaire selection states
+  // Short Answer Questionnaire States
+  const [textAnswers, setTextAnswers] = useState<string[]>(["", "", ""]);
+
+  // Radio Questionnaire Selection States
   const [selectedOptions, setSelectedOptions] = useState<Record<number, string>>({
     1: "",
     2: "",
@@ -110,21 +133,45 @@ export default function AgentScreen() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Text Questionnaire handlers
+  const handleTextAnswerChange = (index: number, value: string) => {
+    setTextAnswers((prev) => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
+
+  const handleNextTextQuestion = () => {
+    if (flowState === "text-questionnaire-1") {
+      setFlowState("text-questionnaire-2");
+    } else if (flowState === "text-questionnaire-2") {
+      setFlowState("text-questionnaire-3");
+    } else if (flowState === "text-questionnaire-3") {
+      setFlowState("transition-message");
+    }
+  };
+
+  const handleSkipAllText = () => {
+    setFlowState("transition-message");
+  };
+
+  // Radio Questionnaire handlers
   const handleOptionChange = (step: number, option: string) => {
     setSelectedOptions((prev) => ({ ...prev, [step]: option }));
   };
 
-  const handleNextQuestion = () => {
-    if (flowState === "questionnaire-1") {
-      setFlowState("questionnaire-2");
-    } else if (flowState === "questionnaire-2") {
-      setFlowState("questionnaire-3");
-    } else if (flowState === "questionnaire-3") {
+  const handleNextRadioQuestion = () => {
+    if (flowState === "radio-questionnaire-1") {
+      setFlowState("radio-questionnaire-2");
+    } else if (flowState === "radio-questionnaire-2") {
+      setFlowState("radio-questionnaire-3");
+    } else if (flowState === "radio-questionnaire-3") {
       setFlowState("forging-identity");
     }
   };
 
-  const handleSkipAll = () => {
+  const handleSkipAllRadio = () => {
     setFlowState("forging-identity");
   };
 
@@ -132,12 +179,20 @@ export default function AgentScreen() {
     if (inputValue.trim() !== "") {
       setInputValue("");
     }
-    // Advance flows dynamically
-    if (flowState === "questionnaire-1") {
-      setFlowState("questionnaire-2");
-    } else if (flowState === "questionnaire-2") {
-      setFlowState("questionnaire-3");
-    } else if (flowState === "questionnaire-3") {
+    // Advance flows dynamically based on state
+    if (flowState === "text-questionnaire-1") {
+      setFlowState("text-questionnaire-2");
+    } else if (flowState === "text-questionnaire-2") {
+      setFlowState("text-questionnaire-3");
+    } else if (flowState === "text-questionnaire-3") {
+      setFlowState("transition-message");
+    } else if (flowState === "transition-message") {
+      setFlowState("radio-questionnaire-1");
+    } else if (flowState === "radio-questionnaire-1") {
+      setFlowState("radio-questionnaire-2");
+    } else if (flowState === "radio-questionnaire-2") {
+      setFlowState("radio-questionnaire-3");
+    } else if (flowState === "radio-questionnaire-3") {
       setFlowState("forging-identity");
     } else if (flowState === "forging-interrupted") {
       setFlowState("forging-skills");
@@ -146,21 +201,29 @@ export default function AgentScreen() {
     } else if (flowState === "forging-personalities") {
       setFlowState("forging-done");
     } else if (flowState === "forging-done") {
-      // Cycle back
-      setFlowState("questionnaire-1");
+      // Restart the entire unified flow
+      setFlowState("text-questionnaire-1");
+      setTextAnswers(["", "", ""]);
       setSelectedOptions({ 1: "", 2: "", 3: "" });
       setOtherText({ 1: "", 2: "", 3: "" });
     }
   };
 
-  // Map states to Questionnaire IDs for rendering
-  const getStepId = (): number => {
-    if (flowState === "questionnaire-1") return 1;
-    if (flowState === "questionnaire-2") return 2;
+  // Helper getters
+  const getTextStepIndex = (): number => {
+    if (flowState === "text-questionnaire-1") return 0;
+    if (flowState === "text-questionnaire-2") return 1;
+    return 2;
+  };
+
+  const getRadioStepId = (): number => {
+    if (flowState === "radio-questionnaire-1") return 1;
+    if (flowState === "radio-questionnaire-2") return 2;
     return 3;
   };
 
-  const currentQuestionStep = getStepId();
+  const currentTextIndex = getTextStepIndex();
+  const currentRadioStepId = getRadioStepId();
 
   return (
     <main className="flex-1 bg-[#FBFBFB] md:rounded-[24px] md:border md:border-[#E7E8EA] md:shadow-sm flex flex-col min-h-0 overflow-hidden relative">
@@ -171,7 +234,7 @@ export default function AgentScreen() {
           {liveTimestamp}
         </div>
 
-        {/* 1. Initial User Request */}
+        {/* 1. Initial User Prompt */}
         <div className="flex flex-col items-end space-y-1.5 max-w-3xl ml-auto animate-fade-in">
           <div className="bg-[#F3F4F6] text-gray-800 text-[15px] px-5 py-3 rounded-[20px] max-w-[85%] shadow-sm leading-relaxed">
             Build a content creator for skincare brand
@@ -209,22 +272,124 @@ export default function AgentScreen() {
           </div>
         </div>
 
-        {/* ---------------- QUESTIONNAIRE STEPS ---------------- */}
-        {flowState.startsWith("questionnaire") && (
+        {/* ---------------- FLOW PHASE 1: SHORT ANSWER QUESTIONNAIRE (TEXT INPUT) ---------------- */}
+        {flowState.startsWith("text-questionnaire") && (
+          <div className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in">
+            <div className="w-[450px] max-w-full rounded-2xl border-[2.5px] border-[#B1B5B4] bg-[#F4F4F5] p-5 shadow-sm">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-[#E4E4E4] pb-3 text-sm font-semibold text-black">
+                <span>Questions</span>
+                <span className="font-mono">
+                  {currentTextIndex + 1}/3
+                </span>
+              </div>
+
+              {/* Body */}
+              <div className="py-4 space-y-4">
+                <div className="flex items-center justify-between gap-3 text-sm font-semibold text-black">
+                  <label htmlFor={`text-q-${currentTextIndex}`}>
+                    {TEXT_QUESTIONS[currentTextIndex].question}
+                  </label>
+                  <span className="shrink-0 text-xs font-medium text-zinc-500">
+                    Write short answer
+                  </span>
+                </div>
+
+                <input
+                  id={`text-q-${currentTextIndex}`}
+                  type="text"
+                  value={textAnswers[currentTextIndex]}
+                  onChange={(e) => handleTextAnswerChange(currentTextIndex, e.target.value)}
+                  placeholder={TEXT_QUESTIONS[currentTextIndex].placeholder}
+                  className="w-full rounded-lg border border-[#E4E4E4] bg-[#EEEFEE]/70 px-4 py-3 text-sm text-black placeholder-zinc-400 outline-none focus:ring-1 focus:ring-[#B1B5B4]"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && textAnswers[currentTextIndex].trim() !== "") {
+                      handleNextTextQuestion();
+                    }
+                  }}
+                  autoFocus
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-6 pt-2">
+                <button
+                  onClick={handleSkipAllText}
+                  className="text-xs font-semibold text-black hover:underline cursor-pointer"
+                >
+                  Skip all
+                </button>
+                <button
+                  onClick={handleNextTextQuestion}
+                  disabled={textAnswers[currentTextIndex].trim() === ""}
+                  className={`rounded-lg border-[0.5px] border-[#9E9F9E] px-5 py-2 text-xs font-bold text-white transition-all shadow-sm cursor-pointer ${
+                    textAnswers[currentTextIndex].trim() !== ""
+                      ? "bg-[#1a6b5a] hover:opacity-90 active:scale-[0.98]"
+                      : "bg-[#1a6b5a]/30 text-white cursor-not-allowed opacity-50"
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ---------------- FLOW PHASE 2: SHORT ANSWER REPLIES & TRANSITION STATE ---------------- */}
+        {!flowState.startsWith("text-questionnaire") && (
+          <>
+            {/* Display the answers user provided as a persistent user message in the chat */}
+            <div className="flex flex-col items-end space-y-1.5 max-w-3xl ml-auto animate-fade-in">
+              <div className="bg-[#F3F4F6] text-gray-800 text-[15px] px-5 py-3 rounded-[20px] max-w-[85%] shadow-sm leading-relaxed">
+                Agent details verified: Skincare brand name is <span className="font-semibold">{textAnswers[0] || "Nior"}</span>, targeting <span className="font-semibold">{textAnswers[1] || "middle-aged women"}</span>, using a <span className="font-semibold">{textAnswers[2] || "playful and bold"}</span> brand tone.
+              </div>
+            </div>
+
+            <div className="flex flex-col items-start space-y-2 max-w-3xl mr-auto animate-fade-in">
+              <div className="bg-[#F3F4F6]/50 text-[#0c5d56] italic text-[15px] px-5 py-3.5 rounded-[20px] max-w-[90%] border border-gray-100/50 leading-relaxed">
+                Got it - Agent Anatassia Rhodes content creator for a skincare brand. Let&apos;s verify some info about your brand before proceeding...
+              </div>
+            </div>
+
+            {/* Transition State Proceed Card */}
+            {flowState === "transition-message" && (
+              <div className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in">
+                <div className="w-[450px] max-w-full rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+                  <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-[#1a6b5a]">
+                    <MessageSquare size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-800 text-base">Details Collected Successfully!</h3>
+                    <p className="text-xs text-gray-500 mt-1">Let&apos;s run a quick 3-step criteria verification to configure your agent.</p>
+                  </div>
+                  <button
+                    onClick={() => setFlowState("radio-questionnaire-1")}
+                    className="w-full rounded-lg bg-[#1a6b5a] text-white px-5 py-2.5 text-xs font-bold shadow-sm hover:bg-[#124e42] transition-all cursor-pointer active:scale-[0.98]"
+                  >
+                    Start Verification &rarr;
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ---------------- FLOW PHASE 3: RADIO CHOICE QUESTIONNAIRE ---------------- */}
+        {flowState.startsWith("radio-questionnaire") && (
           <div className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in">
             <div className="w-[450px] max-w-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               {/* Header */}
               <div className="flex items-center justify-between border-b border-gray-100 pb-3 text-xs font-bold text-gray-900">
-                <span>Questions</span>
+                <span>Verification Criteria</span>
                 <span className="font-mono text-gray-400">
-                  {currentQuestionStep}/3
+                  {currentRadioStepId}/3
                 </span>
               </div>
 
               {/* Title */}
               <div className="py-4">
                 <div className="flex items-center justify-between text-xs font-bold text-gray-900 mb-4">
-                  <span>{STEPS_DATA[currentQuestionStep].title}</span>
+                  <span>{RADIO_QUESTIONS[currentRadioStepId].title}</span>
                   <span className="text-[11px] font-normal text-gray-400">
                     Select one answer
                   </span>
@@ -232,9 +397,9 @@ export default function AgentScreen() {
 
                 {/* Options List */}
                 <div className="space-y-3">
-                  {STEPS_DATA[currentQuestionStep].options.map((option) => {
-                    const isSelected = selectedOptions[currentQuestionStep] === option;
-                    const hasSelectionMade = selectedOptions[currentQuestionStep] !== "";
+                  {RADIO_QUESTIONS[currentRadioStepId].options.map((option) => {
+                    const isSelected = selectedOptions[currentRadioStepId] === option;
+                    const hasSelectionMade = selectedOptions[currentRadioStepId] !== "";
                     return (
                       <label
                         key={option}
@@ -244,9 +409,9 @@ export default function AgentScreen() {
                       >
                         <input
                           type="radio"
-                          name={`step-${currentQuestionStep}`}
+                          name={`step-${currentRadioStepId}`}
                           checked={isSelected}
-                          onChange={() => handleOptionChange(currentQuestionStep, option)}
+                          onChange={() => handleOptionChange(currentRadioStepId, option)}
                           className="sr-only"
                         />
                         <span
@@ -266,49 +431,49 @@ export default function AgentScreen() {
                   })}
 
                   {/* "Other" Option */}
-                  {STEPS_DATA[currentQuestionStep].hasOther && (
+                  {RADIO_QUESTIONS[currentRadioStepId].hasOther && (
                     <div className="space-y-3">
                       <label
                         className={`flex items-center gap-3.5 cursor-pointer text-sm transition-colors ${
-                          selectedOptions[currentQuestionStep] !== "" &&
-                          selectedOptions[currentQuestionStep] !== "other"
+                          selectedOptions[currentRadioStepId] !== "" &&
+                          selectedOptions[currentRadioStepId] !== "other"
                             ? "text-gray-300"
                             : "text-gray-900"
                         }`}
                       >
                         <input
                           type="radio"
-                          name={`step-${currentQuestionStep}`}
-                          checked={selectedOptions[currentQuestionStep] === "other"}
-                          onChange={() => handleOptionChange(currentQuestionStep, "other")}
+                          name={`step-${currentRadioStepId}`}
+                          checked={selectedOptions[currentRadioStepId] === "other"}
+                          onChange={() => handleOptionChange(currentRadioStepId, "other")}
                           className="sr-only"
                         />
                         <span
                           className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border transition-all ${
-                            selectedOptions[currentQuestionStep] === "other"
+                            selectedOptions[currentRadioStepId] === "other"
                               ? "border-[#1a6b5a] bg-white ring-4 ring-[#1a6b5a]"
-                              : selectedOptions[currentQuestionStep] !== ""
+                              : selectedOptions[currentRadioStepId] !== ""
                                 ? "border-gray-200"
                                 : "border-gray-400 hover:border-gray-600"
                           }`}
                         >
-                          {selectedOptions[currentQuestionStep] === "other" && (
+                          {selectedOptions[currentRadioStepId] === "other" && (
                             <span className="h-1.5 w-1.5 rounded-full bg-[#1a6b5a]" />
                           )}
                         </span>
                         <span className="font-medium">other</span>
                       </label>
 
-                      {selectedOptions[currentQuestionStep] === "other" && (
+                      {selectedOptions[currentRadioStepId] === "other" && (
                         <div className="pl-8 transition-all duration-200 animate-fade-in">
                           <input
                             type="text"
                             placeholder="Type alternative answer..."
-                            value={otherText[currentQuestionStep]}
+                            value={otherText[currentRadioStepId]}
                             onChange={(e) =>
                               setOtherText((prev) => ({
                                 ...prev,
-                                [currentQuestionStep]: e.target.value,
+                                [currentRadioStepId]: e.target.value,
                               }))
                             }
                             className="w-[220px] rounded-lg border-none bg-gray-100 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-200"
@@ -323,18 +488,18 @@ export default function AgentScreen() {
               {/* Actions */}
               <div className="mt-2 flex items-center justify-end gap-6 border-t border-gray-50 pt-4">
                 <button
-                  onClick={handleSkipAll}
-                  className="text-xs font-semibold text-gray-500 hover:underline hover:text-gray-800 transition-all"
+                  onClick={handleSkipAllRadio}
+                  className="text-xs font-semibold text-gray-500 hover:underline hover:text-gray-800 transition-all cursor-pointer"
                 >
                   Skip all
                 </button>
                 <button
-                  onClick={handleNextQuestion}
-                  disabled={!selectedOptions[currentQuestionStep]}
-                  className={`rounded-lg px-5 py-2 text-xs font-bold text-white transition-all shadow-sm ${
-                    selectedOptions[currentQuestionStep]
+                  onClick={handleNextRadioQuestion}
+                  disabled={!selectedOptions[currentRadioStepId]}
+                  className={`rounded-lg px-5 py-2 text-xs font-bold text-white transition-all shadow-sm cursor-pointer ${
+                    selectedOptions[currentRadioStepId]
                       ? "bg-[#1a6b5a] hover:bg-[#124e42] active:scale-[0.98]"
-                      : "bg-[#1a6b5a]/30 text-white cursor-not-allowed"
+                      : "bg-[#1a6b5a]/30 text-white cursor-not-allowed opacity-50"
                   }`}
                 >
                   Next
@@ -344,39 +509,24 @@ export default function AgentScreen() {
           </div>
         )}
 
-        {/* ---------------- FORGING STATES ---------------- */}
-
-        {/* Render persistent Questionnaire replies if we are in forging state */}
-        {!flowState.startsWith("questionnaire") && (
-          <>
-            {/* User replies about brand details */}
-            <div className="flex flex-col items-end space-y-1.5 max-w-3xl ml-auto animate-fade-in">
-              <div className="bg-[#F3F4F6] text-gray-800 text-[15px] px-5 py-3 rounded-[20px] max-w-[85%] shadow-sm leading-relaxed">
-                Agent type: content creator for a skincare brand and automates snapchat
-              </div>
+        {/* ---------------- FLOW PHASE 4: FORGING STATE SEQUENCE ---------------- */}
+        
+        {/* Render persistent replies when in forging phase */}
+        {(flowState.startsWith("forging") || flowState === "forging-done") && (
+          <div className="flex flex-col items-start space-y-2 max-w-3xl mr-auto animate-fade-in">
+            <div className="bg-[#F3F4F6]/50 text-[#0c5d56] italic text-[15px] px-5 py-3.5 rounded-[20px] max-w-[90%] border border-gray-100/50 leading-relaxed">
+              Got it - <span className="font-semibold">{textAnswers[0] || "Nior"}</span> is a skincare brand for <span className="font-semibold">{textAnswers[1] || "middle-aged women"}</span>. Goal is <span className="font-semibold">{selectedOptions[1]}</span>. Forging agent...
             </div>
-
-            <div className="flex flex-col items-start space-y-2 max-w-3xl mr-auto animate-fade-in">
-              <div className="bg-[#F3F4F6]/50 text-[#0c5d56] italic text-[15px] px-5 py-3.5 rounded-[20px] max-w-[90%] border border-gray-100/50 leading-relaxed">
-                Got it - Agent Anatassia Rhodes content creator for a skincare brand. Let&apos;s verify some info about your brand before proceeding...
-              </div>
+            <div className="flex items-center gap-3.5 pl-2 text-gray-400">
+              <button className="hover:text-gray-600 transition-colors"><ThumbsUp size={14} /></button>
+              <button className="hover:text-gray-600 transition-colors"><ThumbsDown size={14} /></button>
+              <button className="hover:text-gray-600 transition-colors"><Copy size={14} /></button>
+              <button className="hover:text-gray-600 transition-colors"><MoreHorizontal size={14} /></button>
             </div>
-
-            <div className="flex flex-col items-start space-y-2 max-w-3xl mr-auto animate-fade-in">
-              <div className="bg-[#F3F4F6]/50 text-[#0c5d56] italic text-[15px] px-5 py-3.5 rounded-[20px] max-w-[90%] border border-gray-100/50 leading-relaxed">
-                Got it- Nior is a skincare brand for middle aged women. Forging agent...
-              </div>
-              <div className="flex items-center gap-3.5 pl-2 text-gray-400">
-                <button className="hover:text-gray-600 transition-colors"><ThumbsUp size={14} /></button>
-                <button className="hover:text-gray-600 transition-colors"><ThumbsDown size={14} /></button>
-                <button className="hover:text-gray-600 transition-colors"><Copy size={14} /></button>
-                <button className="hover:text-gray-600 transition-colors"><MoreHorizontal size={14} /></button>
-              </div>
-            </div>
-          </>
+          </div>
         )}
 
-        {/* FORGING STATE 1: Generating Identity File */}
+        {/* STATE: Generating Identity File */}
         {flowState === "forging-identity" && (
           <div className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in">
             <div className="flex items-center gap-2.5 text-sm text-[#0c5d56] font-medium">
@@ -405,14 +555,14 @@ export default function AgentScreen() {
                   </div>
                   <div>
                     <span className="text-gray-400"># Core Purpose</span>
-                    <p className="mt-1 text-gray-700 font-sans">You are a content creator designed for a skincare brand Nior.</p>
+                    <p className="mt-1 text-gray-700 font-sans">You are a content creator designed for a skincare brand {textAnswers[0] || "Nior"}.</p>
                   </div>
                   <div>
-                    <span className="text-gray-400">#Primary Responsibilities</span>
+                    <span className="text-gray-400"># Primary Responsibilities</span>
                     <ol className="mt-1 list-decimal pl-5 space-y-1 font-sans text-gray-700">
-                      <li>Generate multiple content materials</li>
-                      <li>Automate product campaigns for new collections</li>
-                      <li>Stay current with industry best practices and emerging trends</li>
+                      <li>Generate multiple content materials designed for {textAnswers[1] || "middle aged women"}</li>
+                      <li>Automate product campaigns with a {textAnswers[2] || "playful and bold"} tone</li>
+                      <li>Stay current with skincare industry best practices and emerging trends</li>
                     </ol>
                   </div>
                   <div>
@@ -425,7 +575,7 @@ export default function AgentScreen() {
           </div>
         )}
 
-        {/* FORGING STATE 2: Interrupted */}
+        {/* STATE: Interrupted */}
         {flowState === "forging-interrupted" && (
           <div className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in">
             <div className="flex items-center gap-2.5 text-sm text-[#0c5d56] font-medium">
@@ -453,14 +603,14 @@ export default function AgentScreen() {
                   </div>
                   <div>
                     <span className="text-gray-400"># Core Purpose</span>
-                    <p className="mt-1 text-gray-700 font-sans">You are a content creator designed for a skincare brand Nior.</p>
+                    <p className="mt-1 text-gray-700 font-sans">You are a content creator designed for a skincare brand {textAnswers[0] || "Nior"}.</p>
                   </div>
                   <div>
-                    <span className="text-gray-400">#Primary Responsibilities</span>
+                    <span className="text-gray-400"># Primary Responsibilities</span>
                     <ol className="mt-1 list-decimal pl-5 space-y-1 font-sans text-gray-700">
-                      <li>Generate multiple content materials</li>
-                      <li>Automate product campaigns for new collections</li>
-                      <li>Stay current with industry best practices and emerging trends</li>
+                      <li>Generate multiple content materials designed for {textAnswers[1] || "middle aged women"}</li>
+                      <li>Automate product campaigns with a {textAnswers[2] || "playful and bold"} tone</li>
+                      <li>Stay current with skincare industry best practices and emerging trends</li>
                     </ol>
                   </div>
                   <div>
@@ -487,7 +637,7 @@ export default function AgentScreen() {
           </div>
         )}
 
-        {/* FORGING STATE 3: Matching Agent Skills */}
+        {/* STATE: Matching Agent Skills */}
         {flowState === "forging-skills" && (
           <div className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in">
             <div className="flex items-center gap-2.5 text-sm text-[#0c5d56] font-medium">
@@ -502,7 +652,7 @@ export default function AgentScreen() {
           </div>
         )}
 
-        {/* FORGING STATE 4: Generating Personalities File */}
+        {/* STATE: Generating Personalities File */}
         {flowState === "forging-personalities" && (
           <div className="flex flex-col items-start space-y-4 max-w-2xl mr-auto pl-2 animate-fade-in">
             <div className="flex items-center gap-2.5 text-sm text-[#0c5d56] font-medium">
@@ -517,7 +667,7 @@ export default function AgentScreen() {
           </div>
         )}
 
-        {/* FORGING STATE 5: Done Successfully */}
+        {/* STATE: Done Successfully */}
         {flowState === "forging-done" && (
           <div className="flex flex-col items-start space-y-3.5 max-w-2xl mr-auto pl-2 animate-fade-in">
             <div className="bg-[#F3F4F6]/50 text-[#0c5d56] italic text-[15px] px-5 py-3.5 rounded-[20px] max-w-[90%] border border-gray-100/50 leading-relaxed">
@@ -535,7 +685,7 @@ export default function AgentScreen() {
                     Forged Anatassia
                   </h4>
                   <p className="text-xs text-gray-400 truncate">
-                    content creator agent
+                    content creator agent ({textAnswers[0] || "Nior"})
                   </p>
                 </div>
               </div>
