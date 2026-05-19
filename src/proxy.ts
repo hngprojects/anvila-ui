@@ -13,16 +13,9 @@ const PUBLIC_PATHS = new Set([
   '/confirm-email',
   '/forgot-password',
   '/reset-password',
-  '/generator',
-  '/explore',
-  '/pricing',
-  '/faq',
-  '/terms',
-  '/privacy_policy',
-  '/about',
-  '/contact',
-  '/generator/agent-screen',
-  '/agent-screen'
+  '/auth/oauth/callback',
+  "/generator",
+  '/agent-flow-14-17',
 ])
 
 /** Prefixes that are always public (static assets, Next internals, our own API routes) */
@@ -61,7 +54,4 @@ export const config = {
 }
 
 
-// export const config = {
-//   // Wipe out any paths here temporarily so the middleware acts as an open pipe
-//   matcher: [],
-// };
+ 
