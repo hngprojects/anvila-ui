@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TextAlignJustify } from "lucide-react";
 import Sidebar from "@/components/protected/sideBar";
 import { Logo } from "@/components/icons";
-import {  AuthProvider } from "@/context/auth";
+import { AuthProvider } from "@/context/auth";
 
 export default function GeneratorClientLayout({
   children,
@@ -60,7 +60,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Page */}
-          <div className="flex-1 min-h-0 overflow-hidden"><AuthProvider>{children}</AuthProvider></div>
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <AuthProvider>{children}</AuthProvider>
+          </div>
         </div>
       </div>
     </>

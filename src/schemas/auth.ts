@@ -29,7 +29,7 @@ export const RegisterSchema = z
     path: ["confirmPassword"],
   });
 
-// ─── Response Schemas ─────────────────────────────────────────────────────────
+// ─── Response Schemas ────────────────────────────────────────────────────────�
 
 export const UserSchema = z.object({
   id: z.string().uuid(),
@@ -38,6 +38,7 @@ export const UserSchema = z.object({
   email_verified: z.boolean(),
   is_active: z.boolean(),
   created_at: z.string(),
+  plan: z.string().optional(),
 });
 
 export const TokensSchema = z.object({
