@@ -29,12 +29,10 @@ export default function MainPage() {
     fileInputRef.current?.click();
   }
 
-  // Button classes:
-  // mobile  (no md prefix): green bg when empty → transparent bg when has input
-  // desktop (md prefix):    gray bg when empty  → green bg when has input
-  const sendBtnClass = hasInput
-    ? "bg-transparent text-[#1a6b5a] md:bg-[#1a6b5a] md:text-white"
-    : "bg-[#1a6b5a] text-white md:bg-gray-200 md:text-gray-400 md:cursor-not-allowed";
+
+const sendBtnClass = hasInput
+  ? "bg-[#1a6b5a] text-white"
+  : "bg-gray-200 text-gray-400 cursor-not-allowed";
 
   return (
     <main className="flex-1 bg-[#FBFBFB] md:rounded-2xl md:border md:border-gray-200 md:shadow-sm flex flex-col min-h-0 overflow-hidden">
