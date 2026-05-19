@@ -86,6 +86,12 @@ const TEXT_QUESTIONS: Record<number, TextQuestion> = {
   },
 };
 
+let messageIdCounter = 0;
+const generateMsgId = (prefix: string): string => {
+  messageIdCounter += 1;
+  return `${prefix}-${messageIdCounter}-${Date.now()}`;
+};
+
 export default function AgentScreen() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -181,14 +187,14 @@ export default function AgentScreen() {
     setIdentityExpanded(true);
 
     const newUserMsg: ChatMessage = {
-      id: `u-${Date.now()}`,
+      id: generateMsgId("u"),
       sender: "user",
       text: prompt,
       type: "text",
     };
 
     const newThinkingMsg: ChatMessage = {
-      id: `a-think-${Date.now()}`,
+      id: generateMsgId("a-think"),
       sender: "assistant",
       type: "thinking",
     };
@@ -202,13 +208,13 @@ export default function AgentScreen() {
         return [
           ...filtered,
           {
-            id: `a-intro-${Date.now()}`,
+            id: generateMsgId("a-intro"),
             sender: "assistant",
             text: "I'd love to build this for you! Let me ask a couple of quick questions to make sure I create exactly what you envision ...",
             type: "text",
           },
           {
-            id: `a-radio-quest-${Date.now()}`,
+            id: generateMsgId("a-radio-quest"),
             sender: "assistant",
             type: "questionnaire",
           },
@@ -242,7 +248,7 @@ export default function AgentScreen() {
         : selectedRadioOptions[2] || "snapchat";
 
     const summaryMsg: ChatMessage = {
-      id: `u-radio-summary-${Date.now()}`,
+      id: generateMsgId("u-radio-summary"),
       sender: "user",
       text: `Agent type: content creator for a skincare brand and automates ${chosenFormat.toLowerCase()}`,
       type: "text",
@@ -256,14 +262,14 @@ export default function AgentScreen() {
     if (userChoseOther) {
       // Assistant transition reply before short-answer card
       const transitionMsg: ChatMessage = {
-        id: `a-radio-trans-${Date.now()}`,
+        id: generateMsgId("a-radio-trans"),
         sender: "assistant",
         text: "Got it - Agent Anatassia Rhodes content creator for a skincare brand. Let's verify some info about your brand before proceeding...",
         type: "text",
       };
 
       const verificationCardMsg: ChatMessage = {
-        id: `a-verify-card-${Date.now()}`,
+        id: generateMsgId("a-verify-card"),
         sender: "assistant",
         type: "verification-card",
       };
@@ -303,7 +309,7 @@ export default function AgentScreen() {
       "middle aged women";
 
     const forgeIntroMsg: ChatMessage = {
-      id: `a-forge-intro-${Date.now()}`,
+      id: generateMsgId("a-forge-intro"),
       sender: "assistant",
       text: `Got it- ${brandName} is a skincare brand for ${brandAudience.toLowerCase()}. Forging agent...`,
       type: "text",
@@ -317,7 +323,7 @@ export default function AgentScreen() {
       setMessages((prev) => [
         ...prev,
         {
-          id: `a-forge-identity-${Date.now()}`,
+          id: generateMsgId("a-forge-identity"),
           sender: "assistant",
           type: "forging-identity",
         },
@@ -328,7 +334,7 @@ export default function AgentScreen() {
         setMessages((prev) => [
           ...prev,
           {
-            id: `a-forge-skills-${Date.now()}`,
+            id: generateMsgId("a-forge-skills"),
             sender: "assistant",
             type: "forging-skills",
           },
@@ -339,7 +345,7 @@ export default function AgentScreen() {
           setMessages((prev) => [
             ...prev,
             {
-              id: `a-forge-personalities-${Date.now()}`,
+              id: generateMsgId("a-forge-personalities"),
               sender: "assistant",
               type: "forging-personalities",
             },
@@ -357,7 +363,7 @@ export default function AgentScreen() {
               return [
                 ...filtered,
                 {
-                  id: `a-forge-done-${Date.now()}`,
+                  id: generateMsgId("a-forge-done"),
                   sender: "assistant",
                   type: "forging-done",
                 },
@@ -384,7 +390,7 @@ export default function AgentScreen() {
       return [
         ...filtered,
         {
-          id: `a-interrupt-${Date.now()}`,
+          id: generateMsgId("a-interrupt"),
           sender: "assistant",
           type: "forging-interrupted",
         },
