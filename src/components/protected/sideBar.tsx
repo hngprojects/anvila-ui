@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo, Github } from "@/components/icons";
 import { useAuth } from "@/context/auth";
 
@@ -17,15 +18,15 @@ import {
 } from "lucide-react";
 
 /* -------------------------------------------------------------------------- */
-/*                                    DATA                                    */
+/* DATA                                    */
 /* -------------------------------------------------------------------------- */
 
 const NAV_ITEMS = [
-  { icon: CirclePlus, label: "Create Agent", active: true },
-  { icon: Search, label: "Search" },
-  { icon: Globe, label: "Explore" },
-  { icon: Bot, label: "My Agents" },
-  { icon: Github, label: "GitHub" },
+  { icon: CirclePlus, label: "Create Agent", path: "/generator" },
+  { icon: Search, label: "Search", path: "/generator/search" },
+  { icon: Globe, label: "Explore", path: "/generator/explore" },
+  { icon: Bot, label: "My Agents", path: "/generator/my-agents" },
+  { icon: Github, label: "GitHub", path: "/generator/github" },
 ];
 
 const RECENT_ITEMS = [
@@ -36,7 +37,7 @@ const RECENT_ITEMS = [
 ];
 
 /* -------------------------------------------------------------------------- */
-/*                                 USER AVATAR                                */
+/* USER AVATAR                                */
 /* -------------------------------------------------------------------------- */
 
 function UserAvatar({
@@ -72,31 +73,41 @@ function UserAvatar({
 }
 
 /* -------------------------------------------------------------------------- */
-/*                               NAVIGATION LIST                              */
+/* NAVIGATION LIST                              */
 /* -------------------------------------------------------------------------- */
 
-function NavigationItems() {
+function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
+  const pathname = usePathname();
+  const router = useRouter();
+
   return (
     <nav className="px-3 space-y-1">
-      {NAV_ITEMS.map(({ icon: Icon, label, active }) => (
-        <button
-          key={label}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
-            active
-              ? "bg-[#1a6b5a] text-white"
-              : "text-gray-600 hover:bg-gray-100"
-          }`}
-        >
-          <Icon size={15} />
-          {label}
-        </button>
-      ))}
+      {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
+        const isActive = pathname === path || (path === "/generator" && pathname === "/generator/agent-screen");
+        return (
+          <button
+            key={label}
+            onClick={() => {
+              router.push(path);
+              if (onNavigate) onNavigate();
+            }}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
+              isActive
+                ? "bg-[#1a6b5a] text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <Icon size={15} />
+            {label}
+          </button>
+        );
+      })}
     </nav>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                RECENT ITEMS                                */
+/* RECENT ITEMS                                */
 /* -------------------------------------------------------------------------- */
 
 function RecentSection() {
@@ -137,7 +148,7 @@ function RecentSection() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                              COLLAPSED SIDEBAR                             */
+/* COLLAPSED SIDEBAR                             */
 /* -------------------------------------------------------------------------- */
 
 function CollapsedSidebar({
@@ -146,6 +157,8 @@ function CollapsedSidebar({
   onExpand: () => void;
 }) {
   const { user } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
 
   const displayName =
     user?.display_name ?? user?.email ?? "User";
@@ -160,19 +173,23 @@ function CollapsedSidebar({
       </button>
 
       <div className="w-full flex flex-col items-center gap-1">
-        {NAV_ITEMS.map(({ icon: Icon, label, active }) => (
-          <button
-            key={label}
-            title={label}
-            className={`w-8 h-8 flex items-center justify-center rounded-lg ${
-              active
-                ? "bg-[#1a6b5a] text-white"
-                : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            <Icon size={15} />
-          </button>
-        ))}
+        {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
+          const isActive = pathname === path || (path === "/generator" && pathname === "/generator/agent-screen");
+          return (
+            <button
+              key={label}
+              title={label}
+              onClick={() => router.push(path)}
+              className={`w-8 h-8 flex items-center justify-center rounded-lg ${
+                isActive
+                  ? "bg-[#1a6b5a] text-white"
+                  : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              <Icon size={15} />
+            </button>
+          );
+        })}
       </div>
 
       <div className="flex-1" />
@@ -182,7 +199,7 @@ function CollapsedSidebar({
 }
 
 /* -------------------------------------------------------------------------- */
-/*                               EXPANDED SIDEBAR                             */
+/* EXPANDED SIDEBAR                             */
 /* -------------------------------------------------------------------------- */
 
 function ExpandedSidebar({
@@ -216,7 +233,7 @@ function ExpandedSidebar({
 }
 
 /* -------------------------------------------------------------------------- */
-/*                               MOBILE DRAWER                                */
+/* MOBILE DRAWER                              */
 /* -------------------------------------------------------------------------- */
 
 function MobileDrawer({
@@ -244,7 +261,7 @@ function MobileDrawer({
           </button>
         </div>
 
-        <NavigationItems />
+        <NavigationItems onNavigate={onClose} />
         <RecentSection />
         <UserAvatar name={displayName} showName />
       </div>
@@ -253,7 +270,7 @@ function MobileDrawer({
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                   SIDEBAR                                  */
+/* SIDEBAR                                  */
 /* -------------------------------------------------------------------------- */
 
 export default function Sidebar({
