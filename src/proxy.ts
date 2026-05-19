@@ -8,6 +8,7 @@ import { getTokensFromRequest } from '@/lib/auth/cookies'
 const PUBLIC_PATHS = new Set([
   '/',
   '/login',
+  '/waitlist',
   '/register',
   '/verify-email',
   '/confirm-email',
@@ -53,3 +54,9 @@ export function proxy(req: NextRequest) {
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*|api/).*)'],
 }
+
+
+// export const config = {
+//   // Wipe out any paths here temporarily so the middleware acts as an open pipe
+//   matcher: [],
+// };

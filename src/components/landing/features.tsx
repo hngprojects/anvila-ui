@@ -64,10 +64,10 @@ export function Features() {
           </span>
         </div>
 
-     <h2 className="m-0 w-full max-w-[760px] text-center text-3xl font-medium leading-[38px] text-logo md:text-5xl md:leading-[60px]">
-  One setup. Clean files. <br className="hidden md:inline" />
-  Reusable agents.
-</h2>
+        <h2 className="m-0 w-full max-w-[760px] text-center text-3xl font-medium leading-[38px] text-logo md:text-5xl md:leading-[60px]">
+          One setup. Clean files. <br className="hidden md:inline" />
+          Reusable agents.
+        </h2>
 
         {/* Subhead */}
         <p className="m-0 max-w-[565px] text-center text-base font-normal leading-6 text-copy-muted">
@@ -118,10 +118,11 @@ export function Features() {
           })}
         </div>
 
-  <Button className="flex h-auto items-center justify-center gap-2.5 rounded-lg border-none bg-teal-brand p-4 text-base font-medium leading-6 text-white transition-opacity hover:opacity-90">
+        <Button className="flex h-auto items-center justify-center gap-2.5 rounded-lg border-none bg-teal-brand p-6 text-base font-medium leading-6 text-white transition-opacity hover:opacity-90">
           Create your first package
         </Button>
       </div>
     </section>
   );
 }
+
