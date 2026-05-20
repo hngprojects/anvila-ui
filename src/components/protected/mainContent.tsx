@@ -85,6 +85,8 @@ export default function MainPage() {
   const [prompt, setPrompt] = useState("");
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const { user } = useAuth();
+  const [showMenu, setShowMenu] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
