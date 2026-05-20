@@ -39,14 +39,14 @@ function CheckMailContent() {
   const handleResendClick = () => {
   if (!isFinished) return;  
   handleResend();
-  router.push("/auth/reset-password"); 
+  router.push("/reset-password"); 
 };
 
   return (
-    <div className="w-full bg-white md:p-12 md:rounded-[32px] md:border md:border-[#F2F4F7] md:shadow-sm relative">
+    <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
       {/* Back Button */}
       <Link 
-        href="/auth/forgot-password"
+        href="forgot-password"
         className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors">
         <ChevronLeft size={16} /> Back
       </Link>
