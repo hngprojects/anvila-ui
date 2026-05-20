@@ -26,12 +26,19 @@ export default function PaymentStatusModal({
         onClick={status !== "processing" ? onClose : undefined} 
       />
 
-      {/* Modal Container */}
-      <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-8 text-center shadow-2xl transition-all sm:p-10">
+      {/* MODAL CONTAINER */}
+      <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="payment-status-modal-title"
+        className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-8 text-center shadow-2xl transition-all sm:p-10"
+      >
         
-        {/* Close Button */}
+        {/* CLOSE BUTTON */}
         {status !== "processing" && (
           <button 
+            type="button"
+            aria-label="Close payment status modal"
             onClick={onClose} 
             className="absolute right-5 top-5 text-[#667085] hover:text-[#344054] transition-colors"
           >
@@ -41,25 +48,24 @@ export default function PaymentStatusModal({
 
         <div className="flex flex-col items-center justify-center">
           
-          {/* 1. SPINNER */}
+          {/* ICON SECTION */}
           {status === "processing" && (
             <div className="mb-6 flex items-center justify-center h-16 w-full">
-                {/* main anchor container */}
-                <div className="relative h-12 w-12 flex items-center justify-center">
+              <div className="relative h-12 w-12 flex items-center justify-center">
                 {[...Array(8)].map((_, i) => (
-                    <div
+                  <div
                     key={i}
                     className="absolute h-2.5 w-2.5 rounded-full bg-[#004D4D] animate-pulse"
                     style={{
-                        transform: `rotate(${i * 45}deg) translateY(-18px)`,
-                        animationDelay: `${i * 0.12}s`,
-                        animationDuration: "0.9s"
+                      transform: `rotate(${i * 45}deg) translateY(-18px)`,
+                      animationDelay: `${i * 0.12}s`,
+                      animationDuration: "0.9s"
                     }}
-                    />
+                  />
                 ))}
-                </div>
+              </div>
             </div>
-            )}
+          )}
 
           {status === "success" && (
             <div className="mb-6 rounded-full bg-green-50 p-3">
@@ -73,8 +79,11 @@ export default function PaymentStatusModal({
             </div>
           )}
           
-          {/* HEADER */}
-          <h2 className="text-2xl font-extrabold text-[#101828] tracking-tight mb-2">
+          {/* ACCESSIBLE HEADER ID LINKED TO CONTAINER */}
+          <h2 
+            id="payment-status-modal-title" 
+            className="text-2xl font-extrabold text-[#101828] tracking-tight mb-2"
+          >
             {status === "processing" && "Payment processing"}
             {status === "success" && "Payment Successful"}
             {status === "failed" && "Payment Failed"}
@@ -87,12 +96,12 @@ export default function PaymentStatusModal({
             {status === "failed" && "Something went wrong with your transaction. Please check your details and try again."}
           </p>
 
-          {/* 2.PROGRESS BAR */}
+          {/* PROGRESS BAR */}
           {status === "processing" && (
             <div className="w-full max-w-[280px] h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
               <div 
                 className="h-full bg-[#004D4D] rounded-full transition-all duration-75 ease-out"
-                style={{ width: `${progress}%` }}
+                style={{ width: `${progress}%` }} 
               />
             </div>
           )}
@@ -100,6 +109,7 @@ export default function PaymentStatusModal({
           {/* ACTION BUTTON */}
           {status !== "processing" && (
             <button
+              type="button"
               onClick={onActionClick || onClose}
               className="w-full mt-2 rounded-xl bg-[#004D4D] py-3 text-sm font-semibold text-white shadow-md hover:bg-[#003333] transition-colors"
             >
