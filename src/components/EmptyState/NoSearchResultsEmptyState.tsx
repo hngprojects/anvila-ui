@@ -98,7 +98,7 @@ export default function NoSearchResultsEmptyState({
              type="button"
             onClick={handleClear}
               disabled={!canClear}
-            className="w-full flex items-center justify-center gap-2 bg-[`#0C5D56`] hover:bg-[`#0a4d47`] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium py-3 rounded-xl transition-all duration-150"
+             className="w-full flex items-center justify-center gap-2 bg-[`#0C5D56`] hover:bg-[`#0a4d47`] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium py-3 rounded-xl transition-all duration-150"
           >
             <RefreshCw className="w-4 h-4" />
             Clear search
