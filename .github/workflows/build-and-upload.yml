@@ -11,6 +11,7 @@ jobs:
     env:
       HUSKY: "0"
       SKIP_ENV_VALIDATION: "1"
+      NEXT_PUBLIC_API_URL: ${{ github.ref == 'refs/heads/main' && secrets.NEXT_PUBLIC_API_URL || github.ref == 'refs/heads/staging' && secrets.NEXT_PUBLIC_API_URL_STAGING }}
 
     steps:
       - uses: actions/checkout@v4
