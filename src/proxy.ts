@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTokensFromRequest } from '@/lib/auth/cookies'
 
-/**
- * Public paths — no auth required.
- * Everything else is protected by default.
- */
 const PUBLIC_PATHS = new Set([
   '/',
   '/login',

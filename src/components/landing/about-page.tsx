@@ -1,9 +1,7 @@
 "use client";
-
-import React from "react";
 import {
-  Search,
   Globe,
+  Search,
   BookMarked,
   ChevronDown,
   MoreHorizontal,
@@ -17,7 +15,7 @@ const AnvilaLogo = ({
   color?: string;
   size?: number;
 }) => (
-  <svg
+  <svg  
     width={size}
     height={Math.round((size * 33) / 44)}
     viewBox="0 0 44 33"

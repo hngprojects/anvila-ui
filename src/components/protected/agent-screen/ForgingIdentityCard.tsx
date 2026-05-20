@@ -28,7 +28,7 @@ export const ForgingIdentityCard: React.FC<ForgingIdentityCardProps> = ({
   if (isInterrupted) {
     return (
       <div className="flex flex-col items-start gap-4 max-w-2xl mr-auto pl-2">
-        <div className="w-[522px] max-w-full h-[320px] rounded-[15px] border-[2.5px] border-[#E4E4E7] bg-white shadow-[0px_25px_50px_-12px_rgba(142,81,255,0.1)] flex flex-col overflow-hidden gap-[8px]">
+        <div className="w-full max-w-[522px] h-[320px] rounded-[15px] border-[2.5px] border-[#E4E4E7] bg-white shadow-[0px_25px_50px_-12px_rgba(142,81,255,0.1)] flex flex-col overflow-hidden gap-[8px]">
           <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100 shrink-0">
             <FileText size={18} className="text-gray-500 shrink-0" />
             <h3 className="font-semibold text-gray-700 text-sm truncate">
@@ -106,7 +106,7 @@ export const ForgingIdentityCard: React.FC<ForgingIdentityCardProps> = ({
       </button>
 
       {identityExpanded && (
-        <div className="w-[522px] max-w-full h-[320px] rounded-[15px] border-[2.5px] border-[#E4E4E7] bg-white shadow-[0px_25px_50px_-12px_rgba(142,81,255,0.1)] flex flex-col overflow-hidden gap-[8px]">
+        <div className="w-full max-w-[522px] h-[320px] rounded-[15px] border-[2.5px] border-[#E4E4E7] bg-white shadow-[0px_25px_50px_-12px_rgba(142,81,255,0.1)] flex flex-col overflow-hidden gap-[8px]">
           <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100 shrink-0">
             <FileText size={18} className="text-gray-500 shrink-0" />
             <h3 className="font-semibold text-gray-700 text-sm truncate">

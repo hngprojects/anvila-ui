@@ -29,7 +29,7 @@ export const RegisterSchema = z
     path: ["confirmPassword"],
   });
 
-// ─── Response Schemas ─────────────────────────────────────────────────────────
+// ─── Response Schemas ────────────────────────────────────────────────────────
 
 export const UserSchema = z.object({
   id: z.string().uuid(),

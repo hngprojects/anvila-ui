@@ -22,7 +22,7 @@ export const ShortAnswerVerification: React.FC<ShortAnswerVerificationProps> = (
   onSkip,
 }) => {
   return (
-    <div className="max-w-full flex flex-col justify-between shadow-sm w-[579px] h-[208px] rounded-[15px] border-[2.5px] border-[#B1B5B4] bg-[var(--bg-muted,#F4F4F5)] pt-[16px] pb-[16px] px-[20px] opacity-100">
+    <div className="w-full md:w-[579px] max-w-full flex flex-col justify-between shadow-sm h-auto min-h-[208px] rounded-[15px] border-[2.5px] border-[#B1B5B4] bg-[var(--bg-muted,#F4F4F5)] py-[16px] px-4 md:px-[20px] opacity-100">
       <div className="flex items-center justify-between border-b border-zinc-200 pb-1.5 text-xs font-semibold text-black">
         <span>Questions</span>
         <span className="font-mono text-zinc-500">{textStep}/3</span>
@@ -36,7 +36,7 @@ export const ShortAnswerVerification: React.FC<ShortAnswerVerificationProps> = (
           </span>
         </div>
 
-        <div className="mt-2 transition-all duration-200 border flex items-center shadow-sm w-[537px] max-w-full h-[48px] rounded-[6px] border-[1px] border-[#E4E4E4] pt-[12px] pr-[16px] pb-[12px] pl-[16px] gap-[8px] bg-[#EEEFEEB2]">
+        <div className="mt-2 transition-all duration-200 border flex items-center shadow-sm w-full md:w-[537px] max-w-full h-auto min-h-[48px] rounded-[6px] border-[1px] border-[#E4E4E4] py-[12px] px-4 gap-[8px] bg-[#EEEFEEB2]">
           <input
             type="text"
             placeholder={placeholder}
@@ -47,7 +47,7 @@ export const ShortAnswerVerification: React.FC<ShortAnswerVerificationProps> = (
                 onNext();
               }
             }}
-            className="text-[20px] font-medium leading-[100%] text-left text-gray-800 placeholder-zinc-400 tracking-normal focus:outline-none bg-transparent w-full h-full font-sans"
+            className="text-base md:text-[20px] font-medium leading-[100%] text-left text-gray-800 placeholder-zinc-400 tracking-normal focus:outline-none bg-transparent w-full h-full font-sans min-w-0"
           />
         </div>
       </div>

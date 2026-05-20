@@ -2,6 +2,7 @@
 
 import React from "react";
 import { FileIcon, ThumbsUpIcon, ThumbsDownIcon, CopyIcon, ThreeDottedIcon } from "@/components/icons";
+import { useRouter } from "next/navigation";
 
 interface ForgingDoneCardProps {
   msgId: string;
@@ -15,6 +16,7 @@ export const ForgingDoneCard: React.FC<ForgingDoneCardProps> = ({
   onCopy,
 }) => {
   const successText = "Done! Successfully created content creator- Anatassia Rhodes....";
+  const router = useRouter();
 
   return (
     <div className="flex flex-col items-start space-y-3.5 max-w-2xl mr-auto pl-2 animate-fade-in">
@@ -22,7 +24,7 @@ export const ForgingDoneCard: React.FC<ForgingDoneCardProps> = ({
         {successText}
       </div>
 
-      <div className="bg-white flex items-center justify-between px-5 shadow-sm border-[2.5px] border-[#A1A1AA] rounded-[15px] w-[685px] max-w-full h-[75px]">
+      <div className="bg-white flex items-center justify-between px-4 md:px-5 py-3 md:py-0 shadow-sm border-[2.5px] border-[#A1A1AA] rounded-[15px] w-full max-w-[685px] h-auto min-h-[75px] gap-3 md:gap-0">
         <div className="flex items-center gap-3.5">
           <div className="shrink-0 flex items-center justify-center">
             <FileIcon className="w-12 h-12 text-black" />
@@ -36,7 +38,10 @@ export const ForgingDoneCard: React.FC<ForgingDoneCardProps> = ({
             </p>
           </div>
         </div>
-        <button className="text-xs font-semibold text-[#52525B] bg-white transition-all shrink-0 cursor-pointer flex items-center justify-center border-[0.5px] border-[#52525B] rounded-[8px] w-[95px] h-[40px] py-[12px] px-[20px] gap-[8px]">
+        <button 
+          onClick={() => router.push("/generator/create-agent")}
+          className="text-xs font-semibold text-[#52525B] bg-white transition-all shrink-0 cursor-pointer flex items-center justify-center border-[0.5px] border-[#52525B] rounded-[8px] w-[95px] h-[40px] py-[12px] px-[20px] gap-[8px]"
+        >
           Preview
         </button>
       </div>

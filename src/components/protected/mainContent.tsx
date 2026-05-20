@@ -84,9 +84,9 @@ export default function MainPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
+  const { user } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { user } = useAuth();
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -428,7 +428,7 @@ export default function MainPage() {
     return (
       <main className="h-full flex-1 bg-[#FBFBFB] md:rounded-[24px] md:border md:border-[#E7E8EA] md:shadow-sm flex flex-col min-h-0 overflow-hidden relative">
         {/* Scrollable Chat Area */}
-        <div className="flex-1 overflow-y-auto px-[80px] pt-16 pb-6 space-y-8 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto px-4 md:px-[80px] pt-16 pb-6 space-y-8 scrollbar-hide">
           {/* Dynamic Timestamp */}
           <div className="text-center text-xs text-gray-500 font-medium py-2">
             {liveTimestamp}
@@ -582,12 +582,12 @@ export default function MainPage() {
   // Welcome State View (messages.length === 0)
   return (
     <main className="flex-1 bg-[#FBFBFB] md:rounded-2xl md:border md:border-gray-200 md:shadow-sm flex flex-col min-h-0 overflow-hidden">
-      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10">
-        <h1 className="text-[32px] font-bold mb-8 tracking-tight text-black font-sans leading-none">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 pb-10">
+        <h1 className="text-2xl md:text-[32px] px-4 md:px-0 text-center font-bold mb-8 tracking-tight text-black font-sans leading-none">
           What should we build, {firstName}?
         </h1>
 
-        <div className="w-full max-w-[726px]">
+        <div className="w-full max-w-[726px] px-4 md:px-0">
           {/* File attachment preview */}
           {attachedFile && (
             <div className="flex items-center gap-2 mb-2 px-4 py-2 bg-white border border-gray-200 rounded-2xl shadow-sm text-sm text-gray-600">
@@ -603,7 +603,7 @@ export default function MainPage() {
           )}
 
           {/* Input row configured precisely according to the user spec */}
-          <div className="w-full max-w-[726px] h-[64px] rounded-[50px] border border-[var(--fg-subtle,#A1A1AA)] pt-[8px] pr-[24px] pb-[8px] pl-[24px] gap-[10px] relative flex items-center bg-white shadow-sm focus-within:border-zinc-400 focus-within:ring-2 focus-within:ring-zinc-200/20 transition-all">
+          <div className="w-full max-w-[726px] h-auto min-h-[64px] rounded-[50px] border border-[var(--fg-subtle,#A1A1AA)] py-2 px-4 md:px-[24px] gap-[10px] relative flex items-center bg-white shadow-sm focus-within:border-zinc-400 focus-within:ring-2 focus-within:ring-zinc-200/20 transition-all">
             {/* Hidden file input */}
             <input
               ref={fileInputRef}
@@ -646,7 +646,7 @@ export default function MainPage() {
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="Describe your agent..."
               onKeyDown={handleWelcomeKeyDown}
-              className="flex-1 text-[20px] font-medium leading-[100%] bg-transparent outline-none text-gray-800 placeholder-gray-400 tracking-normal font-sans"
+              className="flex-1 text-base md:text-[20px] font-medium leading-[100%] bg-transparent outline-none text-gray-800 placeholder-gray-400 tracking-normal font-sans min-w-0"
             />
 
             {/* Send button styled identically to the active chat input bar send button */}

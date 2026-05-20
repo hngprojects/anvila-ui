@@ -31,7 +31,7 @@ export const RadioQuestionnaire: React.FC<RadioQuestionnaireProps> = ({
   const otherSelected = selectedOption === "other";
 
   return (
-    <div className="max-w-full flex flex-col w-[593px] min-h-[296px] h-auto rounded-[15px] border border-[var(--border-default,#E4E4E7)] bg-[var(--bg-muted,#F4F4F5)] pt-[1px] pb-[1px] px-[20px] shadow-sm opacity-100">
+    <div className="w-full md:w-[593px] max-w-full flex flex-col min-h-[296px] h-auto rounded-[15px] border border-[var(--border-default,#E4E4E7)] bg-[var(--bg-muted,#F4F4F5)] py-[1px] px-4 md:px-[20px] shadow-sm opacity-100">
       <div className="flex items-center justify-between border-b border-zinc-200 pt-3.5 pb-1.5 text-xs font-semibold text-black">
         <span>Questions</span>
         <span className="font-mono text-zinc-500">{radioStep}/3</span>
@@ -44,13 +44,13 @@ export const RadioQuestionnaire: React.FC<RadioQuestionnaireProps> = ({
         </span>
       </div>
 
-      <div className="flex flex-col w-[593px] -ml-[20px] pl-[20px] opacity-100">
+      <div className="flex flex-col w-full md:w-[593px] max-w-full -ml-4 pl-4 md:-ml-[20px] md:pl-[20px] opacity-100">
         {options.map((option) => {
           const isSelected = selectedOption === option;
           return (
             <label
               key={option}
-              className={`flex items-center cursor-pointer text-xs transition-colors w-[486px] h-[37px] pt-[10px] pr-[16px] pb-[10px] pl-[16px] gap-[12px] opacity-100 ${
+              className={`flex items-start md:items-center cursor-pointer text-xs transition-colors w-full md:w-[486px] max-w-full h-auto min-h-[37px] py-[10px] px-4 gap-[12px] opacity-100 ${
                 hasSelection && !isSelected ? "text-zinc-400" : "text-zinc-950 font-medium"
               }`}
             >
@@ -76,7 +76,7 @@ export const RadioQuestionnaire: React.FC<RadioQuestionnaireProps> = ({
         {hasOther && (
           <>
             <label
-              className={`flex items-center cursor-pointer text-xs transition-colors w-[486px] h-[37px] pt-[10px] pr-[16px] pb-[10px] pl-[16px] gap-[12px] opacity-100 ${
+              className={`flex items-start md:items-center cursor-pointer text-xs transition-colors w-full md:w-[486px] max-w-full h-auto min-h-[37px] py-[10px] px-4 gap-[12px] opacity-100 ${
                 hasSelection && !otherSelected ? "text-zinc-400" : "text-zinc-950 font-medium"
               }`}
             >
@@ -104,7 +104,7 @@ export const RadioQuestionnaire: React.FC<RadioQuestionnaireProps> = ({
                   placeholder="pinterest post"
                   value={otherText}
                   onChange={(e) => onOtherTextChange(e.target.value)}
-                  className="w-[344px] h-[41px] rounded-[6px] border border-[#E4E4E4] bg-[#EEEFEEB2] pt-[12px] pr-[16px] pb-[12px] pl-[16px] font-sans font-normal text-[16px] leading-[24px] tracking-[0px] text-gray-800 placeholder-zinc-400 focus:outline-none"
+                  className="w-full md:w-[344px] max-w-full h-[41px] rounded-[6px] border border-[#E4E4E4] bg-[#EEEFEEB2] py-[12px] px-4 font-sans font-normal text-[16px] leading-[24px] tracking-[0px] text-gray-800 placeholder-zinc-400 focus:outline-none"
                 />
               </div>
             )}
