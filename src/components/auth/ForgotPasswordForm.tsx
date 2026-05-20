@@ -80,8 +80,8 @@ export default function ForgotPasswordForm() {
               type="email"
               placeholder="Enter email address"
               aria-invalid={!!errors.email}
-              disabled={isLoading}
-              className="pl-10 pr-4 w-full rounded-lg"
+              readOnly={isLoading}
+              className={`pl-10 pr-4 w-full rounded-lg ${isLoading ? "opacity-60 cursor-not-allowed select-none focus-visible:ring-0" : ""}`}
               {...register("email")}
             />
           </div>
@@ -101,6 +101,7 @@ export default function ForgotPasswordForm() {
 
         <Button
           type="submit"
+          disabled={isLoading}
           className="w-full py-2.5 bg-[#004D4D] hover:bg-[#003636] text-white shadow-sm transition-all"
         >
           {isLoading ? (

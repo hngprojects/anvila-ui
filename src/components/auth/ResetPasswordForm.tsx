@@ -27,7 +27,7 @@ type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 export default function SetNewPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  ;
+  
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -100,19 +100,20 @@ export default function SetNewPasswordForm() {
             </div>
             <input
               type={showPassword ? "text" : "password"}
-              disabled={isLoading || !token} 
+              readOnly={isLoading || !token} 
               {...register("password")}
               placeholder="Enter password"
               className={`w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm outline-none transition-all ${
                 errors.password 
                   ? "border-red-500 focus:ring-red-100" 
                   : "border-[#D0D5DD] focus:ring-2 focus:ring-[#004D4D]/10 focus:border-[#004D4D]"
-              }`}
+              } ${(isLoading || !token) ? "opacity-60 cursor-not-allowed" : ""}`}
             />
             <button
               type="button"
+              disabled={isLoading || !token}
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#98A2B3] hover:text-[#667085]"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#98A2B3] hover:text-[#667085] disabled:opacity-50"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -131,19 +132,20 @@ export default function SetNewPasswordForm() {
             </div>
             <input
               type={showConfirmPassword ? "text" : "password"}
-              disabled={isLoading || !token}
+              readOnly={isLoading || !token}
               {...register("confirmPassword")}
               placeholder="Re-enter password"
               className={`w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm outline-none transition-all ${
                 errors.confirmPassword 
                   ? "border-red-500 focus:ring-red-100" 
                   : "border-[#D0D5DD] focus:ring-2 focus:ring-[#004D4D]/10 focus:border-[#004D4D]"
-              }`}
+              } ${(isLoading || !token) ? "opacity-60 cursor-not-allowed" : ""}`}
             />
             <button
               type="button"
+              disabled={isLoading || !token}
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#98A2B3] hover:text-[#667085]"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#98A2B3] hover:text-[#667085] disabled:opacity-50"
             >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
