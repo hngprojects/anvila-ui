@@ -45,7 +45,7 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
           <div className="w-full space-y-4">
             <Button
               variant="outline"
-              className="group h-14 w-full gap-4 rounded-2xl border-copy-muted/20 text-base font-semibold transition-all duration-200 hover:border-copy-muted/30 hover:bg-background"
+              className="group h-14 w-full gap-4 rounded-2xl border-copy-muted/20 text-base font-semibold transition-all cursor-pointer duration-200 hover:border-copy-muted/30 hover:bg-black hover:text-white"
               onClick={() => {
                 window.location.href = `${BACKEND_URL}/api/v1/auth/google`;
               }}
@@ -56,7 +56,7 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
 
             <Button
               variant="outline"
-              className="group h-14 w-full gap-4 rounded-2xl border-copy-muted/20 text-base font-semibold transition-all duration-200 hover:border-copy-muted/30 hover:bg-background"
+              className="group h-14 w-full gap-4 rounded-2xl border-copy-muted/20 text-base font-semibold transition-all cursor-pointer duration-200 hover:border-copy-muted/30  hover:bg-black hover:text-white"
               onClick={() => {
                 window.location.href = `${BACKEND_URL}/api/v1/auth/github`;
               }}
@@ -69,7 +69,7 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
           <div className="mt-8 flex flex-col items-center gap-5">
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 py-1 text-sm font-bold text-teal-brand transition-colors hover:text-teal-accent"
+              className="inline-flex items-center gap-2 py-1 text-sm cursor-pointer font-bold text-teal-brand transition-colors hover:text-teal-accent"
             >
               Use email instead
             </Link>
