@@ -2,6 +2,7 @@
 
 import React from "react";
 import { FileIcon, ThumbsUpIcon, ThumbsDownIcon, CopyIcon, ThreeDottedIcon } from "@/components/icons";
+import { useRouter } from "next/navigation";
 
 interface ForgingDoneCardProps {
   msgId: string;
@@ -15,6 +16,7 @@ export const ForgingDoneCard: React.FC<ForgingDoneCardProps> = ({
   onCopy,
 }) => {
   const successText = "Done! Successfully created content creator- Anatassia Rhodes....";
+  const router = useRouter();
 
   return (
     <div className="flex flex-col items-start space-y-3.5 max-w-2xl mr-auto pl-2 animate-fade-in">
@@ -36,7 +38,10 @@ export const ForgingDoneCard: React.FC<ForgingDoneCardProps> = ({
             </p>
           </div>
         </div>
-        <button className="text-xs font-semibold text-[#52525B] bg-white transition-all shrink-0 cursor-pointer flex items-center justify-center border-[0.5px] border-[#52525B] rounded-[8px] w-[95px] h-[40px] py-[12px] px-[20px] gap-[8px]">
+        <button 
+          onClick={() => router.push("/generator/create-agent")}
+          className="text-xs font-semibold text-[#52525B] bg-white transition-all shrink-0 cursor-pointer flex items-center justify-center border-[0.5px] border-[#52525B] rounded-[8px] w-[95px] h-[40px] py-[12px] px-[20px] gap-[8px]"
+        >
           Preview
         </button>
       </div>

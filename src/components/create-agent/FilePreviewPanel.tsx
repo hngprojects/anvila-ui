@@ -19,7 +19,7 @@ export default function FilePreviewPanel({
   const activeFile = files.find((f) => f.id === activeFileId) ?? files[0];
 
   return (
-    <section className="flex items-stretch rounded-2xl border border-gray-200 bg-white shadow-sm min-w-0">
+    <section className="flex flex-col lg:flex-row items-stretch rounded-2xl border border-gray-200 bg-white shadow-sm min-w-0 flex-1">
       {/* Left: file tree + content */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Header bar */}
@@ -30,9 +30,9 @@ export default function FilePreviewPanel({
           </button>
         </div>
 
-        <div className="flex flex-1">
+        <div className="flex flex-col sm:flex-row flex-1 min-h-0">
           {/* File tree sidebar */}
-          <aside className="w-44 shrink-0 border-r border-gray-100 py-3 px-2">
+          <aside className="w-full sm:w-44 shrink-0 border-b sm:border-b-0 sm:border-r border-gray-100 py-3 px-2">
             <FileTree
               files={files}
               activeId={activeFileId}
@@ -42,16 +42,16 @@ export default function FilePreviewPanel({
           </aside>
 
           {/* Content */}
-          <div className="min-w-0 flex-1 px-5 py-4">
+          <div className="min-w-0 flex-1 px-4 sm:px-5 py-4 overflow-y-auto">
             <MarkdownPreview content={activeFile?.content ?? ""} />
           </div>
         </div>
       </div>
 
       {/* Right: manifest sidebar */}
-      <aside className="w-[280px] shrink-0 border-l border-gray-100 bg-[#FBFBFB]/50 p-4 space-y-4">
+      <aside className="w-full lg:w-[280px] shrink-0 border-t lg:border-t-0 lg:border-l border-gray-100 bg-[#FBFBFB]/50 p-4 space-y-4">
         {/* Manifest */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 shadow-sm">
           <p className="mb-4 text-sm font-medium text-gray-900">
             Manifest
           </p>
@@ -72,7 +72,7 @@ export default function FilePreviewPanel({
         </div>
 
         {/* Skills */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 shadow-sm">
           <p className="mb-4 text-sm font-medium text-gray-900">
             Skills &amp; Capabilities
           </p>
