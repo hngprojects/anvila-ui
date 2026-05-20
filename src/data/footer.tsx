@@ -16,7 +16,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     title: "Company",
     links: [
       { label: "Home", href: "/" },
-      { label: "About Us", href: "#" },
+      { label: "About Us", href: "/about" },
       { label: "FAQ", href: "/faq" },
       { label: "Contacts", href: "/contact" },
       { label: "Partners", href: "#" },
@@ -42,7 +42,7 @@ export const SOCIAL_LINKS = [
 ];
 
 export const LEGAL_LINKS = [
-  { label: "Privacy Policy", href: "#" },
+  { label: "Privacy Policy", href: "/privacy_policy" },
   { label: "Terms of service", href: "#" },
   { label: "Cookies Policy", href: "#" },
 ];

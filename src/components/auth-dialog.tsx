@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Github, Google, LogoIcon } from "@/components/icons";
+import { BACKEND_URL } from "@/lib/consts";
 
 type AuthDialogProps = {
   trigger: React.ReactNode;
@@ -46,7 +47,7 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
               variant="outline"
               className="group h-14 w-full gap-4 rounded-2xl border-copy-muted/20 text-base font-semibold transition-all duration-200 hover:border-copy-muted/30 hover:bg-background"
               onClick={() => {
-                // TODO: Replace with actual auth url
+                window.location.href = `${BACKEND_URL}/api/v1/auth/google`;
               }}
             >
               <Google className="h-6 w-6 transition-transform group-hover:scale-105" />
@@ -57,7 +58,7 @@ export function AuthDialog({ trigger }: AuthDialogProps) {
               variant="outline"
               className="group h-14 w-full gap-4 rounded-2xl border-copy-muted/20 text-base font-semibold transition-all duration-200 hover:border-copy-muted/30 hover:bg-background"
               onClick={() => {
-                // TODO: Replace with actual auth url
+                window.location.href = `${BACKEND_URL}/api/v1/auth/github`;
               }}
             >
               <Github className="h-6 w-6 transition-transform group-hover:scale-105" />

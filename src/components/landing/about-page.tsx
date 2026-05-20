@@ -1,16 +1,16 @@
 "use client";
+import React from "react";
 
-import React, { useState } from "react";
-
+import React from "react";
 import {
   Globe,
   Search,
+  Globe,
   BookMarked,
   ChevronDown,
   MoreHorizontal,
   LucideBook,
 } from "lucide-react";
- 
 
 const AnvilaLogo = ({
   color = "#0C5D56",
@@ -34,7 +34,6 @@ const AnvilaLogo = ({
 );
 
 export const AboutPage = () => {
-   
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans text-[#1A1A1A]">
