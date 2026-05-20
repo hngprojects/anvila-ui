@@ -15,10 +15,16 @@ const PUBLIC_PATHS = new Set([
   '/forgot-password',
   '/reset-password',
   '/auth/oauth/callback',
-  "/generator",
+  '/explore',
+  '/pricing',
+  '/faq',
+  '/terms',
+  '/privacy_policy',
+  '/contact',
+  '/cookies-policy'
 ])
 
-/** Prefixes that are always public (static assets, Next internals, our own API routes) */
+ 
 const PUBLIC_PREFIXES = ['/_next', '/favicon', '/api/auth', '/static', '/images']
 
 function isPublic(pathname: string): boolean {
