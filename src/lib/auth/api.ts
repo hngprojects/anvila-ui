@@ -74,7 +74,7 @@ export interface FastApiForgotResetPasswordResponse {
   success: boolean;
   message: string;
   data: null;
-  meta: Record<string, any>;
+  meta: Record<string, unknown>;
 }
 
 export const authApi = {
