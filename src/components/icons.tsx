@@ -275,3 +275,39 @@ export function ContactIcon({ bg, stroke }: { bg: string; stroke: string }) {
     </svg>
   );
 }
+
+export const DownloadZipIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6.41667 12.6759C6.59402 12.7783 6.79521 12.8322 7 12.8322C7.20479 12.8322 7.40598 12.7783 7.58333 12.6759L11.6667 10.3426C11.8438 10.2403 11.991 10.0932 12.0934 9.91609C12.1958 9.73897 12.2498 9.53803 12.25 9.33344V4.66677C12.2498 4.46218 12.1958 4.26124 12.0934 4.08412C11.991 3.90699 11.8438 3.7599 11.6667 3.65761L7.58333 1.32427C7.40598 1.22188 7.20479 1.16797 7 1.16797C6.79521 1.16797 6.59402 1.22188 6.41667 1.32427L2.33333 3.65761C2.15615 3.7599 2.00899 3.90699 1.9066 4.08412C1.80422 4.26124 1.75021 4.46218 1.75 4.66677V9.33344C1.75021 9.53803 1.80422 9.73897 1.9066 9.91609C2.00899 10.0932 2.15615 10.2403 2.33333 10.3426L6.41667 12.6759Z" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M7 12.8333V7" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M1.91992 4.08301L7.00076 6.99967L12.0816 4.08301" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M4.375 2.49121L9.625 5.49538" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const GitCloneIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8.74955 12.8337V10.5003C8.83071 9.76958 8.62118 9.03623 8.16622 8.45866C9.91622 8.45866 11.6662 7.29199 11.6662 5.25033C11.7129 4.52116 11.5087 3.80366 11.0829 3.20866C11.2462 2.53783 11.2462 1.83783 11.0829 1.16699C11.0829 1.16699 10.4996 1.16699 9.33289 2.04199C7.79289 1.75033 6.20622 1.75033 4.66622 2.04199C3.49955 1.16699 2.91622 1.16699 2.91622 1.16699C2.74122 1.83783 2.74122 2.53783 2.91622 3.20866C2.49148 3.80126 2.28533 4.52278 2.33289 5.25033C2.33289 7.29199 4.08289 8.45866 5.83289 8.45866C5.60539 8.74449 5.43622 9.07116 5.33705 9.42116C5.23789 9.77116 5.20872 10.1387 5.24955 10.5003V12.8337" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M5.24935 10.4997C2.61852 11.6663 2.33268 9.33301 1.16602 9.33301" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const CopyIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="4" y="4" width="8" height="8" rx="1.5" stroke="#0C0E0D" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M4 10H2.5C2.22386 10 2 9.77614 2 9.5V2.5C2 2.22386 2.22386 2 2.5 2H9.5C9.77614 2 10 2.22386 10 2.5V4" stroke="#0C0E0D" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const GithubPublishIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+    </svg>
+);
+
+export const DownloadIcon = () => (
+ <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M17 10L12 15L7 10M12 15V3" stroke="#E6EFEF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+);
