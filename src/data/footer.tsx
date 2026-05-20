@@ -42,7 +42,7 @@ export const SOCIAL_LINKS = [
 ];
 
 export const LEGAL_LINKS = [
-  { label: "Privacy Policy", href: "#" },
+  { label: "Privacy Policy", href: "/privacy_policy" },
   { label: "Terms of service", href: "#" },
   { label: "Cookies Policy", href: "#" },
 ];
