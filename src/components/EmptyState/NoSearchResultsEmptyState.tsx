@@ -4,7 +4,7 @@ import { Search, RefreshCw, HelpCircle, Sparkles } from "lucide-react";
 
 interface NoSearchResultsEmptyStateProps {
   query?: string;
-  onClear?: () => void;
+  onClear: () => void;
   onHelp?: () => void;
   suggestions?: string[];
 }
@@ -25,10 +25,11 @@ export default function NoSearchResultsEmptyState({
   onHelp,
   suggestions = DEFAULT_SUGGESTIONS,
 }: NoSearchResultsEmptyStateProps) {
+     const canClear = Boolean(onClear);
 
 
   function handleClear() {
-    if (onClear) onClear();
+    onClear();
   }
 
   // BUTTON 2 — Get support
@@ -94,8 +95,10 @@ export default function NoSearchResultsEmptyState({
 
          
           <button
+             type="button"
             onClick={handleClear}
-            className="w-full flex items-center justify-center gap-2 bg-[#0C5D56] hover:bg-[#0a4d47] active:scale-[0.98] text-white text-sm font-medium py-3 rounded-xl transition-all duration-150"
+              disabled={!canClear}
+            className="w-full flex items-center justify-center gap-2 bg-[`#0C5D56`] hover:bg-[`#0a4d47`] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium py-3 rounded-xl transition-all duration-150"
           >
             <RefreshCw className="w-4 h-4" />
             Clear search
@@ -103,6 +106,7 @@ export default function NoSearchResultsEmptyState({
 
         
           <button
+          type="button"
             onClick={handleHelp}
             className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 text-sm font-medium py-3 rounded-xl border border-gray-200 transition-all duration-150"
           >

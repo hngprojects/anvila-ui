@@ -141,7 +141,9 @@ export default function GenerationFailedEmptyState({
             TRY AGAIN BUTTON
           */}
           <button
+             type="button"
             onClick={handleRetry}
+             disabled={!onRetry}
             className="w-full flex items-center justify-center gap-2 bg-[#0C5D56] hover:bg-[#0a4d47] active:scale-[0.98] text-white text-sm font-medium py-3 rounded-xl transition-all duration-150"
           >
             <RefreshCw className="w-4 h-4" />
@@ -152,6 +154,7 @@ export default function GenerationFailedEmptyState({
             REPORT BUTTON
           */}
           <button
+             type="button"
             onClick={handleReport}
             className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 text-sm font-medium py-3 rounded-xl border border-gray-200 transition-all duration-150"
           >

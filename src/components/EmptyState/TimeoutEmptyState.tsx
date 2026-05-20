@@ -45,11 +45,8 @@ export default function GenerationTimeoutEmptyState({
   onHelp,
 }: GenerationTimeoutEmptyStateProps) {
 
-
  function handleRetry() {
-    if (onRetry) {
-      onRetry();
-    }
+          onRetry?.();
   }
 
   function handleHelp() {
@@ -119,13 +116,16 @@ export default function GenerationTimeoutEmptyState({
         {/* CTA Buttons */}
         <div className="flex flex-col gap-2.5">
           <button
-              onClick={handleRetry}
-            className="w-full flex items-center justify-center gap-2 bg-[#0C5D56]  active:scale-[0.98] text-white text-sm font-medium py-3 rounded-xl transition-all duration-150"
+               type="button"
+               onClick={handleRetry}
+              disabled={!onRetry}
+            className="w-full flex items-center justify-center gap-2 bg-[`#0C5D56`] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium py-3 rounded-xl transition-all duration-150"
           >
             <RefreshCw className="w-4 h-4" />
             Retry generation
           </button>
           <button
+          type="button"
           onClick={handleHelp}
             className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 text-sm font-medium py-3 rounded-xl border border-gray-200 transition-all duration-150"
           >

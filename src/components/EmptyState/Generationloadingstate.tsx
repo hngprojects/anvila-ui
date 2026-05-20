@@ -39,11 +39,6 @@ const PROGRESS_MESSAGES = [
 
 type StepState = "done" | "active" | "pending"
 
-/**
- * Pure function — no mutation inside render.
- * Computes { start, end } boundaries for every step once,
- * then derives StepState from elapsed without touching any variable.
- */
 function computeStepStates(
   steps: GenerationStep[],
   elapsed: number
@@ -174,7 +169,10 @@ export default function GenerationLoadingState({
   )
 
   // Cap at 99% — parent resolves to 100 on success/failure
-  const pct = Math.min(Math.round((elapsed / totalDuration) * 100), 99)
+  const pct =
+    totalDuration > 0
+      ? Math.min(Math.round((elapsed / totalDuration) * 100), 99)
+      : 0
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
@@ -271,7 +269,9 @@ export default function GenerationLoadingState({
 
         {/* Cancel */}
         <button
+          type="button"
           onClick={onCancel}
+          disabled={!onCancel}
           className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-600 text-sm font-medium py-3 rounded-xl border border-gray-200 transition-all duration-150"
         >
           <X className="w-4 h-4 text-gray-400" />

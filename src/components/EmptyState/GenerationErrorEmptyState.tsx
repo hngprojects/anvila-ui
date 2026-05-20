@@ -183,6 +183,7 @@ function GenericError({
         {/* Buttons */}
         <div className="flex flex-col gap-2.5">
           <button
+           type="button"
             onClick={handleRetry}
             disabled={retrying}
             className="w-full flex items-center justify-center gap-2 bg-[#0C5D56] hover:bg-[#0a4d47] active:scale-[0.98] text-white text-sm font-medium py-3 rounded-xl transition-all duration-150 disabled:opacity-70"
@@ -191,6 +192,7 @@ function GenericError({
             {retrying ? "Retrying…" : "Try again"}
           </button>
           <button
+            type="button"
             onClick={handleReport}
             className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 text-sm font-medium py-3 rounded-xl border border-gray-200 transition-all duration-150"
           >
@@ -227,14 +229,23 @@ function TimeoutError({
   const [cancelled, setCancelled] = useState(false)
   const [retrying, setRetrying] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
+    const hasRetriedRef = useRef(false)
+  function triggerRetryOnce() {
+    if (hasRetriedRef.current) return
+    hasRetriedRef.current = true
+    onRetry?.()
+  }
+   
   useEffect(() => {
     if (cancelled) return
     timerRef.current = setInterval(() => {
       setCountdown((c) => {
         if (c <= 1) {
           clearInterval(timerRef.current!)
-          onRetry?.()
+         if (!hasRetriedRef.current) {
+           hasRetriedRef.current = true
+              triggerRetryOnce()
+          }
           return 0
         }
         return c - 1
@@ -248,7 +259,10 @@ function TimeoutError({
     setCancelled(true)
     setRetrying(true)
     setTimeout(() => setRetrying(false), 1800)
-    onRetry?.()
+     if (!hasRetriedRef.current) {
+      hasRetriedRef.current = true
+      triggerRetryOnce()
+    }
   }
 
   function handleCancel() {
@@ -320,6 +334,7 @@ function TimeoutError({
         {/* Buttons */}
         <div className="flex flex-col gap-2.5">
           <button
+            type="button"
             onClick={handleRetry}
             disabled={retrying}
             className="w-full flex items-center justify-center gap-2 bg-[#0C5D56] hover:bg-[#0a4d47] active:scale-[0.98] text-white text-sm font-medium py-3 rounded-xl transition-all duration-150 disabled:opacity-70"
@@ -329,6 +344,7 @@ function TimeoutError({
           </button>
           {!cancelled && (
             <button
+              type="button"
               onClick={handleCancel}
               className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 text-sm font-medium py-3 rounded-xl border border-gray-200 transition-all duration-150"
             >
@@ -337,6 +353,7 @@ function TimeoutError({
             </button>
           )}
           <button
+            type="button"
             onClick={handleReport}
             className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-700 text-sm font-medium py-3 rounded-xl border border-gray-200 transition-all duration-150"
           >
@@ -411,6 +428,7 @@ function InlineError({
           </p>
           <div className="flex items-center gap-2 mt-2.5 flex-wrap">
             <button
+            type="button"
               onClick={handleRetry}
               disabled={retrying}
               className="inline-flex items-center gap-1.5 bg-[#0C5D56] hover:bg-[#0a4d47] text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors disabled:opacity-70"
@@ -420,6 +438,7 @@ function InlineError({
             </button>
             {onEditPrompt && (
               <button
+                type="button"
                 onClick={onEditPrompt}
                 className="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 transition-colors"
               >
@@ -428,6 +447,7 @@ function InlineError({
               </button>
             )}
             <button
+              type="button"
               onClick={handleReport}
               className="inline-flex items-center gap-1.5 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 transition-colors"
             >
@@ -451,7 +471,7 @@ const TIMEOUT_DETAIL =
 
 export default function GenerationErrorEmptyState({
   variant = "generic",
-  errorCode = "GEN_500",
+  errorCode,
   errorDetail,
   preservedInput = "",
   autoRetrySeconds = 30,
@@ -462,7 +482,7 @@ export default function GenerationErrorEmptyState({
   if (variant === "timeout") {
     return (
       <TimeoutError
-        errorCode={errorCode ?? "GEN_TIMEOUT"}
+         errorCode={errorCode ?? "GEN_TIMEOUT"}
         errorDetail={errorDetail ?? TIMEOUT_DETAIL}
         autoRetrySeconds={autoRetrySeconds}
         onRetry={onRetry}
@@ -486,7 +506,7 @@ export default function GenerationErrorEmptyState({
   // Fallback — generic
   return (
     <GenericError
-      errorCode={errorCode}
+      errorCode={errorCode ?? "GEN_500"}
       errorDetail={errorDetail ?? FALLBACK_DETAIL}
       onRetry={onRetry}
       onReport={onReport}
