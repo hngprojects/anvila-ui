@@ -6,6 +6,12 @@ export type Category =
   | "Finance"
   | "Operation";
 
+export interface CategoryFilterProps {
+  categories: Category[];
+  activeCategory: Category;
+  onCategoryChange: (category: Category) => void;
+}
+
 export interface Tag {
   label: string;
   color: string;
@@ -109,3 +115,4 @@ export interface MobileDrawerProps {
   user?: User;
   onClose: () => void;
 }
+
