@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, useMemo } from "react";
-import { Lock, Sparkles, X, Zap } from "lucide-react";
+import { Lock, Sparkles, Zap } from "lucide-react";
 import type { GenerationLoadingStateProps } from "@/types";
 import { GENERATION_STEPS } from "@/constants/steps";
 import { PROGRESS_MESSAGES } from "@/constants/content";
