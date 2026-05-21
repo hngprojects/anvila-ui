@@ -1,4 +1,4 @@
-import { PricingPage } from '@/components/pricing/PricingPage'
+import { PricingPage } from '@/components/pricing/pricing-page'
 
 export const metadata = {
   title: 'Pricing | Anvila',

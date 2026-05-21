@@ -21,7 +21,7 @@ export function PricingFaqs({
       collapsible
       value={openFaq ?? ""}
       onValueChange={(val) => setOpenFaq(val || null)}
-      className="flex flex-col gap-4 border-none"
+      className="flex flex-col gap-3 border-none"
     >
       {FAQS.map((faq, i) => {
         const key = `pricing-faq-${i}`;
@@ -29,16 +29,16 @@ export function PricingFaqs({
           <AccordionItem
             key={key}
             value={key}
-            className="border-none rounded-xl overflow-hidden bg-white ring-1 ring-copy-muted/10"
+            className="overflow-hidden rounded-2xl border border-zinc-200 bg-white"
           >
             <AccordionTrigger
-              className={`px-4 py-4 text-left text-base font-semibold leading-7 hover:no-underline hover:bg-transparent transition-colors ${
-                openFaq === key ? "text-teal-accent" : "text-logo"
+              className={`px-5 py-4 text-left text-sm font-semibold leading-6 hover:no-underline sm:text-base ${
+                openFaq === key ? "text-teal-brand" : "text-zinc-900"
               }`}
             >
               {faq.q}
             </AccordionTrigger>
-            <AccordionContent className="px-4 pb-5 text-sm leading-6 text-copy-muted">
+            <AccordionContent className="border-t border-zinc-100 px-5 pb-5 pt-4 text-sm leading-relaxed text-zinc-500">
               {faq.a}
             </AccordionContent>
           </AccordionItem>
