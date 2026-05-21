@@ -26,7 +26,7 @@ export default function GeneratorClientLayout({
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const isPreviewPage = pathname ? (pathname.includes("create-agent") || pathname.includes("my-agents")) : false;
+  const isPreviewPage = pathname?.startsWith("/generator/create-agent") || pathname?.startsWith("/generator/my-agents") || false;
 
   useEffect(() => {
     const handleToggle = () => setMobileOpen((prev) => !prev);
@@ -36,13 +36,6 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <style>{`
-        body:has(#preview-screen-root) .layout-mobile-topbar,
-        body:has(#my-agents-screen-root) .layout-mobile-topbar {
-          display: none !important;
-        }
-      `}</style>
-    
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,#D4D4D8_1px,transparent_1px)] [background-size:24px_24px]"
@@ -77,7 +70,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           )}
 
           <div className="flex-1 min-h-0 overflow-hidden">
-            <AuthProvider>{children}</AuthProvider>
+            {children} 
           </div>
         </div>
       </div>

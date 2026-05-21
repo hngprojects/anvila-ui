@@ -69,12 +69,12 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     setError(null);
     try {
-      // Simulate network delay
       await new Promise((resolve) => setTimeout(resolve, 500));
       
       const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (stored) {
-        setAgents(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        setAgents(Array.isArray(parsed) ? (parsed as AgentData[]) : []);
       } else {
         setAgents([]);
       }
