@@ -3,7 +3,7 @@ import { Trash2 } from "lucide-react";
 export default function DeleteAgentModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="w-full max-w-sm rounded-2xl bg-white shadow-xl p-6 mx-4">
+      <div className="w-full max-w-sm rounded-2xl bg-white shadow-xl p-6 mx-4 overflow-visible">
 
         {/* Icon */}
         <div className="flex items-center justify-center w-10 h-10 rounded-full mx-auto">
@@ -21,12 +21,12 @@ export default function DeleteAgentModal() {
         </div>
 
         {/* Buttons */}
-        <div className="mt-6 flex gap-2">
-          <button className="flex-1 rounded-lg border border-gray-200 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+        <div className="mt-6 flex flex-row gap-2">
+          <button className="flex-1 rounded-lg border border-gray-200 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors">
             Cancel
           </button>
-          <button className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-700 transition-colors">
-            Delete Agent
+          <button className="flex-1 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] px-4 py-2 text-xs font-medium text-white cursor-pointer transition-all duration-200">
+           Delete Agent
           </button>
         </div>
 
