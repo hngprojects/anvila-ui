@@ -78,23 +78,33 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       } else {
         setAgents([]);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to fetch agents");
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  // Initial fetch
   useEffect(() => {
-    fetchAgents();
+    let active = true;
+    const init = async () => {
+      await Promise.resolve();
+      if (active) {
+        fetchAgents();
+      }
+    };
+    init();
+    return () => {
+      active = false;
+    };
   }, [fetchAgents]);
+
 
   // Simulate an API call to create an agent
   const createAgent = async (newAgentData: Omit<AgentData, "id" | "created" | "clone" | "owners">) => {
     setIsLoading(true);
     try {
-      // Simulate network delay
+    
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const newAgent: AgentData = {
@@ -103,7 +113,6 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
         created: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }),
         clone: 0,
         owners: [
-          // Mock owner for now, could be derived from auth context later
           { initials: "ME", username: "@current_user", color: "bg-blue-100 text-blue-700" },
         ],
       };
@@ -113,17 +122,16 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedAgents));
     } catch (err) {
       setError("Failed to create agent");
-      throw err; // Re-throw so callers can handle it
+      throw err;  
     } finally {
       setIsLoading(false);
     }
   };
-
-  // Simulate an API call to delete an agent
+ 
   const deleteAgent = async (id: string) => {
     setIsLoading(true);
     try {
-      // Simulate network delay
+    
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const updatedAgents = agents.filter((a) => a.id !== id);
