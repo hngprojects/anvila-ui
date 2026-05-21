@@ -16,6 +16,7 @@
 
   --color-footer-bg: #0a4a44;
   --color-footer-text: #e7e7e7;
+  --color-brand-primary: `#0C5D56`;
 }
 @layer base {
   ::selection {
