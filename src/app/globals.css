@@ -17,6 +17,12 @@
   --color-footer-bg: #0a4a44;
   --color-footer-text: #e7e7e7;
   --color-brand-primary: `#0C5D56`;
+
+  --color-dashboard-bg: #141918;
+  --color-dashboard-sidebar: #0c0f0e;
+  --color-dashboard-border: #2a302e;
+  --color-dashboard-surface: #ffffff;
+  --color-dashboard-muted: #6b7280;
 }
 @layer base {
   ::selection {

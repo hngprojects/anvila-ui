@@ -294,7 +294,7 @@ export function PrivacyPolicy() {
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {DATA_CONTROL_CARDS.map((card, idx) => (
+            {DATA_CONTROL_CARDS.map((card) => (
               <motion.div
                 key={card.title}
                 whileHover={{ y: -4 }}

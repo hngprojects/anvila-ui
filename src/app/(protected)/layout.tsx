@@ -25,14 +25,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {/* background grid */}
+    
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,#D4D4D8_1px,transparent_1px)] [background-size:24px_24px]"
       />
 
       <div className="h-screen relative w-full flex p-3 gap-3 overflow-hidden font-sans">
-        {/* Sidebar */}
+      
         <Sidebar
           mobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}

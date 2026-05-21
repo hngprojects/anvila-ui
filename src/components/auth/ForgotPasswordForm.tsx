@@ -1,0 +1,119 @@
+"use client";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Mail, ChevronLeft, Loader2 } from "lucide-react";
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { authApi } from "@/lib/auth/api";
+
+const formSchema = z.object({
+  email: z
+    .string()
+    .email({ message: "Invalid email address" }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+export default function ForgotPasswordForm() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const handleFormSubmit = async(values: FormValues) => {
+    setIsLoading(true);
+    setApiError(null);
+
+    const formattedEmail = values.email.trim();
+
+    const result = await authApi.forgotPassword({ email: formattedEmail });
+
+    if (result.ok) {
+      router.push(`/forgot-password/check-mail?email=${encodeURIComponent(formattedEmail)}`);
+    } else {
+      setApiError(result.message);
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
+      {/* Back Link Component */}
+      <Link 
+        href="/login" 
+        className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors"
+      >
+        <ChevronLeft size={16} /> Back
+      </Link>
+
+      <div className="text-center mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#101828] md:mb-2 tracking-tight">Forgot Password?</h1>
+        <p className="text-xs md:text-sm text-[#667085]">Enter your details to receive a reset link</p>
+      </div>
+
+      <form className="space-y-3 md:space-y-5" onSubmit={handleSubmit(handleFormSubmit)}>
+        <div className="space-y-1.5">
+          <Label htmlFor="email-input" className="text-xs font-semibold text-[#344054]">
+            Email
+          </Label>
+          
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#667085] z-10" />
+            
+            <Input
+              id="email-input"
+              type="email"
+              placeholder="Enter email address"
+              aria-invalid={!!errors.email}
+              readOnly={isLoading}
+              className={`pl-10 pr-4 w-full rounded-lg ${isLoading ? "opacity-60 cursor-not-allowed select-none focus-visible:ring-0" : ""}`}
+              {...register("email")}
+            />
+          </div>
+          
+          {errors.email && (
+            <p className="text-[10px] text-destructive font-medium pl-1">
+              {errors.email.message}
+            </p>
+          )}
+
+          {apiError && (
+            <p className="text-[10px] text-destructive font-medium pl-1 mt-1">
+              {apiError}
+            </p>
+          )}
+        </div>
+
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-2.5 bg-[#004D4D] hover:bg-[#003636] text-white shadow-sm transition-all"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="animate-spin h-4 w-4" />
+              Sending...
+            </>
+          ) : (
+            "Send Reset Link"
+          )}
+        </Button>
+      </form>
+    </div>
+  );
+}
