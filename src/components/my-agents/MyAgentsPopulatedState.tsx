@@ -18,104 +18,96 @@ export default function MyAgentsPopulatedState() {
   const publicPercentage = totalCount > 0 ? Math.round((publicCount / totalCount) * 100) : 0;
 
   return (
-    <div className="flex flex-col w-full h-full bg-white md:bg-[#FBFBFB] md:p-6 overflow-y-auto">
-      {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div className="flex flex-col w-full h-full bg-white md:bg-[#FBFBFB] p-4 md:p-6 overflow-y-auto">
+      <header className="hidden md:flex items-center justify-between gap-4 mb-8 w-full">
         <h1 className="text-[28px] font-semibold text-gray-900">My Agents</h1>
         <Link
           href="/generator"
-          className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors gap-2"
+          className="inline-flex items-center justify-center h-[36px] rounded-lg border border-[#005F5A] bg-white px-4 text-xs font-semibold text-[#52525B] hover:bg-teal-50/50 transition-colors gap-1.5"
         >
-          <span className="text-gray-400 text-lg leading-none">+</span> New Agent
+          <span className="text-[#52525B] text-base leading-none font-medium">+</span> New Agent
         </Link>
       </header>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {/* Total Agents */}
-        <div className="bg-[#F8F9F9] rounded-2xl p-5 border border-gray-100 flex flex-col justify-between h-[120px]">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 mt-2 md:mt-0">
+        <div className="bg-[#F4F4F5] border border-gray-200 border-t-[#C9C9C9CC] rounded-[14px] p-4 flex flex-col justify-between h-[104px] flex-1   shrink-0">
           <div className="flex items-start justify-between">
-            <span className="text-sm text-gray-600 font-medium">Total agents</span>
+            <span className="text-xs font-medium text-gray-600">Total agents</span>
             <Activity size={16} className="text-gray-500" />
           </div>
-          <div>
-            <div className="text-[32px] leading-none font-medium text-gray-900 mb-2">{totalCount}</div>
-            <div className="text-xs text-gray-500">+0 this week</div>
+          <div className="flex flex-col gap-[6px]">
+            <div className="text-2xl font-bold text-gray-900 leading-none">{totalCount}</div>
+            <div className="text-[10px] text-gray-500 leading-none mt-[5px]">+2 this week</div>
           </div>
         </div>
 
-        {/* Public */}
-        <div className="bg-[#F8F9F9] rounded-2xl p-5 border border-gray-100 flex flex-col justify-between h-[120px]">
+        <div className="bg-[#F4F4F5] border border-gray-200 border-t-[#C9C9C9CC] rounded-[14px] p-4 flex flex-col justify-between h-[104px] flex-1   shrink-0">
           <div className="flex items-start justify-between">
-            <span className="text-sm text-gray-600 font-medium">Public</span>
+            <span className="text-xs font-medium text-gray-600">Public</span>
             <Globe size={16} className="text-gray-500" />
           </div>
-          <div>
-            <div className="text-[32px] leading-none font-medium text-gray-900 mb-2">{publicCount}</div>
-            <div className="text-xs text-gray-500">{publicPercentage}% of total</div>
+          <div className="flex flex-col gap-[6px]">
+            <div className="text-2xl font-bold text-gray-900 leading-none">{publicCount}</div>
+            <div className="text-[10px] text-gray-500 leading-none mt-[5px]">{publicPercentage}% of total</div>
           </div>
         </div>
 
-        {/* Private */}
-        <div className="bg-[#F8F9F9] rounded-2xl p-5 border border-gray-100 flex flex-col justify-between h-[120px]">
+        <div className="bg-[#F4F4F5] border border-gray-200 border-t-[#C9C9C9CC] rounded-[14px] p-4 flex flex-col justify-between h-[104px] flex-1   shrink-0">
           <div className="flex items-start justify-between">
-            <span className="text-sm text-gray-600 font-medium">Private</span>
+            <span className="text-xs font-medium text-gray-600">Private</span>
             <Lock size={16} className="text-gray-500" />
           </div>
-          <div>
-            <div className="text-[32px] leading-none font-medium text-gray-900 mb-2">{privateCount}</div>
-            <div className="text-xs text-gray-500">+0%</div>
+          <div className="flex flex-col gap-[6px]">
+            <div className="text-2xl font-bold text-gray-900 leading-none">{privateCount}</div>
+            <div className="text-[10px] text-gray-500 leading-none mt-[5px]">+12.4%</div>
           </div>
         </div>
 
-        {/* Downloads */}
-        <div className="bg-[#F8F9F9] rounded-2xl p-5 border border-gray-100 flex flex-col justify-between h-[120px]">
+        <div className="bg-[#F4F4F5] border border-gray-200 border-t-[#C9C9C9CC] rounded-[14px] p-4 flex flex-col justify-between h-[104px] flex-1    shrink-0">
           <div className="flex items-start justify-between">
-            <span className="text-sm text-gray-600 font-medium">Downloads (30d)</span>
+            <span className="text-xs font-medium text-gray-600">Downloads (30d)</span>
             <Download size={16} className="text-gray-500" />
           </div>
-          <div>
-            <div className="text-[32px] leading-none font-medium text-gray-900 mb-2 text-gray-200">{totalDownloads}</div>
-            <div className="text-xs text-gray-500">+0%</div>
+          <div className="flex flex-col gap-[6px]">
+            <div className="text-2xl font-bold text-gray-900 leading-none">{totalDownloads || "-"}</div>
+            <div className="text-[10px] text-gray-500 leading-none mt-[5px]">+12.4%</div>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="flex items-center gap-2 mb-6">
         <button
           onClick={() => setActiveTab("All")}
-          className={`px-4 py-2 rounded-full text-[15px] font-medium transition-colors ${
+          className={`transition-all duration-200 ${
             activeTab === "All"
-              ? "bg-[#005F5A] text-white"
-              : "text-gray-500 hover:bg-gray-100"
+              ? "h-[32px] w-[129px] flex items-center justify-center gap-[8px] rounded-[8px] border-[0.5px] border-[#005F5A] bg-[#005F5A] text-white text-xs font-medium"
+              : "h-[32px] w-[120px] flex items-center justify-center gap-[8px] rounded-[8px] text-gray-500 hover:text-gray-800 hover:bg-gray-100 text-xs font-medium"
           }`}
         >
           All agents {totalCount}
         </button>
         <button
           onClick={() => setActiveTab("Public")}
-          className={`px-4 py-2 rounded-full text-[15px] font-medium transition-colors ${
+          className={`transition-all duration-200 ${
             activeTab === "Public"
-              ? "bg-[#005F5A] text-white"
-              : "text-gray-500 hover:bg-gray-100"
+              ? "h-[32px] w-[129px] flex items-center justify-center gap-[8px] rounded-[8px] border-[0.5px] border-[#005F5A] bg-[#005F5A] text-white text-xs font-medium"
+              : "h-[32px] w-[120px] flex items-center justify-center gap-[8px] rounded-[8px] text-gray-500 hover:text-gray-800 hover:bg-gray-100 text-xs font-medium"
           }`}
         >
           Public {publicCount}
         </button>
         <button
           onClick={() => setActiveTab("Private")}
-          className={`px-4 py-2 rounded-full text-[15px] font-medium transition-colors ${
+          className={`transition-all duration-200 ${
             activeTab === "Private"
-              ? "bg-[#005F5A] text-white"
-              : "text-gray-500 hover:bg-gray-100"
+              ? "h-[32px] w-[129px] flex items-center justify-center gap-[8px] rounded-[8px] border-[0.5px] border-[#005F5A] bg-[#005F5A] text-white text-xs font-medium"
+              : "h-[32px] w-[120px] flex items-center justify-center gap-[8px] rounded-[8px] text-gray-500 hover:text-gray-800 hover:bg-gray-100 text-xs font-medium"
           }`}
         >
           Private {privateCount}
         </button>
       </div>
 
-      {/* Data Table */}
       <MyAgentsTable filter={activeTab} agents={agents} />
     </div>
   );

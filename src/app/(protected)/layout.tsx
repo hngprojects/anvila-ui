@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TextAlignJustify } from "lucide-react";
 import Sidebar from "@/components/protected/sideBar";
 import { Logo } from "@/components/icons";
 import { AuthProvider } from "@/context/auth";
 import { AgentProvider } from "@/context/agent";
+import { usePathname } from "next/navigation";
 
 export default function GeneratorClientLayout({
   children,
@@ -20,14 +21,27 @@ export default function GeneratorClientLayout({
     </AuthProvider>
   );
 }
-
-/* ---------------- INTERNAL COMPONENT ---------------- */
+ 
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const isPreviewPage = pathname ? (pathname.includes("create-agent") || pathname.includes("my-agents")) : false;
+
+  useEffect(() => {
+    const handleToggle = () => setMobileOpen((prev) => !prev);
+    window.addEventListener("toggle-sidebar", handleToggle);
+    return () => window.removeEventListener("toggle-sidebar", handleToggle);
+  }, []);
 
   return (
     <>
+      <style>{`
+        body:has(#preview-screen-root) .layout-mobile-topbar,
+        body:has(#my-agents-screen-root) .layout-mobile-topbar {
+          display: none !important;
+        }
+      `}</style>
     
       <div
         aria-hidden
@@ -41,28 +55,27 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           onMobileClose={() => setMobileOpen(false)}
         />
 
-        {/* Right side */}
         <div className="flex flex-1 flex-col min-w-0 h-full overflow-hidden">
-          {/* Mobile top bar */}
-          <div className="flex md:hidden items-center pb-3 shrink-0">
-            <button
-              onClick={() => setMobileOpen(true)}
-              className="w-9 h-9 flex items-center justify-center text-gray-600"
-            >
-              <TextAlignJustify size={20} />
-            </button>
+          {!isPreviewPage && (
+            <div className="layout-mobile-topbar flex md:hidden items-center pb-3 shrink-0">
+              <button
+                onClick={() => setMobileOpen(true)}
+                className="w-9 h-9 flex items-center justify-center text-gray-600"
+              >
+                <TextAlignJustify size={20} />
+              </button>
 
-            <div className="flex items-center gap-1.5">
-              <Logo />
-              {!mobileOpen && (
-                <span className="text-[#1a6b5a] font-bold text-xs uppercase">
-                  Anvila
-                </span>
-              )}
+              <div className="flex items-center gap-1.5">
+                <Logo />
+                {!mobileOpen && (
+                  <span className="text-[#1a6b5a] font-bold text-xs uppercase">
+                    Anvila
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Page */}
           <div className="flex-1 min-h-0 overflow-hidden">
             <AuthProvider>{children}</AuthProvider>
           </div>

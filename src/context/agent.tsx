@@ -9,6 +9,7 @@ interface AgentContextType {
   error: string | null;
   fetchAgents: () => Promise<void>;
   createAgent: (agent: Omit<AgentData, "id" | "created" | "clone" | "owners">) => Promise<void>;
+  deleteAgent: (id: string) => Promise<void>;
   
   // Chat Persistence State
   messages: ChatMessage[];
@@ -118,6 +119,24 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Simulate an API call to delete an agent
+  const deleteAgent = async (id: string) => {
+    setIsLoading(true);
+    try {
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const updatedAgents = agents.filter((a) => a.id !== id);
+      setAgents(updatedAgents);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedAgents));
+    } catch (err) {
+      setError("Failed to delete agent");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AgentContext.Provider
       value={{
@@ -126,6 +145,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
         error,
         fetchAgents,
         createAgent,
+        deleteAgent,
         messages,
         setMessages,
         prompt,

@@ -1,26 +1,14 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
-import { Bell } from "lucide-react";
 import { Logo } from "@/components/icons";
 
 export default function MyAgentsEmptyState() {
   return (
     <div className="flex flex-col w-full h-full bg-[#FBFBFB]">
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
-        <h1 className="text-lg font-bold text-gray-900">My Agents</h1>
-        <div className="relative cursor-pointer text-gray-600 hover:text-gray-900 transition-colors">
-          <Bell size={20} />
-          {/* Notification dot */}
-          <span className="absolute top-0 right-0 w-2 h-2 bg-[#1a6b5a] rounded-full ring-2 ring-[#FBFBFB]" />
-        </div>
-      </header>
 
-      {/* Main Content (Centered) */}
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-        <div className="mb-6 flex justify-center">
+        <div className="mb-4 flex justify-center">
           <Logo />
         </div>
         
@@ -34,7 +22,7 @@ export default function MyAgentsEmptyState() {
         
         <Link 
           href="/generator"
-          className="inline-flex items-center justify-center rounded-lg bg-[#005F5A] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#004f4a] transition-colors gap-2"
+          className="inline-flex items-center justify-center w-[320px] h-[48px] gap-[6px] rounded-[8px] pt-[6.4px] pb-[6.4px] pl-[4px] pr-[4px] bg-[#005F5A] text-sm font-medium text-white hover:bg-[#004f4a] transition-colors mt-[32px]"
         >
           <span>+</span> Create Agent
         </Link>
