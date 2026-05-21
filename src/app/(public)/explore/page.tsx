@@ -1,4 +1,4 @@
-import { Explore } from '@/components/explore/ExplorePage'
+import { Explore } from '@/components/explore/explore'
 
 export const metadata = {
   title: 'Explore | Anvila',
