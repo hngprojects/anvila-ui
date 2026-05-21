@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -71,7 +71,7 @@ export function AuthSignUpForm() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterInput>({
@@ -80,10 +80,10 @@ export function AuthSignUpForm() {
     mode: "onBlur",
   });
 
-  const nameValue = watch("display_name") ?? "";
-  const emailValue = watch("email") ?? "";
-  const password = watch("password") ?? "";
-  const cpwValue = watch("confirmPassword") ?? "";
+  const nameValue = useWatch({ control, name: "display_name" }) ?? "";
+  const emailValue = useWatch({ control, name: "email" }) ?? "";
+  const password = useWatch({ control, name: "password" }) ?? "";
+  const cpwValue = useWatch({ control, name: "confirmPassword" }) ?? "";
 
   const nameEmpty = nameValue.length === 0;
   const emailEmpty = emailValue.length === 0;
@@ -119,7 +119,7 @@ export function AuthSignUpForm() {
 
       // Redirect to verify-email page with masked email as query param
       const encoded = encodeURIComponent(values.email);
-      router.push(`/verify-email?email=${encoded}`);
+      router.push(`/confirm-email?email=${encoded}`);
     } catch {
       setBannerError("Network error. Please check your connection.");
     }

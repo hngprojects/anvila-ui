@@ -81,3 +81,31 @@ export interface NavLinkProps {
   onClick?: () => void;
   isMobile?: boolean;
 }
+
+// ---------------- SIDEBAR TYPES ----------------
+
+export interface User {
+  display_name?: string;
+  email?: string;
+}
+
+export interface SidebarProps {
+  user?: User;
+  mobileOpen: boolean;
+  onMobileClose: () => void;
+}
+
+export interface CollapsedSidebarProps {
+  user?: User;
+  onExpand: () => void;
+}
+
+export interface ExpandedSidebarProps {
+  user?: User;
+  onCollapse: () => void;
+}
+
+export interface MobileDrawerProps {
+  user?: User;
+  onClose: () => void;
+}

@@ -4,9 +4,11 @@ import { cn } from "@/lib/utils";
 import { inter } from "@/components/lib/fonts";
 import { AuthProvider } from "@/context/auth";
 import { getServerTokens } from "@/lib/auth/cookies";
+import { BACKEND_URL } from "@/lib/consts";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "Anvila";
+const appName = "Anvila";
+const appDescription = "Build reusable AI agent packages from one clear setup. Describe your agent setup in seconds and get a structured package you can publish, share, and reuse.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
@@ -14,12 +16,36 @@ export const metadata: Metadata = {
     default: appName,
     template: `%s · ${appName}`,
   },
-  description: `${appName} — a Next.js 16 starter.`,
+  description: appDescription,
+  keywords: [
+    "AI agents",
+    "agent packages",
+    "prompt engineering",
+    "no-code AI",
+    "AI Skills",
+    "GitHub agent setup",
+  ],
+  authors: [{ name: appName }],
+
   icons: {
-    icon: [
-      { url: "/favicon-32.svg", sizes: "32x32", type: "image/svg+xml" },
-      { url: "/favicon-64.svg", sizes: "64x64", type: "image/svg+xml" },
-    ],
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
+
+  openGraph: {
+    title: appName,
+    description: appDescription,
+    url: appUrl,
+    siteName: appName,
+    locale: "en_US",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary",
+    title: appName,
+    description: appDescription,
   },
 };
 
@@ -27,10 +53,8 @@ async function getInitialUser() {
   const { accessToken } = await getServerTokens()
   if (!accessToken) return null
  
-  const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
- 
   try {
-    const res = await fetch(`${BASE}/api/v1/auth/me`, {
+    const res = await fetch(`${BACKEND_URL}/api/v1/auth/me`, {
       headers: { Authorization: `Bearer ${accessToken}` },
       cache: 'no-store',
     })
