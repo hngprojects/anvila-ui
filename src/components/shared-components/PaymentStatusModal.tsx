@@ -18,6 +18,8 @@ export default function PaymentStatusModal({
 }: PaymentStatusModalProps) {
   if (!isOpen) return null;
 
+  const normalizedProgress = Math.min(100, Math.max(0, progress));
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -101,7 +103,7 @@ export default function PaymentStatusModal({
             <div className="w-full max-w-[280px] h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
               <div 
                 className="h-full bg-[#004D4D] rounded-full transition-all duration-75 ease-out"
-                style={{ width: `${progress}%` }} 
+                style={{ width: `${normalizedProgress}%` }}
               />
             </div>
           )}
