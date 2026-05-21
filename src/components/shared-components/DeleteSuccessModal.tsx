@@ -39,6 +39,7 @@ export default function DeleteSuccessModal({ onBackToAgents }: DeleteSuccessModa
 
         {/* Button */}
         <button
+           type="button"
           onClick={onBackToAgents}
           className="mt-6 w-full rounded-lg bg-[#1a3a34] hover:bg-[#14302a] px-4 py-2.5 text-sm font-medium text-white cursor-pointer transition-colors"
         >
