@@ -37,7 +37,7 @@ export default function PaymentSuccessModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" 
@@ -49,37 +49,37 @@ export default function PaymentSuccessModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="success-card-title"
-        className="relative w-full max-w-[440px] transform overflow-hidden rounded-2xl bg-white p-6 shadow-2xl transition-all text-left sm:p-8"
+        className="relative w-full max-w-[440px] my-auto transform overflow-hidden rounded-2xl bg-white p-5 shadow-2xl transition-all text-left sm:p-8"
       >
         {/* Header */}
         <div className="flex items-start gap-3 mb-5">
-          <div className="rounded-full bg-[#E6F4F0] p-1.5 mt-0.5">
+          <div className="rounded-full bg-[#E6F4F0] p-1.5 mt-0.5 shrink-0">
             <CheckCircle2 className="h-5 w-5 text-[#004D4D]" />
           </div>
-          <div>
-            <h2 id="success-card-title" className="text-lg font-bold text-[#101828]">
+          <div className="min-w-0">
+            <h2 id="success-card-title" className="text-lg font-bold text-[#101828] truncate">
               Payment Successful
             </h2>
-            <p className="text-sm text-[#667085] mt-0.5">
+            <p className="text-sm text-[#667085] mt-0.5 wrap-break-word">
               Your agent is now private.
             </p>
           </div>
         </div>
 
         {/* Inner Card Section */}
-        <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 space-y-4">
+        <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-3 sm:p-4 space-y-4">
           
           {/* Row 1: Registry Target and Badge */}
-          <div className="flex items-center justify-between border-b border-slate-200/50 pb-3.5">
-            <div>
+          <div className="flex items-center justify-between border-b border-slate-200/50 pb-3.5 gap-2">
+            <div className="min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-wider text-black block">
                 Clone Agent
               </span>
-              <span className="text-sm text-black mt-0.5 block">
+              <span className="text-sm text-black mt-0.5 block truncate">
                 {agentName}
               </span>
             </div>
-            <div>
+            <div className="shrink-0">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50/50 px-2.5 py-1 text-xs font-semibold text-[#004D4D]">
                 Private
                 <span className="h-1.5 w-1.5 rounded-full bg-[#5B9B48]" />
@@ -88,8 +88,8 @@ export default function PaymentSuccessModal({
           </div>
 
           {/* Row 2: ZIP and Github action */}
-          <div className="p-1 text-sm rounded-sm flex items-center justify-between shadow-sm bg-[#CBCECD]">
-            <div className="flex items-center gap-2.5 p-2 text-black font-semibold text-xs">
+          <div className="p-1 text-sm rounded-sm flex flex-col xs:flex-row items-start xs:items-center justify-between shadow-sm bg-[#CBCECD] gap-2">
+            <div className="flex items-center gap-2.5 p-2 text-black font-semibold text-xs shrink-0">
               <svg className="h-4 w-4 text-slate-700" viewBox="0 0 24 24" fill="currentColor">
                 <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.0.069-.608 1.003.708 1.53 1.038 1.53 1.038.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
               </svg>
@@ -97,7 +97,7 @@ export default function PaymentSuccessModal({
             </div>
             <button
               type="button"
-              className="inline-flex items-center gap-2 justify-center rounded-sm bg-[#F6F7F7] hover:bg-white px-3.5 py-1.5 text-xs font-bold text-black transition-all"
+              className="w-full xs:w-auto inline-flex items-center gap-2 justify-center rounded-sm bg-[#F6F7F7] hover:bg-white px-3.5 py-1.5 text-xs font-bold text-black transition-all"
             >
               <Box className="h-3.5 w-3.5" />  
               Download ZIP
@@ -129,28 +129,28 @@ export default function PaymentSuccessModal({
           </div>
 
           {/* Row 4: Specs Metric Row Grid */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-xl border border-slate-200/60 bg-white p-2.5 text-center">
-              <span className="block text-[10px] font-medium text-[#667085] uppercase tracking-wide">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="rounded-xl border border-slate-200/60 bg-white p-2 sm:p-2.5 text-center min-w-0">
+              <span className="block text-[10px] font-medium text-[#667085] uppercase tracking-wide truncate">
                 License
               </span>
-              <span className="text-xs font-bold text-[#101828] mt-0.5 block">
+              <span className="text-xs font-bold text-[#101828] mt-0.5 block truncate">
                 {licenseType}
               </span>
             </div>
-            <div className="rounded-xl border border-slate-200/60 bg-white p-2.5 text-center">
-              <span className="block text-[10px] font-medium text-[#667085] uppercase tracking-wide">
+            <div className="rounded-xl border border-slate-200/60 bg-white p-2 sm:p-2.5 text-center min-w-0">
+              <span className="block text-[10px] font-medium text-[#667085] uppercase tracking-wide truncate">
                 SSH
               </span>
-              <span className="text-xs font-bold text-[#101828] mt-0.5 block">
+              <span className="text-xs font-bold text-[#101828] mt-0.5 block truncate">
                 {sshKeyType}
               </span>
             </div>
-            <div className="rounded-xl border border-slate-200/60 bg-white p-2.5 text-center">
-              <span className="block text-[10px] font-medium text-[#667085] uppercase tracking-wide">
+            <div className="rounded-xl border border-slate-200/60 bg-white p-2 sm:p-2.5 text-center min-w-0">
+              <span className="block text-[10px] font-medium text-[#667085] uppercase tracking-wide truncate">
                 Version
               </span>
-              <span className="text-xs font-bold text-[#101828] mt-0.5 block">
+              <span className="text-xs font-bold text-[#101828] mt-0.5 block truncate">
                 {versionNumber}
               </span>
             </div>
@@ -159,7 +159,7 @@ export default function PaymentSuccessModal({
         </div>
 
         {/* Footer actions */}
-        <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button
             type="button"
             className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#004D4D] py-3 text-sm font-bold text-white shadow-sm hover:bg-[#003333] transition-all"
