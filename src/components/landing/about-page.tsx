@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Globe,
   Search,
@@ -6,266 +7,332 @@ import {
   ChevronDown,
   MoreHorizontal,
   LucideBook,
+  CirclePlus,
 } from "lucide-react";
+import { LogoIcon } from "@/components/icons";
 
-const AnvilaLogo = ({
-  color = "#0C5D56",
-  size = 44,
-}: {
-  color?: string;
-  size?: number;
-}) => (
-  <svg  
-    width={size}
-    height={Math.round((size * 33) / 44)}
-    viewBox="0 0 44 33"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+/* ── Inline logo for the mockup ───────────────────────────────────────────── */
+
+const MockLogo = () => (
+  <svg width="22" height="22" viewBox="0 0 44 44" fill="none">
     <path
-      d="M23.703 0L44 0L44 4.41112L27.8273 4.41112C26.9005 8.43596 20.8145 9.55347 17.8873 9.60912C19.1848 9.60912 22.8086 9.4279 25.8115 10.5152C29.565 11.8743 32.4381 15.8562 31.8589 22.461C31.3955 27.7448 35.5893 31.6886 37.7441 33L14.1569 33L14.1569 28.0643C14.1569 28.0643 18.119 28.3218 23.3091 26.3953C29.7967 23.987 26.9005 14.7832 21.8262 14.1633C16.4971 13.5122 2.22433 8.72689 0 4.41112L23.703 4.41112L23.703 0Z"
-      fill={color}
+      d="M23.5609 6.875L42.1665 6.87499L42.1665 10.9185L27.3415 10.9185C26.4919 14.608 20.9131 15.6323 18.2299 15.6834C19.4193 15.6834 22.7411 15.5172 25.4937 16.5139C28.9345 17.7598 31.5681 21.4099 31.0371 27.4642C30.6124 32.3077 34.4567 35.9229 36.4319 37.125L14.8104 37.125L14.8104 32.6006C14.8104 32.6006 18.4423 32.8367 23.1999 31.0707C29.1468 28.8631 26.4919 20.4263 21.8405 19.858C16.9555 19.2612 3.87214 14.8746 1.83317 10.9185L23.5609 10.9185L23.5609 6.875Z"
+      fill="#0C5D56"
     />
   </svg>
 );
 
-export const AboutPage = () => {
+const RECENT_ITEMS = [
+  "Real estate marketing ca...",
+  "7 days of social media...",
+  "Business plan outline...",
+  "Landing page copy for...",
+];
 
+const SUGGESTION_CHIPS = [
+  "No-Code Builders",
+  "Prompt Engineers",
+  "Startup Founders",
+  "AI Engineers",
+];
+
+const NAV_ITEMS = [
+  { icon: <Search size={14} />, label: "Search" },
+  { icon: <Globe size={14} />, label: "Explore" },
+  { icon: <BookMarked size={14} />, label: "My Agents" },
+  { icon: <LucideBook size={14} />, label: "GitHub" },
+];
+
+const WHY_CARDS = [
+  {
+    image: "/tech.png",
+    title: "From Chaos to Structure",
+    body: "We replace messy, inconsistent prompts with a clean, GitHub-ready file protocol.",
+    dark: false,
+  },
+  {
+    image: "/hand.png",
+    title: "Collaborative Innovation",
+    body: "Through our Public Registry, we empower a global community to share and build upon the world's best AI blueprints.",
+    dark: true,
+  },
+  {
+    image: "/glass.png",
+    title: "Professional Reliability",
+    body: "We treat AI Agents as digital employees. By standardizing their Instruction Manuals, we ensure they remain reliable tools for businesses and builders alike.",
+    dark: false,
+  },
+];
+
+/* ── Dashboard Mockup ─────────────────────────────────────────────────────── */
+
+function DashboardMockup() {
   return (
-    <div className="min-h-screen bg-[#F9FAFB] font-sans text-[#1A1A1A]">
-      <main className="pt-24">
-        {/* Hero */}
-        <section className="mx-auto max-w-3xl px-6 text-center py-16 md:py-24">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#A1A1AA] mb-8">
-            <div className="w-2 h-2 rounded-full bg-orange-400" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#52525B]">
+    <div
+      className="relative overflow-hidden rounded-[24px] border border-zinc-200 p-4 shadow-sm"
+      style={{
+        backgroundImage:
+          "radial-gradient(circle, #D4D4D8 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
+        backgroundColor: "#F4F4F5",
+      }}
+    >
+      <div className="flex gap-3" style={{ minHeight: "520px" }}>
+        {/* Sidebar */}
+        <div className="hidden w-52 shrink-0 flex-col overflow-hidden rounded-[16px] border border-zinc-200 bg-white p-4 md:flex">
+          {/* Header */}
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <MockLogo />
+              <span className="text-sm font-bold tracking-tight text-zinc-900">
+                Anvila
+              </span>
+            </div>
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-100 text-zinc-400">
+              <ChevronDown size={11} />
+            </div>
+          </div>
+
+          {/* Create button */}
+          <button className="mb-5 flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-teal-brand text-[11px] font-semibold text-white">
+            <CirclePlus size={13} />
+            Create Agent
+          </button>
+
+          {/* Nav */}
+          <div className="mb-5 flex flex-col gap-0.5">
+            {NAV_ITEMS.map((item) => (
+              <div
+                key={item.label}
+                className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[12px] font-medium text-zinc-500"
+              >
+                <span className="text-zinc-400">{item.icon}</span>
+                {item.label}
+              </div>
+            ))}
+          </div>
+
+          <div className="mb-4 h-px bg-zinc-100" />
+
+          {/* Recent */}
+          <div className="flex flex-1 flex-col gap-1 overflow-hidden">
+            <div className="mb-1.5 flex items-center justify-between">
+              <span className="text-[9px] font-semibold uppercase tracking-widest text-zinc-400">
+                Recent
+              </span>
+              <ChevronDown size={11} className="text-zinc-400" />
+            </div>
+            {RECENT_ITEMS.map((item) => (
+              <div
+                key={item}
+                className="group flex cursor-pointer items-center justify-between rounded-lg px-2 py-1.5"
+              >
+                <span className="truncate text-[11px] text-zinc-400">
+                  {item}
+                </span>
+                <MoreHorizontal size={11} className="shrink-0 text-zinc-300" />
+              </div>
+            ))}
+          </div>
+
+          {/* User */}
+          <div className="mt-auto border-t border-zinc-100 pt-3 flex items-center gap-2">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal-brand">
+              <span className="text-[9px] font-bold text-white">DA</span>
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold leading-none text-zinc-800">
+                Dave Ash
+              </p>
+              <p className="mt-0.5 text-[9px] text-zinc-400">Free plan</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Main canvas */}
+        <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden rounded-[16px] border border-zinc-200 bg-white px-8 py-10 text-center">
+          {/* Inner dot grid + glow */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,#D4D4D8_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_40%,black_40%,transparent_100%)]"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-1/3 h-[180px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(29,158,117,0.08)_0%,transparent_70%)]"
+          />
+
+          <div className="relative flex flex-col items-center gap-5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-teal-brand/15 bg-[#F0FDFA]">
+              <LogoIcon className="h-4 w-4 text-teal-brand" />
+            </div>
+            <h2 className="text-xl font-semibold tracking-tight text-zinc-900 md:text-2xl">
+              What should we build, <span className="text-teal-brand">Amy</span>
+              ?
+            </h2>
+
+            {/* Input mockup */}
+            <div className="flex w-full max-w-sm items-center gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 shadow-sm">
+              <span className="text-zinc-400">
+                <CirclePlus size={14} />
+              </span>
+              <span className="flex-1 text-left text-[12px] text-zinc-400">
+                Describe your agent...
+              </span>
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-teal-brand text-white">
+                <span className="text-xs">↑</span>
+              </div>
+            </div>
+
+            {/* Chips */}
+            <div className="flex flex-wrap justify-center gap-2">
+              {SUGGESTION_CHIPS.map((chip) => (
+                <span
+                  key={chip}
+                  className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-[11px] font-medium text-zinc-500"
+                >
+                  {chip}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Page ─────────────────────────────────────────────────────────────────── */
+
+export const AboutPage = () => {
+  return (
+    <main className="min-h-screen bg-[#FAFAFA] font-sans text-zinc-900">
+      {/* ── Hero ───────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden border-b border-zinc-100 px-6 pb-20 pt-28 md:pb-24 md:pt-36">
+        {/* Dot grid */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,#D4D4D8_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_40%,black_40%,transparent_100%)]"
+        />
+        {/* Glow */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/3 h-[280px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(29,158,117,0.09)_0%,transparent_70%)]"
+        />
+
+        <div className="relative mx-auto flex max-w-[680px] flex-col items-center gap-6 text-center">
+          <div className="inline-flex items-center gap-1.5 rounded-full border-[0.5px] border-zinc-400 px-3.5 py-1.5">
+            <span
+              aria-hidden
+              className="inline-block h-2 w-2 rounded-full bg-amber-400"
+            />
+            <span className="text-[11px] font-medium uppercase tracking-widest text-zinc-500">
               About
             </span>
           </div>
-          <h1 className="text-5xl md:text-[60px] font-medium text-[#000000] mb-8 leading-tight">
-            The Standard for <br className="hidden sm:block" /> Portable
-            Intelligence
+
+          <h1 className="text-[36px] font-semibold leading-tight tracking-tight text-zinc-900 md:text-[56px]">
+            The Standard for{" "}
+            <em className="not-italic text-teal-brand">
+              Portable Intelligence
+            </em>
           </h1>
-          <p className="text-[#52525B] text-[16px] font-normal max-w-2xl mx-auto leading-relaxed">
+
+          <p className="max-w-[560px] text-sm leading-relaxed text-zinc-500 md:text-base">
             In the rapidly evolving world of AI, consistency is often the
-            missing piece. Most AI interactions are ephemeral temporary
-            conversations lost in a chat history. At Anvila, we believe that an
-            AI&apos;s persona, logic, and skill-set should be more than just a
-            fleeting prompt. They should be permanent, structured, and reusable
-            assets.
+            missing piece. Most AI interactions are ephemeral — temporary
+            conversations lost in a chat history. At Anvila, we believe an
+            AI&apos;s persona, logic, and skill-set should be permanent,
+            structured, and reusable assets.
           </p>
-        </section>
+        </div>
+      </section>
 
-        {/* Dashboard Mockup */}
-        <section className="mx-auto max-w-5xl px-6 mb-24 md:mb-32">
-          <div
-            className="relative rounded-[28px] border border-gray-200 p-5"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, #c8cdd4 1.2px, transparent 1.2px)",
-              backgroundSize: "22px 22px",
-              backgroundColor: "#f0f2f4",
-            }}
-          >
-            <div className="flex gap-4" style={{ minHeight: "560px" }}>
-              {/* Sidebar */}
-              <div className="w-56 bg-white rounded-[20px] p-5 hidden md:flex flex-col shrink-0">
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-2">
-                    <AnvilaLogo color="#0C5D56" size={28} />
-                    <span className="font-bold text-[15px] text-[#0D1B1E]">
-                      Anvila
-                    </span>
-                  </div>
-                  <button className="w-7 h-7 bg-gray-100 rounded-md flex items-center justify-center text-gray-400 text-[11px] font-bold">
-                    &#91;&#8592;&#93;
-                  </button>
-                </div>
+      {/* ── Dashboard Mockup ───────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-[960px] px-6 py-16 md:py-20">
+        <DashboardMockup />
+      </section>
 
-                <button className="w-full h-10 bg-[#004D40] text-white text-[12px] font-bold rounded-xl flex items-center justify-center gap-2 mb-6">
-                  <div className="w-4 h-4 rounded-full border border-white/40 flex items-center justify-center text-[11px] leading-none">
-                    +
-                  </div>
-                  Create Agent
-                </button>
-
-                <div className="flex flex-col gap-5 mb-6">
-                  {[
-                    { icon: <Search className="w-4 h-4" />, label: "Search" },
-                    { icon: <Globe className="w-4 h-4" />, label: "Explore" },
-                    {
-                      icon: <BookMarked className="w-4 h-4" />,
-                      label: "My Agents",
-                    },
-                    {
-                      icon: <LucideBook className="w-4 h-4" />,
-                      label: "GitHub",
-                    },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="flex items-center gap-3 text-gray-500 text-[13px] font-medium"
-                    >
-                      <span className="text-gray-400">{item.icon}</span>
-                      {item.label}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="h-px bg-gray-100 mb-5" />
-
-                <div className="flex flex-col gap-3 flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
-                      Recent
-                    </span>
-                    <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-                  </div>
-                  {[
-                    "Real estate marketing ca...",
-                    "7 days of social media...",
-                    "Business plan outline...",
-                    "Landing page copy for...",
-                  ].map((item) => (
-                    <div
-                      key={item}
-                      className="flex items-center justify-between py-1 cursor-pointer group"
-                    >
-                      <span className="text-[12px] text-gray-400 truncate flex-1 group-hover:text-gray-600 transition-colors">
-                        {item}
-                      </span>
-                      <MoreHorizontal className="w-3.5 h-3.5 text-gray-300 shrink-0 ml-1" />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-auto pt-4 border-t border-gray-100 flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-[#1a2c11] flex items-center justify-center shrink-0">
-                    <span className="text-[10px] font-bold text-white">DA</span>
-                  </div>
-                  <div>
-                    <p className="text-[12px] font-bold text-gray-700 leading-none">
-                      Dave Ash
-                    </p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">Premium</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Main canvas */}
-              <div className="flex-1 bg-[#E8EAED] rounded-[20px] flex items-center justify-center flex-col px-10 text-center">
-                <h2 className="text-2xl md:text-[30px] font-bold mb-8 text-[#1A1A1A]">
-                  What should we build, Amy?
-                </h2>
-                <div className="w-full max-w-lg">
-                  <div className="w-full py-4 px-6 rounded-full border border-gray-200 bg-white flex items-center justify-between shadow-sm">
-                    <span className="flex items-center gap-3 text-gray-400 text-[14px]">
-                      <span className="text-gray-300 text-lg leading-none">
-                        +
-                      </span>
-                      Describe your agent...
-                    </span>
-                    <div className="w-9 h-9 bg-[#004D40] rounded-full flex items-center justify-center text-white text-base shrink-0">
-                      ↑
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-wrap justify-center gap-2.5 mt-6">
-                  {[
-                    "No-Code Builder",
-                    "Prompt Engineering",
-                    "Startup Founders",
-                    "AI Engineers",
-                  ].map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-4 py-1.5 bg-white text-[12px] text-[#52525B] font-medium rounded-full border border-gray-200"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+      {/* ── Mission ────────────────────────────────────────────────────────── */}
+      <section className="border-y border-zinc-100 bg-white px-6 py-20 md:py-24">
+        <div className="mx-auto flex max-w-[680px] flex-col items-center gap-6 text-center">
+          <div className="inline-flex items-center gap-1.5 rounded-full border-[0.5px] border-zinc-400 px-3.5 py-1.5">
+            <span
+              aria-hidden
+              className="inline-block h-2 w-2 rounded-full bg-amber-400"
+            />
+            <span className="text-[11px] font-medium uppercase tracking-widest text-zinc-500">
+              Our mission
+            </span>
           </div>
-        </section>
 
-        {/* Mission */}
-        <section className="mx-auto max-w-3xl px-6 text-center mb-24 md:mb-32">
-          <h2 className="text-4xl md:text-[60px] font-medium mb-8 text-[#000000]">
-            Our Mission
+          <h2 className="text-[32px] font-semibold leading-tight tracking-tight text-zinc-900 md:text-[48px]">
+            Building the distribution layer for{" "}
+            <em className="not-italic text-teal-brand">AI agents</em>.
           </h2>
-          <p className="text-[#52525B] text-[16px] leading-relaxed">
-            Our mission is to provide the distribution layer for the next
-            generation of AI Agents. We&apos;ve built the &quot;Forge&quot; that
-            transforms natural language descriptions into a standardized
-            architecture. By packaging an agent&apos;s Identity, Soul, and DNA
-            into a portable file system, we enable developers and creators to
-            build AI that is version controlled, shareable, and ready for
-            deployment.
+
+          <p className="max-w-[560px] text-sm leading-relaxed text-zinc-500 md:text-base">
+            We&apos;ve built the &ldquo;Forge&rdquo; that transforms natural
+            language descriptions into a standardized architecture. By packaging
+            an agent&apos;s Identity, Soul, and DNA into a portable file system,
+            we enable developers and creators to build AI that is
+            version-controlled, shareable, and ready for deployment.
           </p>
-        </section>
+        </div>
+      </section>
 
-        {/* Why we Build */}
-        <section className="mx-auto max-w-7xl px-6 pb-24 md:pb-40">
-          <h2 className="text-4xl md:text-[60px] font-medium text-center mb-12 md:mb-20 text-[#000000]">
-            Why we Build
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            {/* Card 1 */}
-            <div className="bg-white rounded-[20px] border border-gray-100 flex flex-col overflow-hidden shadow-sm">
-              <div
-                className="w-full h-64 bg-cover bg-center"
-                style={{ backgroundImage: "url('/tech.png')" }}
+      {/* ── Why We Build ───────────────────────────────────────────────────── */}
+      <section className="px-6 py-20 md:py-24">
+        <div className="mx-auto max-w-[960px]">
+          <div className="mb-12 flex flex-col items-center gap-4 text-center md:mb-16">
+            <div className="inline-flex items-center gap-1.5 rounded-full border-[0.5px] border-zinc-400 px-3.5 py-1.5">
+              <span
+                aria-hidden
+                className="inline-block h-2 w-2 rounded-full bg-amber-400"
               />
-              <div className="p-8">
-                <h3 className="text-[20px] font-semibold mb-3 text-[#000000]">
-                  From Chaos to Structure
-                </h3>
-                <p className="text-[#52525B] text-[16px] font-normal leading-relaxed">
-                  We replace messy, inconsistent prompts with a clean, GitHub
-                  ready file protocol.
-                </p>
-              </div>
+              <span className="text-[11px] font-medium uppercase tracking-widest text-zinc-500">
+                Why we build
+              </span>
             </div>
-
-            {/* Card 2 */}
-            <div className="rounded-[20px] flex flex-col overflow-hidden shadow-sm">
-              <div
-                className="w-full h-64 bg-cover bg-center"
-                style={{ backgroundImage: "url('/hand.png')" }}
-              />
-              <div className="p-8 bg-[#0C5D56]">
-                <h3 className="text-[20px] font-semibold mb-3 text-white">
-                  Collaborative Innovation
-                </h3>
-                <p className="text-white/80 text-[16px] font-normal leading-relaxed">
-                  Through our Public Registry, we empower a global community to
-                  share and build upon the world&apos;s best AI blueprints.
-                </p>
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white rounded-[20px] border border-gray-100 flex flex-col overflow-hidden shadow-sm">
-              <div
-                className="w-full h-64 bg-cover bg-center"
-                style={{ backgroundImage: "url('/glass.png')" }}
-              />
-              <div className="p-8">
-                <h3 className="text-[20px] font-semibold mb-3 text-[#000000]">
-                  Professional Reliability
-                </h3>
-                <p className="text-[#52525B] text-[16px] font-normal leading-relaxed">
-                  We treat AI Agents as digital employees. By standardizing
-                  their &quot;Instruction Manuals,&quot; we ensure they remain
-                  reliable tools for businesses and builders alike.
-                </p>
-              </div>
-            </div>
+            <h2 className="text-[32px] font-semibold leading-tight tracking-tight text-zinc-900 md:text-[44px]">
+              Principles that drive us
+            </h2>
           </div>
-        </section>
-      </main>
-    </div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            {WHY_CARDS.map((card) => (
+              <div
+                key={card.title}
+                className={`flex flex-col overflow-hidden rounded-2xl ${
+                  card.dark
+                    ? "border border-white/15 bg-teal-brand"
+                    : "border border-zinc-200 bg-white"
+                }`}
+              >
+                {/* Image */}
+                <div
+                  className="h-56 w-full bg-cover bg-center"
+                  style={{ backgroundImage: `url('${card.image}')` }}
+                />
+
+                {/* Text */}
+                <div className="flex flex-col gap-3 p-6">
+                  {/* Subtle corner glow on dark card */}
+                  <h3
+                    className={`text-base font-semibold ${card.dark ? "text-white" : "text-zinc-900"}`}
+                  >
+                    {card.title}
+                  </h3>
+                  <p
+                    className={`text-sm leading-relaxed ${card.dark ? "text-white/75" : "text-zinc-500"}`}
+                  >
+                    {card.body}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
   );
 };
