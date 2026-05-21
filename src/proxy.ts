@@ -17,10 +17,6 @@ const PUBLIC_PATHS = new Set([
   '/forgot-password/check-mail',
   '/reset-password/success',
   '/auth/oauth/callback',
-  '/generator/my-agents',
-  '/generator',
-  '/generator/create-agent',
-  
 ])
 
 /** Prefixes that are always public (static assets, Next internals, our own API routes) */

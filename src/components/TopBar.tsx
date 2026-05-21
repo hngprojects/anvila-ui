@@ -72,7 +72,7 @@ export default function TopBar() {
           </button>
         </div>
 
-        {/* Parent container of Publish button, Refresh, and Close icons */}
+ 
         <div 
           style={{ width: "188px", height: "32px", gap: "12px", display: "flex", alignItems: "center", justifyContent: "flex-end" }}
           className="shrink-0"
