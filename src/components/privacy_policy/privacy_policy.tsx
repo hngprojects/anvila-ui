@@ -47,20 +47,20 @@ const QUICK_SUMMARY_CARDS = [
 const DETAILED_ITEMS = [
   {
     id: 1,
-    icon: <DataCollectIcon className="h-10 w-10" />,
+    icon: <DataCollectIcon className="h-6 w-6" />,
     title: "Data we collect",
     description: "Learn about the type of data that we collect to provide and improve our services."
   },
   {
     id: 2,
-    icon: <HowWeUseDataIcon className="h-10 w-10" />,
+    icon: <HowWeUseDataIcon className="h-6 w-6" />,
     title: "How we use Data",
     description: "Understand how we use your data to deliver and enhance your experience."
   },
   {
     id: 3,
     icon: <DataSharingIcon className="h-6 w-6" />,
-    title: "Data shearing and third parties",
+    title: "Data sharing and third parties",
     description: "See when and how we share data with trusted third parties."
   },
   {
@@ -108,6 +108,22 @@ const DATA_CONTROL_CARDS = [
   }
 ];
 
+function ChevronLeftIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={`shrink-0 ${className}`}>
+      <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function ChevronRightIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={`shrink-0 ${className}`}>
+      <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
 export function PrivacyPolicy() {
   const [currentCard, setCurrentCard] = React.useState(0);
 
@@ -120,124 +136,127 @@ export function PrivacyPolicy() {
   };
 
   return (
-    <main className="min-h-screen md:bg-white bg-[#F6F7F7] font-sans text-copy-muted">
-      <div className="mx-auto max-w-[1440px] px-6 py-6 md:px-10 lg:px-20">
-        <section 
-          className="flex w-full md:max-w-[1439px] max-w-[342px] md:h-[310px] min-h-[207px] flex-col items-center text-center md:pt-[106px] pt-8 md:gap-[40px] gap-[8px] mb-8 mx-auto"
-        >
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+    <main className="min-h-screen bg-background font-sans text-copy-muted">
+      <div className="mx-auto max-w-[960px] px-6 py-10 md:px-10 md:py-16">
+        {/* Hero Section */}
+        <section className="relative mb-16 flex flex-col items-center text-center md:mb-20">
+          {/* Ambient teal glow */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[200px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(29,158,117,0.08)_0%,transparent_70%)]"
+          />
+
+          <div className="relative flex flex-col items-center gap-6">
             <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex h-20 w-20 items-center justify-center rounded-full md:border md:border-teal-brand/20 md:bg-teal-brand/5 text-teal-brand shrink-0 md:mb-0"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex h-16 w-16 items-center justify-center rounded-full border border-teal-brand/20 bg-teal-surface text-teal-brand"
             >
-              <ShieldPolicyIcon className="h-[56px] w-[56px]" />
+              <ShieldPolicyIcon className="h-8 w-8" />
             </motion.div>
             
             <motion.h1 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl tracking-tight text-logo md:text-5xl lg:text-6xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
+              className="text-[32px] font-semibold leading-tight tracking-tight text-copy-heading md:text-[48px]"
             >
               Privacy & Data Policy
             </motion.h1>
-          </div>
 
-          <div className="flex flex-col items-center gap-4">
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-lg font-medium text-copy-muted text-[18px]"
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="max-w-[500px] text-base text-copy-muted"
             >
-              How your AI Agent collects, users, and protects your data.
+              How your AI Agent collects, uses, and protects your data.
             </motion.p>
             
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="max-w-2xl text-[14px] leading-relaxed"
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="max-w-[560px] text-sm leading-relaxed text-copy-faint"
             >
               We believe in transparency and giving you control over your data. Here&apos;s everything you need to know.
             </motion.p>
           </div>
         </section>
 
-        <section className="mb-16">
-          <h2 className="mb-6 text-xl font-bold text-logo text-center md:text-left">Quick Summary</h2>
+        {/* Quick Summary */}
+        <section className="mb-16 md:mb-20">
+          <h2 className="mb-6 text-xl font-semibold text-copy-heading">Quick Summary</h2>
           
           {/* Mobile Slider */}
-          <div className="relative flex items-center justify-center md:hidden mb-12">
+          <div className="relative flex items-center justify-center md:hidden">
             <button 
               onClick={prevCard}
-              className="absolute left-0 z-10 p-2 text-[#0C0E0D] hover:opacity-70 transition-opacity"
+              className="absolute left-0 z-10 flex h-8 w-8 items-center justify-center rounded-full text-copy-heading transition-opacity hover:opacity-70"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <ChevronLeftIcon />
             </button>
 
-            <div className="flex justify-center w-full px-12">
+            <div className="flex justify-center w-full px-10">
               <motion.div
                 key={currentCard}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex w-[230px] h-[188px] flex-col items-center justify-center rounded-lg border-r border-logo/10 bg-[#F4F4F5] p-6 text-center"
-                style={{ gap: '16px' }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex w-full max-w-[260px] flex-col items-center rounded-2xl border border-border-subtle bg-surface-muted p-6 text-center"
               >
-                <div>
+                <div className="mb-4 text-teal-brand">
                   {QUICK_SUMMARY_CARDS[currentCard].icon}
                 </div>
-                <h3 className="text-sm font-bold text-logo leading-tight">{QUICK_SUMMARY_CARDS[currentCard].title}</h3>
-                <p className="text-[11px] leading-tight text-copy-muted">{QUICK_SUMMARY_CARDS[currentCard].description}</p>
+                <h3 className="mb-2 text-sm font-semibold text-copy-heading">{QUICK_SUMMARY_CARDS[currentCard].title}</h3>
+                <p className="text-xs leading-relaxed text-copy-muted">{QUICK_SUMMARY_CARDS[currentCard].description}</p>
               </motion.div>
             </div>
 
             <button 
               onClick={nextCard}
-              className="absolute right-0 z-10 p-2 text-[#0C0E0D] hover:opacity-70 transition-opacity"
+              className="absolute right-0 z-10 flex h-8 w-8 items-center justify-center rounded-full text-copy-heading transition-opacity hover:opacity-70"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <ChevronRightIcon />
             </button>
           </div>
 
           {/* Desktop Grid */}
-          <div className="hidden grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 md:grid">
+          <div className="hidden grid-cols-5 gap-3 md:grid">
             {QUICK_SUMMARY_CARDS.map((card, idx) => (
               <motion.div
                 key={card.title}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="flex h-[188px] flex-col items-center justify-center rounded-lg border-r border-transparent bg-[#F4F4F5] p-6 text-center transition-all hover:shadow-sm"
+                className="flex flex-col items-center rounded-2xl border border-border-subtle bg-surface-muted p-5 text-center transition-shadow hover:shadow-sm"
               >
-                <div className="mb-4">
+                <div className="mb-3 text-teal-brand">
                   {card.icon}
                 </div>
-                <h3 className="mb-2 text-sm font-bold text-logo">{card.title}</h3>
-                <p className="text-[11px] leading-tight text-copy-muted">{card.description}</p>
+                <h3 className="mb-1.5 text-sm font-semibold text-copy-heading">{card.title}</h3>
+                <p className="text-xs leading-relaxed text-copy-muted">{card.description}</p>
               </motion.div>
             ))}
           </div>
         </section>
 
+        {/* Warning Banner */}
         <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-12 flex items-center justify-center md:justify-start gap-3 rounded-lg py-2 text-sm font-medium"
+          className="mb-12 flex items-center justify-center gap-2.5 rounded-xl border border-warning/20 bg-warning/5 px-4 py-3 text-sm font-medium text-warning md:justify-start"
         >
-          <DangerIcon className="h-5 w-5" />
+          <DangerIcon className="h-5 w-5 shrink-0" />
           <p>We never use your conversation for advertising.</p>
         </motion.div>
 
-        <section className="hidden md:grid mb-24 grid-cols-1 gap-12 lg:grid-cols-12">
-          <div className="lg:col-span-7 space-y-4">
+        {/* Detailed Items + AI Transparency */}
+        <section className="mb-16 grid-cols-1 gap-8 md:mb-20 md:grid lg:grid-cols-12">
+          <div className="space-y-3 lg:col-span-7">
             {DETAILED_ITEMS.map((item, idx) => (
               <motion.div
                 key={item.id}
@@ -245,35 +264,33 @@ export function PrivacyPolicy() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className="flex items-center gap-4 rounded-lg bg-[#F4F4F5] p-3 transition-colors hover:bg-gray-100/80"
+                className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-surface-muted p-4 transition-colors hover:bg-surface-base"
               >
-                <div 
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F0FDFA] overflow-hidden"
-                >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-surface text-teal-brand">
                   {item.icon}
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-logo">
+                  <h4 className="text-sm font-semibold text-copy-heading">
                     {item.id}. {item.title}
                   </h4>
-                  <p className="text-xs text-copy-muted">{item.description}</p>
+                  <p className="text-xs leading-relaxed text-copy-muted">{item.description}</p>
                 </div>
               </motion.div>
             ))}
           </div>
 
-          <div className="lg:col-span-5 flex items-center">
+          <div className="mt-8 flex items-start lg:col-span-5 lg:mt-0">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="flex w-full max-w-[495px] h-[246px] flex-col rounded-lg border border-[#9E9F9E] bg-[#FBFFFE] p-8 shadow-sm"
+              className="flex w-full flex-col rounded-2xl border border-border-subtle bg-teal-surface/50 p-6"
             >
-              <h3 className="text-lg font-bold text-logo">AI Transparency</h3>
-              <ul className="mt-6 flex w-full max-w-[416px] flex-col gap-4">
+              <h3 className="text-base font-semibold text-copy-heading">AI Transparency</h3>
+              <ul className="mt-4 flex flex-col gap-3">
                 {AI_TRANSPARENCY_LIST.map((text, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-xs leading-tight">
-                    <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-copy-muted" />
+                  <li key={idx} className="flex items-start gap-3 text-xs leading-relaxed text-copy-muted">
+                    <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-brand" />
                     <span>{text}</span>
                   </li>
                 ))}
@@ -282,29 +299,30 @@ export function PrivacyPolicy() {
           </div>
         </section>
 
+        {/* Data Control */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="rounded-xl border border-[#CECFCF] bg-[#F0FDFA]/28 p-10 md:p-12"
+          className="rounded-2xl border border-border-subtle bg-teal-surface/30 p-8 md:p-10"
         >
           <div className="mb-8">
-            <h2 className="mb-2 text-xl font-bold text-logo">Your Data, your control</h2>
+            <h2 className="mb-2 text-xl font-semibold text-copy-heading">Your Data, your control</h2>
             <p className="text-sm text-copy-muted">Manage your data and privacy preferences.</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {DATA_CONTROL_CARDS.map((card) => (
               <motion.div
                 key={card.title}
                 whileHover={{ y: -4 }}
-                className="group flex cursor-pointer items-center gap-4 rounded-lg border border-transparent bg-white p-6 shadow-sm transition-all hover:border-teal-brand/20 hover:shadow-md"
+                className="group flex cursor-pointer items-center gap-4 rounded-2xl border border-transparent bg-surface-base p-5 shadow-sm transition-all hover:border-teal-brand/20 hover:shadow-md"
               >
-                <div className="shrink-0">
+                <div className="shrink-0 text-teal-brand">
                   {card.icon}
                 </div>
                 <div>
-                  <h4 className="mb-1 text-sm font-bold text-logo">{card.title}</h4>
+                  <h4 className="mb-1 text-sm font-semibold text-copy-heading">{card.title}</h4>
                   <p className="text-xs leading-snug text-copy-muted">{card.description}</p>
                 </div>
               </motion.div>
