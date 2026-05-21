@@ -38,13 +38,15 @@ export default function PaymentSuccessModal({
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const previousBodyOverflowRef = useRef<string>("");
 
   // lock body scroll
   useEffect(() => {
     if (isOpen) {
-      previousFocusRef.current = document.activeElement as HTMLElement;
-      document.body.style.overflow = "hidden";
-      modalRef.current?.focus();
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    previousBodyOverflowRef.current = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    modalRef.current?.focus();
 
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
@@ -74,9 +76,9 @@ export default function PaymentSuccessModal({
       document.addEventListener("keydown", handleKeyDown);
       return () => {
         document.removeEventListener("keydown", handleKeyDown);
-        document.body.style.overflow = "";
+        document.body.style.overflow = previousBodyOverflowRef.current;
         previousFocusRef.current?.focus();
-      };
+    };
     }
   }, [isOpen, onClose]);
 
@@ -168,6 +170,7 @@ export default function PaymentSuccessModal({
             <button
               type="button"
               onClick={onDownloadZip}
+              disabled={!onDownloadZip}
               className="inline-flex items-center gap-2 justify-center rounded-sm bg-[#F6F7F7] hover:bg-white px-3.5 py-1.5 text-xs font-bold text-black transition-all shadow-sm"
             >
               <Box className="h-3.5 w-3.5" />  
@@ -233,8 +236,8 @@ export default function PaymentSuccessModal({
         <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button
             type="button"
-            onClick={onPublish}
-            disabled={isPublishing}
+            onClick={onPublish}      
+            disabled={isPublishing || !onPublish}
             className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#004D4D] py-3 text-sm font-bold text-white shadow-sm hover:bg-[#003333] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ArrowUpFromLine className="h-4 w-4 stroke-[2.5]" />
