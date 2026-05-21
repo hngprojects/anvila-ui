@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { maskEmail } from "@/lib/utils";
 import { Logo } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 
 const RESEND_TIMER_DURATION = 60;
 
@@ -59,18 +60,14 @@ function CheckMailContent() {
         <p className="text-sm text-[#667085] text-center mb-3">
           Didn&apos;t receive the link?
         </p>
-        <button
+        <Button
           type="button"
           disabled={!isFinished}
           onClick={handleResendClick}
-          className={`w-full py-3 rounded-xl text-sm font-semibold transition-all text-center ${
-            isFinished
-              ? "bg-[#005F5A] hover:bg-[#004D4D] text-white shadow-sm cursor-pointer"
-              : "bg-[#667085] text-[#F2F4F7] cursor-not-allowed"
-          }`}
+          className="w-full rounded-xl text-sm font-semibold disabled:bg-[#667085] disabled:text-[#F2F4F7] disabled:cursor-not-allowed disabled:opacity-100"
         >
           Resend Link
-        </button>
+        </Button>
       </div>
     </div>
   );
