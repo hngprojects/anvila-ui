@@ -5,20 +5,54 @@ import {
     FileText,
     Cloud,
     CircleCheck,
+    Loader2
 } from "lucide-react";
 import Modal from "./Modal";
-
+import { useRouter } from "next/navigation";
 import { GithubPublishModal } from "./publish-modal";
+import { useAgent } from "@/context/agent";
 
 // ─── Header Actions ───────────────────────────────────────────────────────────
 
 function HeaderActions() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [modalType, setModalType] = React.useState<"publish" | "private">("publish");
+  const [isSaving, setIsSaving] = React.useState(false);
+  const router = useRouter();
+  const { createAgent } = useAgent();
 
-  const openModal = (type: "publish" | "private") => {
-    setModalType(type);
-    setIsModalOpen(true);
+  const handleSavePrivate = async () => {
+    setIsSaving(true);
+    try {
+      await createAgent({
+        name: "New Private Agent",
+        categories: "Custom",
+        visibility: "Private"
+      });
+      setModalType("private");
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    setIsSaving(true);
+    try {
+      await createAgent({
+        name: "New Public Agent",
+        categories: "Institutional",
+        visibility: "Public"
+      });
+      setModalType("publish");
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -27,16 +61,20 @@ function HeaderActions() {
         <RefreshCw size={18} />
       </button>
       <button 
-        onClick={() => openModal("private")}
-        className="rounded-lg border border-gray-300 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors whitespace-nowrap"
+        onClick={handleSavePrivate}
+        disabled={isSaving}
+        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors whitespace-nowrap disabled:opacity-50"
       >
+        {isSaving && modalType === "private" ? <Loader2 size={14} className="animate-spin" /> : null}
         <span className="hidden sm:inline">Save as Private</span>
         <span className="sm:hidden">Save</span>
       </button>
       <button 
-        onClick={() => openModal("publish")}
-        className="rounded-lg bg-[#1a6b5a] px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-[#155a4a] transition-colors"
+        onClick={handlePublish}
+        disabled={isSaving}
+        className="flex items-center gap-2 rounded-lg bg-[#1a6b5a] px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-[#155a4a] transition-colors disabled:opacity-50"
       >
+        {isSaving && modalType === "publish" ? <Loader2 size={14} className="animate-spin" /> : null}
         Publish
       </button>
 

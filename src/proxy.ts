@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTokensFromRequest } from '@/lib/auth/cookies'
 
+/**
+ * Public paths — no auth required.
+ * Everything else is protected by default.
+ */
 const PUBLIC_PATHS = new Set([
   '/',
   '/login',
@@ -11,16 +15,14 @@ const PUBLIC_PATHS = new Set([
   '/forgot-password',
   '/reset-password',
   '/auth/oauth/callback',
-  '/explore',
-  '/pricing',
-  '/faq',
-  '/terms',
-  '/privacy_policy',
-  '/contact',
-  '/cookies-policy'
+  '/generator',
+  '/generator/create-agent',
+  '/my-agents',
+  '/my-agents/create-agent',
+  '/my-agents/create-agent/:id',
 ])
 
- 
+/** Prefixes that are always public (static assets, Next internals, our own API routes) */
 const PUBLIC_PREFIXES = ['/_next', '/favicon', '/api/auth', '/static', '/images']
 
 function isPublic(pathname: string): boolean {

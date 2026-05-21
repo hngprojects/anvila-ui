@@ -5,6 +5,7 @@ import { TextAlignJustify } from "lucide-react";
 import Sidebar from "@/components/protected/sideBar";
 import { Logo } from "@/components/icons";
 import { AuthProvider } from "@/context/auth";
+import { AgentProvider } from "@/context/agent";
 
 export default function GeneratorClientLayout({
   children,
@@ -13,7 +14,9 @@ export default function GeneratorClientLayout({
 }) {
   return (
     <AuthProvider>
-      <LayoutContent>{children}</LayoutContent>
+      <AgentProvider>
+        <LayoutContent>{children}</LayoutContent>
+      </AgentProvider>
     </AuthProvider>
   );
 }
