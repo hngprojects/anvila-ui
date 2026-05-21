@@ -5,10 +5,10 @@ import Link from 'next/link';
 
 export default function ResetSuccessDisplay() {
   return (
-    <div className="w-full bg-white p-8 rounded-lg shadow-md">
+    <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
       {/* Back Button */}
       <Link 
-        href="/auth/reset-password"
+        href="/reset-password"
         className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors">
         <ChevronLeft size={16} /> Back
       </Link>
@@ -20,7 +20,7 @@ export default function ResetSuccessDisplay() {
    
         <Link
           className="block text-center w-full py-2.5 bg-[#004D4D] hover:bg-[#003636] text-white rounded-lg text-sm transition-all shadow-sm"
-          href="/auth/forgot-password"
+          href="/login"
         >
           Log In
         </Link>
