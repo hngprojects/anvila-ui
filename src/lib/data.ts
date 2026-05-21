@@ -3,7 +3,7 @@ import { TermsItem } from "@/app/types/termsItem";
 export const termsData: TermsItem[] = [
   {
     header: "Acceptance of Terms",
-    body: "By accessing or using Anvila (the “Service”), you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree, you may not use the Service. If you use the Servic
+    body: "By accessing or using Anvila (the “Service”), you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree, you may not use the Service. If you use the Service"
   },
   {
     header: "Accounts & Access",
@@ -16,11 +16,11 @@ export const termsData: TermsItem[] = [
   },
   {
     header: "Agents & Content",
-    body: "“Agents” are packaged AI configurations  including identity, soul, and dna files generated, uploaded, or published through the Service. You retain ownership of the Agents you create.By publ
+    body: "“Agents” are packaged AI configurations  including identity, soul, and dna files generated, uploaded, or published through the Service. You retain ownership of the Agents you create.By publishing an Agent to the registry, you grant Anvila a worldwide, royalty-free license to display and distribute your Agent through the Service. You are responsible for the content and behavior of your Agents and must ensure they comply with these Terms.",  
   },
   {
     header: "Explore",
-    body: "The registry is a public index of community-published Agents. We do not guarantee the accuracy, safety, or fitness for purpose of any third-party Agent. Use Agents from the registry at your
+    body: "The registry is a public index of community-published Agents. We do not guarantee the accuracy, safety, or fitness for purpose of any third-party Agent. Use Agents from the registry at your"
   },
   {
     header: "Acceptable Use",
@@ -34,11 +34,11 @@ export const termsData: TermsItem[] = [
   },
   {
     header: "Intellectual Property",
-    body: "The Service, including its branding, UI, documentation, and underlying code (other than open source components), is owned by Anvila and protected by applicable IP laws. Nothing in these Ter
+    body: "The Service, including its branding, UI, documentation, and underlying code (other than open source components), is owned by Anvila and protected by applicable IP laws. Nothing in these Terms grants you any ownership rights in the Service or its content, except for the limited license to use the Service as expressly stated herein. You retain ownership of your Agents and any content you create using the Service.",
   },
   {
     header: "Third Party Services",
-    body: "Anvila integrates with third-party services such as GitHub and AI model providers. Your use of those services is governed by their respective terms. We are not responsible for third-party s
+    body: "Anvila integrates with third-party services such as GitHub and AI model providers. Your use of those services is governed by their respective terms. We are not responsible for third-party services or their content, and we do not endorse any third-party service or content accessed through the Service.",
   },
   {
     header: "Disclaimers",
@@ -46,11 +46,11 @@ export const termsData: TermsItem[] = [
   },
   {
     header: "Limitation of Liability",
-    body: "To the maximum extent permitted by law, Anvila shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits, data, or goodwill arisi
+    body: "To the maximum extent permitted by law, Anvila shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits, data, or goodwill arising out of or in connection with your use of the Service, even if advised of the possibility of such damages.",
   },
   {
     header: "Termination",
-    body: "We may suspend or terminate your access to the Service at any time for violation of these Terms. You may stop using the Service at any time. Sections that by their nature should survive ter
+    body: "We may suspend or terminate your access to the Service at any time for violation of these Terms. You may stop using the Service at any time. Sections that by their nature should survive termination will survive, including ownership provisions, disclaimers, and limitations of liability.",
   },
   {
     header: "Changes to Terms",
