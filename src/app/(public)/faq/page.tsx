@@ -1,4 +1,4 @@
-import { FaqPage } from '@/components/faq/FAQPage'
+import { FaqPage } from '@/components/faq/faq-page'
 
 export const metadata = {
   title: 'FAQs | Anvila',
