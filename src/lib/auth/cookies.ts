@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 import { NextResponse } from "next/server";
 
 const ACCESS_TOKEN_KEY = "at";
