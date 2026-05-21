@@ -9,7 +9,6 @@ import { Logo } from "@/components/icons";
 const RESEND_TIMER_DURATION = 60;
 
 function CheckMailContent() {
-  const [timeLeft, setTimeLeft] = useState(60);
   const [isFinished, setIsFinished] = useState(false);
   const searchParams = useSearchParams();
   const userEmail = searchParams.get("email") || "";
@@ -17,19 +16,12 @@ function CheckMailContent() {
 
   useEffect(() => {
     if (isFinished) return;
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        const newTime = prev - 1;
-        if (newTime <= 0) setIsFinished(true);
-        return newTime;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
+    const timer = setTimeout(() => setIsFinished(true), RESEND_TIMER_DURATION * 1000);
+    return () => clearTimeout(timer);
   }, [isFinished]);
 
   const handleResendClick = () => {
     if (!isFinished) return;
-    setTimeLeft(RESEND_TIMER_DURATION);
     setIsFinished(false);
     router.push("/reset-password");
   };
@@ -37,7 +29,7 @@ function CheckMailContent() {
   return (
     <div className="flex w-full max-w-[580px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
       <Link
-        href="forgot-password"
+        href="/forgot-password"
         className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors"
       >
         <ChevronLeft size={16} /> Back
