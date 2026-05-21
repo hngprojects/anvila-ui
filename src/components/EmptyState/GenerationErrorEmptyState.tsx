@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AlertCircle, AlertTriangle, Clock, Edit, HelpCircle, RefreshCw, Sparkles, X } from "lucide-react";
 import type { GenerationErrorEmptyStateProps } from "@/types";
-import { SUPPORT_SUBJECTS, SUPPORT_BODIES } from "../../../constants/support";
-import { GENERIC_STEPS, ERROR_TIMEOUT_STEPS } from "../../../constants/steps";
-import { FALLBACK_ERROR_DETAIL, TIMEOUT_ERROR_DETAIL, DEFAULT_ERROR_CODES } from "../../../constants/content";
+import { SUPPORT_SUBJECTS, SUPPORT_BODIES } from "@/constants/support";
+import { GENERIC_STEPS, ERROR_TIMEOUT_STEPS } from "@/constants/steps";
+import { FALLBACK_ERROR_DETAIL, TIMEOUT_ERROR_DETAIL, DEFAULT_ERROR_CODES } from "@/constants/content";
 import { buildMailtoUrl } from "@/utils/support";
 
 
@@ -47,8 +47,8 @@ function GenericError({ errorCode, errorDetail, onRetry, onReport }: Pick<Genera
   }
 
   function handleReport() {
-    if (onReport) { onReport(); return; }
-    window.location.href = buildMailtoUrl(SUPPORT_SUBJECTS.failed, SUPPORT_BODIES.failed, errorCode);
+      if (onReport) { onReport(); return; }
+    window.open(buildMailtoUrl(SUPPORT_SUBJECTS.failed, SUPPORT_BODIES.failed, errorCode), "_blank", "noopener");
   }
 
   return (
@@ -87,7 +87,7 @@ function GenericError({ errorCode, errorDetail, onRetry, onReport }: Pick<Genera
 
         <div className="flex flex-col gap-2.5">
           <button type="button" onClick={handleRetry} disabled={retrying}
-            className="w-full flex items-center justify-center gap-2 bg-[#0C5D56] hover:bg-[#0a4d47] active:scale-[0.98] text-white text-sm font-medium py-3 rounded-xl transition-all duration-150 disabled:opacity-70">
+            className="w-full flex items-center justify-center gap-2 bg-brand-primary hover:bg-[#0a4d47] active:scale-[0.98] text-white text-sm font-medium py-3 rounded-xl transition-all duration-150 disabled:opacity-70">
             <RefreshCw className={`w-4 h-4 ${retrying ? "animate-spin" : ""}`} />
             {retrying ? "Retrying…" : "Try again"}
           </button>
@@ -126,20 +126,18 @@ const triggerRetryOnce = useCallback(() => {
 useEffect(() => {
   if (cancelled) return;
 
-  timerRef.current = setInterval(() => {
-    setCountdown((c) => {
-      if (c <= 1) {
-        clearInterval(timerRef.current!);
-        triggerRetryOnce();
-        return 0;
-      }
-
-      return c - 1;
-    });
-  }, 1000);
-
+ timerRef.current = setInterval(() => {
+      setCountdown((c) => (c <= 1 ? 0 : c - 1));
+    }, 1000);
   return () => clearInterval(timerRef.current!);
 }, [cancelled, triggerRetryOnce]);
+
+ useEffect(() => {
+    if (!cancelled && countdown === 0) {
+      if (timerRef.current) clearInterval(timerRef.current);
+      triggerRetryOnce();
+    }
+  }, [countdown, cancelled, triggerRetryOnce]);
 
 
   function handleRetry() {

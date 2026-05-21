@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { Lock, Sparkles, X, Zap } from "lucide-react";
 import type { GenerationLoadingStateProps } from "@/types";
-import { GENERATION_STEPS } from "../../../constants/steps";
-import { PROGRESS_MESSAGES } from "../../../constants/content";
+import { GENERATION_STEPS } from "@/constants/steps";
+import { PROGRESS_MESSAGES } from "@/constants/content";
 
 type StepState = "done" | "active" | "pending";
 
@@ -161,9 +161,8 @@ export default function GenerationLoadingState({
           </div>
         )}
 
-        <button type="button" onClick={onCancel} disabled={!onCancel}
-          className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-600 text-sm font-medium py-3 rounded-xl border border-gray-200 transition-all duration-150">
-          <X className="w-4 h-4 text-gray-400" />
+         <button type="button" onClick={onCancel} disabled={!onCancel}
+          className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:scale-[0.98] text-gray-600 text-sm font-medium py-3 rounded-xl border border-gray-200 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white">
           Cancel generation
         </button>
 

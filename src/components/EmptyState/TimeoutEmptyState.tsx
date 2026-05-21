@@ -2,8 +2,8 @@
 
 import { Clock, RefreshCw, HelpCircle, Sparkles } from "lucide-react";
 import type { GenerationTimeoutEmptyStateProps } from "@/types";
-import { SUPPORT_SUBJECTS, SUPPORT_BODIES } from "../../../constants/support";
-import { TIMEOUT_STEPS } from "../../../constants/steps";
+import { SUPPORT_SUBJECTS, SUPPORT_BODIES } from "@/constants/support";
+import { TIMEOUT_STEPS } from "@/constants/steps";
 import { buildMailtoUrl } from "@/utils/support";
 
 export default function GenerationTimeoutEmptyState({
@@ -63,7 +63,7 @@ export default function GenerationTimeoutEmptyState({
               <div>
                 <p className="text-sm font-medium text-gray-800 leading-tight">{step.title}</p>
                 <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
-                  {typeof step.description === "function" ? step.description(0) : step.description}
+                  {step.description}
                 </p>
               </div>
             </div>

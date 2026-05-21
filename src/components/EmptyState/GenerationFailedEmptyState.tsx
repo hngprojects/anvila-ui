@@ -2,9 +2,9 @@
 
 import { AlertCircle, AlertTriangle, RefreshCw, HelpCircle, Sparkles } from "lucide-react";
 import type { GenerationFailedEmptyStateProps } from "@/types";
-import { SUPPORT_SUBJECTS, SUPPORT_BODIES } from "../../../constants/support";
-import { GENERIC_STEPS } from "../../../constants/steps";
-import { FALLBACK_ERROR_DETAIL, DEFAULT_ERROR_CODES } from "../../../constants/content";
+import { SUPPORT_SUBJECTS, SUPPORT_BODIES } from "@/constants/support";
+import { GENERIC_STEPS } from "@/constants/steps";
+import { FALLBACK_ERROR_DETAIL, DEFAULT_ERROR_CODES } from "@/constants/content";
 import { buildMailtoUrl } from "@/utils/support";
 
 export default function GenerationFailedEmptyState({
@@ -74,7 +74,7 @@ export default function GenerationFailedEmptyState({
               <div>
                 <p className="text-sm font-medium text-gray-800 leading-tight">{step.title}</p>
                 <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
-                  {typeof step.description === "function" ? step.description(0) : step.description}
+                 {step.description}
                 </p>
               </div>
             </div>

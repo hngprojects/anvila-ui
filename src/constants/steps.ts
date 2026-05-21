@@ -45,10 +45,8 @@ export const ERROR_TIMEOUT_STEPS: Step[] = [
   {
     number: 2,
     title: "Retry automatically",
-    description: (cd: number) =>
-      cd > 0
-        ? `We'll retry once in ${cd}s — or click below to retry now`
-        : "Click below to retry now",
+    description: "We'll retry shortly — or click below to retry now",
+    hasCountdown: true,
   },
   {
     number: 3,

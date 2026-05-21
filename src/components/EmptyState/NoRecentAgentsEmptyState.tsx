@@ -2,7 +2,7 @@
 
 import { Bot, Plus, Info, Zap, Radio, Pencil, Briefcase, Sparkles } from "lucide-react";
 import type { NoRecentAgentsEmptyStateProps } from "@/types";
-import { SUPPORT_SUBJECTS, SUPPORT_BODIES } from "../../../constants/support";
+import { SUPPORT_SUBJECTS, SUPPORT_BODIES } from "@/constants/support";
 import { buildMailtoUrl } from "@/utils/support";
 
 // Features stay here — they contain JSX icons

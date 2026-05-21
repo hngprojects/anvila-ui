@@ -115,7 +115,8 @@ export interface MobileDrawerProps {
 export interface Step {
   number: number;
   title: string;
-  description: string | ((countdown: number) => string);
+  description: string;
+  hasCountdown?: boolean;
 }
 
 export interface Feature {

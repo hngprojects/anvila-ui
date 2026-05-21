@@ -2,8 +2,8 @@
 
 import { Search, RefreshCw, HelpCircle, Sparkles } from "lucide-react";
 import type { NoSearchResultsEmptyStateProps } from "@/types";
-import { SUPPORT_SUBJECTS, SUPPORT_BODIES } from "../../../constants/support";
-import { DEFAULT_SEARCH_SUGGESTIONS } from "../../../constants/content";
+import { SUPPORT_SUBJECTS, SUPPORT_BODIES } from "@/constants/support";
+import { DEFAULT_SEARCH_SUGGESTIONS } from "@/constants/content";
 import { buildMailtoUrl } from "@/utils/support";
 
 export default function NoSearchResultsEmptyState({
