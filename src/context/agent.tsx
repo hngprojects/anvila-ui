@@ -70,7 +70,16 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   });
   const [identityExpanded, setIdentityExpanded] = useState(true);
 
- 
+  const fetchAgents = useCallback(async (page = 1) => {
+    const fetchId = ++fetchIdRef.current;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/personas?page=${page}&size=20`);
+      if (fetchId !== fetchIdRef.current) return;
+      if (!res.ok) {
+        setError("Failed to fetch agents");
+        return;
       }
       const json = await res.json();
       if (fetchId !== fetchIdRef.current) return;
@@ -119,8 +128,9 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   }, [fetchAgents]);
 
 
- 
- 
+  const createAgent = async (newAgentData: Omit<AgentData, "id" | "created" | "clone" | "owners">) => {
+    setIsLoading(true);
+    try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       const newAgent: AgentData = {
         ...newAgentData,
@@ -139,7 +149,10 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }
   };
- 
+
+  const deleteAgent = async (id: string) => {
+    setIsLoading(true);
+    try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       setAgents((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {

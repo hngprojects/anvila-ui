@@ -5,13 +5,25 @@ import Link from "next/link";
 import { Activity, Globe, Lock, Download } from "lucide-react";
 import MyAgentsTable from "./MyAgentsTable";
 import { useAgent } from "@/context/agent";
- 
+
+function buildPageWindow(currentPage: number, totalPages: number): (number | "...")[] {
+  const delta = 2;
+  const range: number[] = [];
+  for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+    range.push(i);
+  }
+  const pages: (number | "...")[] = [1];
+  if (range.length > 0 && range[0] > 2) pages.push("...");
+  pages.push(...range);
+  if (range.length > 0 && range[range.length - 1] < totalPages - 1) pages.push("...");
+  if (totalPages > 1) pages.push(totalPages);
+  return pages;
+}
 
 export default function MyAgentsPopulatedState() {
   const [activeTab, setActiveTab] = useState<"All" | "Public" | "Private">("All");
   const { agents, currentPage, totalPages, hasNext, hasPrev, goToPage } = useAgent();
 
-  // Derived from local agent state; will be replaced by API response when endpoint is live
   const totalCount = agents.length;
   const publicCount = agents.filter(a => a.visibility === "Public").length;
   const privateCount = agents.filter(a => a.visibility === "Private").length;
