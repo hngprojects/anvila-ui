@@ -234,7 +234,7 @@ function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
       </div>
 
       <div className="flex-1" />
-      <UserMenu />
+      <UserMenu collapsed />
     </aside>
   );
 }
