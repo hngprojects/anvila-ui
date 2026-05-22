@@ -3,12 +3,12 @@ import * as React from "react";
 
 export default function MarkdownPreview({ content }: { content: string }) {
     // Split content into text segments and fenced code blocks
-    const segments = content.split(/(```(?:[a-z\w]*)?\n[\s\S]*?```)/g);
+    const segments = content.split(/(```(?:[\w]*)?\n[\s\S]*?```)/g);
 
     return (
         <div className="space-y-2 text-sm text-gray-700 leading-relaxed">
             {segments.map((segment, si) => {
-                const codeMatch = segment.match(/^```([a-z\w]*)\n?([\s\S]*?)```$/);
+                const codeMatch = segment.match(/^```([\w]*)\n?([\s\S]*?)```$/);
                 if (codeMatch) {
                     const code = codeMatch[2] ?? "";
                     return (
