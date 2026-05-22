@@ -92,10 +92,7 @@ async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit) {
   const json = await res.json().catch(() => null);
 
   if (!res.ok) {
-    const message =
-      json && typeof json === "object" && "message" in json
-        ? String(json.message)
-        : "Request failed";
+    const message = getErrorMessage(res.status, json);
     throw new Error(message);
   }
 
@@ -104,4 +101,16 @@ async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit) {
 
 function sessionStorageKey(agentId: string) {
   return `anvila:agent:${agentId}:session`;
+}
+
+function getErrorMessage(status: number, json: unknown) {
+  if (status === 403) {
+    return "You have exhausted your free generation quota. Upgrade to continue creating agents.";
+  }
+
+  if (json && typeof json === "object" && "message" in json) {
+    return String(json.message);
+  }
+
+  return "Request failed";
 }
