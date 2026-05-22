@@ -83,24 +83,20 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
             </Link>
           ) : (
             <>
-              <AuthDialog
-                trigger={
-                  <Button
-                    variant="ghost"
-                    className="h-10 px-10 items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo transition-opacity hover:opacity-80"
-                  >
-                    Log in
-                  </Button>
-                }
-              />
+              <Link href="/login">
+                <Button
+                  variant="ghost"
+                  className="h-10 px-10 items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo transition-opacity hover:opacity-80"
+                >
+                  Log in
+                </Button>
+              </Link>
 
-              <AuthDialog
-                trigger={
-                  <Button className="h-10 px-10 items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white transition-opacity hover:opacity-90">
-                    Get Started
-                  </Button>
-                }
-              />
+              <Link href="/register">
+                <Button className="h-10 px-10 items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white transition-opacity hover:opacity-90">
+                  Get Started
+                </Button>
+              </Link>
             </>
           )}
         </div>
@@ -156,7 +152,7 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
           </ul>
 
           <div className="mt-6 flex flex-col gap-3 border-t border-copy-muted/10 pt-6">
-            {waitlist ? (
+           {waitlist ? (
               <Link
                 href="/waitlist"
                 className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white"
@@ -165,23 +161,20 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
               </Link>
             ) : (
               <>
-                <AuthDialog
-                  trigger={
-                    <Button
-                      variant="ghost"
-                      className="h-10 w-full items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo"
-                    >
-                      Log in
-                    </Button>
-                  }
-                />
-                <AuthDialog
-                  trigger={
-                    <Button className="h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white">
-                      Get Started
-                    </Button>
-                  }
-                />
+                <Link href="/login" className="w-full">
+                  <Button
+                    variant="ghost"
+                    className="h-10 w-full items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo"
+                  >
+                    Log in
+                  </Button>
+                </Link>
+
+                <Link href="/register" className="w-full">
+                  <Button className="h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white">
+                    Get Started
+                  </Button>
+                </Link>
               </>
             )}
           </div>
