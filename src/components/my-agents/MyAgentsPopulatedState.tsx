@@ -8,7 +8,7 @@ import { useAgent } from "@/context/agent";
 
 export default function MyAgentsPopulatedState() {
   const [activeTab, setActiveTab] = useState<"All" | "Public" | "Private">("All");
-  const { agents } = useAgent();
+  const { agents, currentPage, totalPages, hasNext, hasPrev, goToPage } = useAgent();
 
   const totalCount = agents.length;
   const publicCount = agents.filter(a => a.visibility === "Public").length;
@@ -109,6 +109,40 @@ export default function MyAgentsPopulatedState() {
       </div>
 
       <MyAgentsTable filter={activeTab} agents={agents} />
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 py-6">
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={!hasPrev}
+            className="h-[32px] px-3 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            Previous
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => goToPage(page)}
+              className={`h-[32px] w-[32px] rounded-lg text-xs font-medium transition-colors ${
+                page === currentPage
+                  ? "bg-[#005F5A] text-white border border-[#005F5A]"
+                  : "border border-gray-200 text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={!hasNext}
+            className="h-[32px] px-3 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
