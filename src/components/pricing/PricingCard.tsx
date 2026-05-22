@@ -1,5 +1,6 @@
 import { FireIcon, CheckIcon } from "@/components/icons";
 import { PricingTier } from "@/types";
+import Link from "next/link";
 
 interface PricingCardProps {
   tier: PricingTier;
@@ -55,7 +56,7 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
         <p className="text-copy-muted/60 text-base leading-6 -mt-4">
           {tier.description}
         </p>
-
+          <Link href="/register">
         <button
           className={`w-full flex items-center justify-center gap-2.5 rounded-[10px] cursor-pointer transition-opacity hover:opacity-80 ${
             isHighlighted
@@ -71,6 +72,7 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
             {tier.ctaText}
           </span>
         </button>
+        </Link>
 
         <hr className="border-background" />
 
