@@ -1,14 +1,11 @@
 "use client";
 
-import MainPage from "@/components/protected/mainContent";
+import GeneratorComposer from "@/components/protected/generator/GeneratorComposer";
 
 export default function AnvilaLayout() {
   return (
-    
-      <div className="flex flex-1 flex-col min-w-0 h-full overflow-hidden">
-         
-        <MainPage />
-      </div>
-  
+    <div className="flex h-full min-w-0 flex-1 flex-col overflow-hidden">
+      <GeneratorComposer />
+    </div>
   );
 }
