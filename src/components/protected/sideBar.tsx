@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo, Github } from "@/components/icons";
 import { useAuth } from "@/context/auth";
+import { rememberSession } from "@/components/protected/generator/api";
+import type { AgentSession } from "@/lib/personas";
 
 import {
   CirclePlus,
@@ -26,15 +28,6 @@ const NAV_ITEMS = [
   { icon: Bot, label: "My Agents", path: "/generator/my-agents" },
   { icon: Github, label: "GitHub", path: "/generator/github" },
 ];
-
-const RECENT_ITEMS = [
-  "Real estate marketing ca...",
-  "7 days of social media...",
-  "Business plan outline...",
-  "Landing page copy for...",
-];
-
-
 
 function UserAvatar({
   name,
@@ -77,7 +70,7 @@ function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <nav className="px-3 space-y-1">
       {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
-        const isActive = pathname === path || (path === "/generator" && pathname === "/generator/agent-screen");
+        const isActive = isNavActive(pathname, path);
         return (
           <button
             key={label}
@@ -106,6 +99,37 @@ function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
 
 function RecentSection() {
   const [recentOpen, setRecentOpen] = useState(true);
+  const [sessions, setSessions] = useState<AgentSession[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSessions() {
+      setIsLoading(true);
+
+      try {
+        const res = await fetch("/api/chat/sessions?size=5", { cache: "no-store" });
+        const json = await res.json();
+
+        if (!cancelled && res.ok) {
+          setSessions(Array.isArray(json.data) ? json.data : []);
+        }
+      } catch {
+        if (!cancelled) setSessions([]);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    loadSessions();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
 
   return (
     <div className="mt-5 px-3 flex-1 overflow-y-auto">
@@ -122,19 +146,51 @@ function RecentSection() {
         />
       </button>
 
+      {recentOpen && isLoading && (
+        <div className="px-3 py-2 text-sm text-gray-400">Loading...</div>
+      )}
+
+      {recentOpen && !isLoading && sessions.length === 0 && (
+        <div className="px-3 py-2 text-sm text-gray-400">No recent agents</div>
+      )}
+
       {recentOpen &&
-        RECENT_ITEMS.map((item) => (
-          <div
-            key={item}
-            className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer group"
-          >
-            <span className="text-sm text-gray-600 truncate">{item}</span>
-            <MoreHorizontal
-              size={14}
-              className="text-gray-300 group-hover:text-gray-500"
-            />
-          </div>
-        ))}
+        !isLoading &&
+        sessions.map((session) => {
+          const isActive = pathname === `/generator/${session.agentId}`;
+
+          return (
+            <button
+              key={session.sessionId}
+              onClick={() => {
+                rememberSession(session.agentId, session.sessionId);
+                router.push(`/generator/${session.agentId}`);
+              }}
+              className={`group w-full rounded-lg px-3 py-2 text-left transition ${
+                isActive ? "bg-[#1a6b5a]/10" : "hover:bg-gray-100"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span
+                  className={`truncate text-sm ${
+                    isActive ? "font-medium text-[#1a6b5a]" : "text-gray-600"
+                  }`}
+                >
+                  {session.personaName || "Untitled agent"}
+                </span>
+                <MoreHorizontal
+                  size={14}
+                  className="shrink-0 text-gray-300 group-hover:text-gray-500"
+                />
+              </div>
+              {session.lastMessagePreview && (
+                <p className="mt-0.5 truncate text-xs text-gray-400">
+                  {session.lastMessagePreview}
+                </p>
+              )}
+            </button>
+          );
+        })}
     </div>
   );
 }
@@ -161,7 +217,7 @@ function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
 
       <div className="w-full flex flex-col items-center gap-1">
         {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
-          const isActive = pathname === path || (path === "/generator" && pathname === "/generator/agent-screen");
+          const isActive = isNavActive(pathname, path);
           return (
             <button
               key={label}
@@ -266,4 +322,15 @@ export default function Sidebar({
       {mobileOpen && <MobileDrawer onClose={onMobileClose} />}
     </>
   );
+}
+
+function isNavActive(pathname: string, path: string) {
+  if (pathname === path) return true;
+  if (path !== "/generator") return false;
+
+  const reservedRoutes = new Set(
+    NAV_ITEMS.filter((item) => item.path !== "/generator").map((item) => item.path),
+  );
+
+  return pathname.startsWith("/generator/") && !reservedRoutes.has(pathname);
 }
