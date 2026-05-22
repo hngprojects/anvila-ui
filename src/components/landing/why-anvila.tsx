@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type Card = {
   title: string;
@@ -59,9 +60,11 @@ export function WhyAnvila() {
             with scattered prompts, and lack a clear structure for files that
             others can reuse.
           </p>
+          <Link href="/register">
           <Button className="hidden h-auto items-center justify-center gap-2.5 rounded-lg border-none bg-teal-brand p-4 text-lg font-medium leading-6 text-white transition-opacity hover:opacity-90 lg:flex lg:w-[287px]">
             Try for Free
           </Button>
+          </Link>
         </div>
 
         <div className="grid w-full grid-cols-2 self-stretch lg:w-[620px] lg:self-auto">
@@ -84,10 +87,11 @@ export function WhyAnvila() {
             );
           })}
         </div>
-
-        <Button className="flex h-auto w-[223px] items-center justify-center gap-2.5 rounded-lg border-none bg-teal-brand p-4 text-lg font-medium leading-6 text-white transition-opacity hover:opacity-90 lg:hidden">
+        <Link href="/register">
+        <Button className="flex h-auto w-[223px] items-center justify-center gap-2.5 cursor-pointer rounded-lg border-none bg-teal-brand p-4 text-lg font-medium leading-6 text-white transition-opacity hover:opacity-90 lg:hidden">
           Try for Free
         </Button>
+        </Link>
       </div>
     </section>
   );
