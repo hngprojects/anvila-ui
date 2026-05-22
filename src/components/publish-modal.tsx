@@ -74,6 +74,7 @@ export function GithubPublishModal({
 }: GithubPublishModalProps) {
   const [activeTab, setActiveTab] = useState<"git" | "zip">(defaultTab);
   const [toast, setToast] = useState<"success" | "error" | null>(null);
+  const [toastText, setToastText] = useState("");
 
   const isZip = activeTab === "zip";
   const zipFileName = `${agentName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "agent"}.zip`;
@@ -90,17 +91,15 @@ export function GithubPublishModal({
     const targetUrl = isZip ? githubZipUrl : githubRepoUrl;
 
     if (!targetUrl) {
+      setToastText(isZip ? "Download URL unavailable" : "GitHub URL unavailable");
       setToast("error");
       setTimeout(() => setToast(null), 3000);
       return;
     }
 
-    if (isZip) {
-      window.location.href = targetUrl;
-    } else {
-      window.open(targetUrl, "_blank", "noopener,noreferrer");
-    }
+    window.open(targetUrl, "_blank", "noopener,noreferrer");
 
+    setToastText(isZip ? "Download started" : "GitHub opened");
     setToast("success");
     setTimeout(() => setToast(null), 3000);
   };
@@ -115,7 +114,7 @@ export function GithubPublishModal({
           >
             {toast === "success" ? <SuccessCheckSVG /> : <ErrorSVG />}
             <span className="flex-1 text-[#0C0E0D] text-[14px] font-normal leading-normal">
-              {toast === "success" ? "File downloaded successfully" : "Download Failed!"}
+              {toastText || (toast === "success" ? "Action completed" : "Action failed")}
             </span>
             <button onClick={() => setToast(null)} className="cursor-pointer border-none bg-transparent p-0">
               <ToastCloseSVG />
