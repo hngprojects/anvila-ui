@@ -6,6 +6,10 @@ import { Github } from "@/components/icons";
 interface GithubPublishModalProps {
   onClose?: () => void;
   defaultTab?: "git" | "zip";
+  agentName?: string;
+  githubRepoUrl?: string;
+  githubCloneUrl?: string;
+  githubZipUrl?: string;
 }
 
 const DownloadSVG = () => (
@@ -60,21 +64,43 @@ const INFO_CARDS = [
   { label: "Version", value: "v1.4.2" },
 ];
 
-export function GithubPublishModal({ onClose, defaultTab = "git" }: GithubPublishModalProps) {
+export function GithubPublishModal({
+  onClose,
+  defaultTab = "git",
+  agentName = "Anvila/under-grad",
+  githubRepoUrl = "https://github.com/Anvila/under-grad-v1",
+  githubCloneUrl = "https://github.com/Anvila/under-grad-v1.git",
+  githubZipUrl = "https://Anvila.dev/r/under-grad-v1/archive.zip",
+}: GithubPublishModalProps) {
   const [activeTab, setActiveTab] = useState<"git" | "zip">(defaultTab);
   const [toast, setToast] = useState<"success" | "error" | null>(null);
 
   const isZip = activeTab === "zip";
+  const zipFileName = `${agentName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "agent"}.zip`;
 
   const textToCopy = isZip
-    ? "curl -L https://Anvila.dev/r/under-grad-v1/archive.zip -o under-grad-v1.zip"
-    : "git clone https://github.com/Anvila/under-grad-v1.git";
+    ? `curl -L ${githubZipUrl} -o ${zipFileName}`
+    : `git clone ${githubCloneUrl}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(textToCopy);
   };
 
   const handleAction = () => {
+    const targetUrl = isZip ? githubZipUrl : githubRepoUrl;
+
+    if (!targetUrl) {
+      setToast("error");
+      setTimeout(() => setToast(null), 3000);
+      return;
+    }
+
+    if (isZip) {
+      window.location.href = targetUrl;
+    } else {
+      window.open(targetUrl, "_blank", "noopener,noreferrer");
+    }
+
     setToast("success");
     setTimeout(() => setToast(null), 3000);
   };
@@ -112,7 +138,7 @@ export function GithubPublishModal({ onClose, defaultTab = "git" }: GithubPublis
                 Clone Agent
               </span>
               <span className="text-[16px] font-normal text-[#0C0E0D]">
-                Anvila/under-grad
+                {agentName}
               </span>
             </div>
             <button onClick={onClose} className="cursor-pointer border-none bg-transparent p-0">
