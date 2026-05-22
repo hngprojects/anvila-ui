@@ -203,7 +203,7 @@ export function normalizeSessions(raw: unknown): {
         sessionId: getString(session.session_id),
         agentId: getString(session.persona_id),
         personaName: getString(session.persona_name, "Untitled agent"),
-        lastMessagePreview: getString(session.last_message_preview),
+        lastMessagePreview: stripUserInputWrapper(getString(session.last_message_preview)),
         lastMessageAt: getString(session.last_message_at),
         status: getString(session.status),
       };
@@ -221,7 +221,7 @@ export function normalizeMessages(raw: unknown): {
   return {
     data: getArray(record.data).map((item) => {
       const message = getRecord(item);
-      const content = getString(message.content);
+      const content = stripUserInputWrapper(getString(message.content));
 
       return {
         id: getString(message.id),
@@ -237,7 +237,9 @@ export function normalizeMessages(raw: unknown): {
 }
 
 export function normalizeClarificationPayload(raw: unknown): ClarificationPayload {
-  const data = getRecord(raw);
+  const data = Array.isArray(raw)
+    ? { round: 0, questions: raw }
+    : getRecord(raw);
 
   return {
     round: getNumber(data.round),
@@ -257,8 +259,16 @@ export function normalizeClarificationPayload(raw: unknown): ClarificationPayloa
 }
 
 export function isClarificationPayload(value: unknown): value is ClarificationPayload {
+  if (Array.isArray(value)) return true;
   const record = getRecord(value);
   return Array.isArray(record.questions);
+}
+
+export function stripUserInputWrapper(value: string) {
+  return value
+    .replace(/^\s*<USER_INPUT>/i, "")
+    .replace(/<\/USER_INPUT>\s*$/i, "")
+    .trim();
 }
 
 function normalizeSkill(raw: unknown): AgentSkill {
