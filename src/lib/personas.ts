@@ -102,6 +102,7 @@ export const PREVIEW_STATUSES = new Set(["generated", "published"]);
 export const STREAM_DONE_STATUSES = new Set(["generated", "published", "failed"]);
 
 const FILES = [
+  { key: "readme_md", name: "readme.md", label: "Readme" },
   { key: "identity_md", name: "identity.md", label: "Identity" },
   { key: "soul_md", name: "soul.md", label: "Soul" },
   { key: "dna_md", name: "dna.md", label: "DNA" },
