@@ -1,17 +1,21 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { AgentData, ChatMessage } from "@/interface/agent";
 
 interface AgentContextType {
   agents: AgentData[];
   isLoading: boolean;
   error: string | null;
-  fetchAgents: () => Promise<void>;
+  fetchAgents: (page?: number) => Promise<void>;
   createAgent: (agent: Omit<AgentData, "id" | "created" | "clone" | "owners">) => Promise<void>;
   deleteAgent: (id: string) => Promise<void>;
+  currentPage: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+  goToPage: (page: number) => void;
   
-  // Chat Persistence State
   messages: ChatMessage[];
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   prompt: string;
@@ -34,14 +38,16 @@ interface AgentContextType {
 
 const AgentContext = createContext<AgentContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = "anvila_agents";
-
 export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [agents, setAgents] = useState<AgentData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrev, setHasPrev] = useState(false);
+  const fetchIdRef = useRef(0);
 
-  // Chat Persistence State
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
@@ -64,27 +70,39 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   });
   const [identityExpanded, setIdentityExpanded] = useState(true);
 
-  // TODO: endpoint — GET /api/agents
-  // Replace the localStorage fallback below with: const data = await fetch("/api/agents").then(r => r.json())
-  const fetchAgents = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setAgents(Array.isArray(parsed) ? (parsed as AgentData[]) : []);
-      } else {
-        setAgents([]);
+ 
       }
+      const json = await res.json();
+      if (fetchId !== fetchIdRef.current) return;
+      const items = Array.isArray(json?.data) ? json.data : [];
+      const mapped: AgentData[] = items.map((item: Record<string, unknown>) => ({
+        id: String(item.id ?? ""),
+        name: String(item.name ?? ""),
+        categories: String(item.category ?? ""),
+        visibility: String(item.visibility).toLowerCase() === "public" ? "Public" : "Private",
+        clone: 0,
+        owners: [],
+        created: item.created_at
+          ? new Date(String(item.created_at)).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+          : "",
+      }));
+      setAgents(mapped);
+      const meta = json?.meta ?? {};
+      setCurrentPage(meta.page ?? page);
+      setTotalPages(meta.pages ?? 1);
+      setHasNext(Boolean(meta.has_next));
+      setHasPrev(Boolean(meta.has_prev));
     } catch {
+      if (fetchId !== fetchIdRef.current) return;
       setError("Failed to fetch agents");
     } finally {
-      setIsLoading(false);
+      if (fetchId === fetchIdRef.current) setIsLoading(false);
     }
   }, []);
+
+  const goToPage = useCallback((page: number) => {
+    fetchAgents(page);
+  }, [fetchAgents]);
 
   useEffect(() => {
     let active = true;
@@ -101,14 +119,9 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   }, [fetchAgents]);
 
 
-  // TODO: endpoint — POST /api/agents  { name, categories, visibility }
-  // Replace the localStorage logic below with: const newAgent = await fetch("/api/agents", { method: "POST", body: JSON.stringify(newAgentData) }).then(r => r.json())
-  const createAgent = async (newAgentData: Omit<AgentData, "id" | "created" | "clone" | "owners">) => {
-    setIsLoading(true);
-    try {
-
+ 
+ 
       await new Promise((resolve) => setTimeout(resolve, 500));
-
       const newAgent: AgentData = {
         ...newAgentData,
         id: Math.random().toString(36).substring(2, 9),
@@ -118,29 +131,17 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
           { initials: "ME", username: "@current_user", color: "bg-blue-100 text-blue-700" },
         ],
       };
-
-      const updatedAgents = [newAgent, ...agents];
-      setAgents(updatedAgents);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedAgents));
+      setAgents((prev) => [newAgent, ...prev]);
     } catch (err) {
       setError("Failed to create agent");
-      throw err;  
+      throw err;
     } finally {
       setIsLoading(false);
     }
   };
  
-  // TODO: endpoint — DELETE /api/agents/:id
-  // Replace the localStorage logic below with: await fetch(`/api/agents/${id}`, { method: "DELETE" })
-  const deleteAgent = async (id: string) => {
-    setIsLoading(true);
-    try {
-
       await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const updatedAgents = agents.filter((a) => a.id !== id);
-      setAgents(updatedAgents);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedAgents));
+      setAgents((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
       setError("Failed to delete agent");
       throw err;
@@ -158,6 +159,11 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
         fetchAgents,
         createAgent,
         deleteAgent,
+        currentPage,
+        totalPages,
+        hasNext,
+        hasPrev,
+        goToPage,
         messages,
         setMessages,
         prompt,

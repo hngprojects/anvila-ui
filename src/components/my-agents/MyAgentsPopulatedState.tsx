@@ -5,14 +5,11 @@ import Link from "next/link";
 import { Activity, Globe, Lock, Download } from "lucide-react";
 import MyAgentsTable from "./MyAgentsTable";
 import { useAgent } from "@/context/agent";
-
-// TODO: endpoint — GET /api/agents/stats
-// Expected response: { weeklyNew: number, publicGrowth: string, privateGrowth: string, downloadsGrowth: string }
-// Replace the hardcoded trend strings below ("+ 2 this week", "+12.4%") with values from this endpoint
+ 
 
 export default function MyAgentsPopulatedState() {
   const [activeTab, setActiveTab] = useState<"All" | "Public" | "Private">("All");
-  const { agents } = useAgent();
+  const { agents, currentPage, totalPages, hasNext, hasPrev, goToPage } = useAgent();
 
   // Derived from local agent state; will be replaced by API response when endpoint is live
   const totalCount = agents.length;
@@ -114,6 +111,50 @@ export default function MyAgentsPopulatedState() {
       </div>
 
       <MyAgentsTable filter={activeTab} agents={agents} />
+
+      {totalPages > 1 && (
+        <nav aria-label="Agents pagination" className="flex items-center justify-center gap-2 py-6">
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={!hasPrev}
+            aria-label="Previous page"
+            className="h-[32px] px-3 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            Previous
+          </button>
+
+          {buildPageWindow(currentPage, totalPages).map((page, idx) =>
+            page === "..." ? (
+              <span key={`ellipsis-${idx}`} className="h-[32px] w-[32px] flex items-center justify-center text-xs text-gray-400">
+                …
+              </span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => goToPage(page)}
+                aria-label={`Page ${page}`}
+                aria-current={page === currentPage ? "page" : undefined}
+                className={`h-[32px] w-[32px] rounded-lg text-xs font-medium transition-colors ${
+                  page === currentPage
+                    ? "bg-[#005F5A] text-white border border-[#005F5A]"
+                    : "border border-gray-200 text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                {page}
+              </button>
+            )
+          )}
+
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={!hasNext}
+            aria-label="Next page"
+            className="h-[32px] px-3 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            Next
+          </button>
+        </nav>
+      )}
     </div>
   );
 }
