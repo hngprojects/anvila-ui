@@ -380,7 +380,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     <div className="relative flex h-full min-h-0 overflow-hidden rounded-2xl border border-gray-200 bg-[#FBFBFB] shadow-sm">
       <section
         className={`flex min-h-0 flex-col transition-[width] ${
-          previewOpen ? "w-full md:w-[390px] lg:w-[440px]" : "w-full"
+          previewOpen ? "w-full md:w-[340px] xl:w-[380px]" : "w-full"
         }`}
       >
         <header className="flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-gray-200 bg-white px-4">
@@ -624,10 +624,14 @@ function messagesToChatItems(messages: AgentMessage[]): ChatItem[] {
     }
 
     if (message.parsedContent && isClarificationPayload(message.parsedContent)) {
+      const payload = normalizeClarificationPayload(message.parsedContent);
       return {
         id: message.id,
         type: "clarification",
-        payload: normalizeClarificationPayload(message.parsedContent),
+        payload: {
+          ...payload,
+          round: payload.round || message.roundNumber,
+        },
         readOnly: true,
         answers: [],
       };

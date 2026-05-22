@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import {
   CheckCircle2,
+  ChevronDown,
+  ChevronRight,
   Copy,
   Download,
   ExternalLink,
@@ -37,6 +39,7 @@ export default function AgentPreviewPanel({
 }: AgentPreviewPanelProps) {
   const [activeFileId, setActiveFileId] = useState(files[0]?.id ?? "");
   const [showLinks, setShowLinks] = useState(false);
+  const [fileTreeOpen, setFileTreeOpen] = useState(false);
 
   const activeFile = useMemo(
     () => files.find((file) => file.id === activeFileId) ?? files[0],
@@ -123,15 +126,25 @@ export default function AgentPreviewPanel({
 
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <aside className="shrink-0 border-b border-gray-100 bg-white px-3 py-3 lg:w-52 lg:border-b-0 lg:border-r">
-          <div className="mb-2 flex items-center gap-2 px-2 text-xs font-semibold uppercase text-gray-400">
+          <button
+            type="button"
+            onClick={() => setFileTreeOpen((open) => !open)}
+            className="mb-2 flex w-full items-center gap-2 rounded-lg px-2 py-1 text-xs font-semibold uppercase text-gray-500 hover:bg-gray-50 lg:pointer-events-none"
+          >
             <FileText size={13} />
             Files
-          </div>
-          <div className="space-y-1">
+            <span className="ml-auto lg:hidden">
+              {fileTreeOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            </span>
+          </button>
+          <div className={`${fileTreeOpen ? "block" : "hidden"} max-h-48 space-y-1 overflow-y-auto lg:block lg:max-h-none`}>
             {files.map((file) => (
               <button
                 key={file.id}
-                onClick={() => setActiveFileId(file.id)}
+                onClick={() => {
+                  setActiveFileId(file.id);
+                  setFileTreeOpen(false);
+                }}
                 className={`flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm ${
                   activeFile?.id === file.id
                     ? "bg-[#0C5D56]/10 font-medium text-[#0C5D56]"
@@ -153,7 +166,7 @@ export default function AgentPreviewPanel({
           )}
         </div>
 
-        <aside className="shrink-0 border-t border-gray-100 bg-[#FBFBFB] p-4 lg:w-72 lg:border-l lg:border-t-0">
+        <aside className="min-h-0 shrink-0 overflow-y-auto border-t border-gray-100 bg-[#FBFBFB] p-4 lg:w-72 lg:border-l lg:border-t-0">
           <div className="rounded-xl border border-gray-200 bg-white p-4">
             <p className="mb-3 text-sm font-semibold text-gray-900">Manifest</p>
             <dl className="space-y-3 text-sm">
@@ -240,7 +253,7 @@ function PublishedLink({
   if (!value) return null;
 
   const content = (
-    <span className="truncate text-xs text-[#0C5D56]">{value}</span>
+    <span className="block truncate text-xs text-[#0C5D56]">{value}</span>
   );
 
   return (
@@ -248,11 +261,11 @@ function PublishedLink({
       <p className="mb-1 text-xs font-medium text-gray-500">{label}</p>
       <div className="flex min-w-0 items-center gap-2 rounded-lg bg-gray-50 px-2 py-2">
         {href ? (
-          <a href={href} target="_blank" rel="noreferrer" className="min-w-0 flex-1">
+          <a href={href} target="_blank" rel="noreferrer" className="min-w-0 flex-1 overflow-hidden">
             {content}
           </a>
         ) : (
-          <div className="min-w-0 flex-1">{content}</div>
+          <div className="min-w-0 flex-1 overflow-hidden">{content}</div>
         )}
         <button
           type="button"

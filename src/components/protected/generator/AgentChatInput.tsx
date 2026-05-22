@@ -62,10 +62,10 @@ export default function AgentChatInput({
   }
 
   return (
-    <div className="shrink-0 border-t border-gray-100 bg-[#FBFBFB] px-4 py-3">
-      <form onSubmit={handleSubmit} className="mx-auto max-w-4xl">
+    <div className="shrink-0 border-t border-gray-100 bg-[#FBFBFB] px-3 py-2.5">
+      <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
         {file && (
-          <div className="mb-2 flex w-fit max-w-full items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700">
+          <div className="mb-2 flex w-fit max-w-full items-center gap-2 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs text-gray-700">
             <FileText size={14} className="shrink-0 text-[#0C5D56]" />
             <span className="truncate">{file.name}</span>
             <button
@@ -79,7 +79,7 @@ export default function AgentChatInput({
           </div>
         )}
 
-        <div className="flex min-h-14 items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-2 shadow-sm focus-within:border-[#0C5D56]">
+        <div className="flex min-h-12 items-center gap-1.5 rounded-full border border-gray-300 bg-white px-2.5 py-1.5 shadow-sm focus-within:border-[#0C5D56]">
           <input
             ref={fileInputRef}
             type="file"
@@ -95,10 +95,10 @@ export default function AgentChatInput({
             type="button"
             disabled={disabled || isLoading}
             onClick={() => fileInputRef.current?.click()}
-            className="flex size-9 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex size-8 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
             title="Attach file"
           >
-            <Paperclip size={17} />
+            <Paperclip size={16} />
           </button>
 
           <input
@@ -106,16 +106,16 @@ export default function AgentChatInput({
             onChange={(event) => setPrompt(event.target.value)}
             placeholder={placeholder}
             disabled={disabled || isLoading}
-            className="min-w-0 flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400 md:text-base"
+            className="min-w-0 flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
           />
 
           <button
             type="submit"
             disabled={!canSubmit}
-            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#0C5D56] text-white transition hover:bg-[#094a45] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
+            className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#0C5D56] text-white transition hover:bg-[#094a45] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
             title="Send prompt"
           >
-            {isLoading ? <Loader2 size={16} className="animate-spin" /> : <ArrowUp size={16} />}
+            {isLoading ? <Loader2 size={15} className="animate-spin" /> : <ArrowUp size={15} />}
           </button>
         </div>
 
