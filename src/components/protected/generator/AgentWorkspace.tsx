@@ -112,7 +112,19 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
         setPersona(nextPersona);
         setFiles(nextPersona.files);
         setSkills(nextPersona.skills);
-        setItems(messagesToChatItems(messageResult.data));
+
+        const chatItems = messagesToChatItems(messageResult.data);
+        if (PREVIEW_STATUSES.has(nextPersona.status)) {
+          chatItems.push({
+            id: `done-${agentId}`,
+            type: "done",
+            text:
+              nextPersona.status === "published"
+                ? `${nextPersona.name || "Agent"} is published and ready to preview.`
+                : `Done. Successfully created ${nextPersona.name || "agent"}.`,
+          });
+        }
+        setItems(chatItems);
       } catch (err) {
         if (!cancelled) {
           setLoadError(err instanceof Error ? err.message : "Could not load agent");
@@ -546,7 +558,7 @@ function ChatItemView({
       <ClarificationCard
         payload={item.payload}
         readOnly={item.readOnly}
-        answers={item.answers}
+        // answers={item.answers}
         isSubmitting={isClarifying}
         onSubmit={onClarificationSubmit}
       />
