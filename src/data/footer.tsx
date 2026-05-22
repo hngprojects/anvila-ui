@@ -1,4 +1,4 @@
-import { Facebook, Twitter, Linkedin, Instagram } from "@/components/icons";
+import { Twitter, Linkedin } from "@/components/icons";
 import { FooterColumn } from "@/types";
 
 export const FOOTER_COLUMNS: FooterColumn[] = [
@@ -25,20 +25,15 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Support & Legal",
     links: [
-      { label: "GitHub", href: "#" },
-      { label: "Twitter / X", href: "#" },
-      { label: "LinkedIn", href: "#" },
-      { label: "Discord", href: "#" },
-      { label: "Product Hunt", href: "#" },
+      { label: "Twitter / X", href: "https://x.com/anviladev" },
+      { label: "LinkedIn", href: "https://www.linkedin.com/company/anvila-dev" },
     ],
   },
 ];
 
 export const SOCIAL_LINKS = [
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Instagram, href: "#", label: "Instagram" },
+  { icon: Twitter, href: "https://x.com/anviladev", label: "Twitter" },
+  { icon: Linkedin, href: "https://www.linkedin.com/company/anvila-dev", label: "LinkedIn" },
 ];
 
 export const LEGAL_LINKS = [
