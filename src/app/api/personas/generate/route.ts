@@ -55,8 +55,11 @@ export async function POST(req: NextRequest) {
 
   const raw = await parseBackendJson(result.res);
   if (!result.res.ok) {
+    const message = result.res.status === 403
+      ? "You have exhausted your free generation quota. Upgrade to continue creating agents."
+      : getBackendMessage(raw);
     const res = NextResponse.json(
-      { message: getBackendMessage(raw) },
+      { message },
       { status: result.res.status },
     );
     return applyAuthCookies(res, result);
