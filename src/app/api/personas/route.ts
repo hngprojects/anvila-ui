@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import {
   applyAuthCookies,
   authFetch,
@@ -7,16 +8,16 @@ import {
   unauthorized,
 } from "@/lib/auth/proxy";
 
+const QuerySchema = z.object({
+  page: z.coerce.number().int().min(1).catch(1),
+  size: z.coerce.number().int().min(1).max(100).catch(20),
+});
+
 export async function GET(req: NextRequest) {
-  const rawPage = parseInt(req.nextUrl.searchParams.get("page") ?? "1", 10);
-  const rawSize = parseInt(req.nextUrl.searchParams.get("size") ?? "20", 10);
-
-  if (isNaN(rawPage) || isNaN(rawSize)) {
-    return NextResponse.json({ message: "Invalid pagination parameters" }, { status: 400 });
-  }
-
-  const page = Math.max(1, rawPage);
-  const size = Math.min(Math.max(1, rawSize), 100);
+  const { page, size } = QuerySchema.parse({
+    page: req.nextUrl.searchParams.get("page"),
+    size: req.nextUrl.searchParams.get("size"),
+  });
   const result = await authFetch(req, `/api/v1/personas?page=${page}&size=${size}`);
 
   if (!result.res) return unauthorized();
