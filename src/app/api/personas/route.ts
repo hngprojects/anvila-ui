@@ -8,8 +8,15 @@ import {
 } from "@/lib/auth/proxy";
 
 export async function GET(req: NextRequest) {
-  const page = req.nextUrl.searchParams.get("page") ?? "1";
-  const size = req.nextUrl.searchParams.get("size") ?? "20";
+  const rawPage = parseInt(req.nextUrl.searchParams.get("page") ?? "1", 10);
+  const rawSize = parseInt(req.nextUrl.searchParams.get("size") ?? "20", 10);
+
+  if (isNaN(rawPage) || isNaN(rawSize)) {
+    return NextResponse.json({ message: "Invalid pagination parameters" }, { status: 400 });
+  }
+
+  const page = Math.max(1, rawPage);
+  const size = Math.min(Math.max(1, rawSize), 100);
   const result = await authFetch(req, `/api/v1/personas?page=${page}&size=${size}`);
 
   if (!result.res) return unauthorized();
