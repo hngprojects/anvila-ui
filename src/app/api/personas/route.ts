@@ -8,7 +8,9 @@ import {
 } from "@/lib/auth/proxy";
 
 export async function GET(req: NextRequest) {
-  const result = await authFetch(req, "/api/v1/personas");
+  const page = req.nextUrl.searchParams.get("page") ?? "1";
+  const size = req.nextUrl.searchParams.get("size") ?? "20";
+  const result = await authFetch(req, `/api/v1/personas?page=${page}&size=${size}`);
 
   if (!result.res) return unauthorized();
 
