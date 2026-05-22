@@ -6,6 +6,10 @@ import { Github } from "@/components/icons";
 interface GithubPublishModalProps {
   onClose?: () => void;
   defaultTab?: "git" | "zip";
+  agentName?: string;
+  githubRepoUrl?: string;
+  githubCloneUrl?: string;
+  githubZipUrl?: string;
 }
 
 const DownloadSVG = () => (
@@ -60,43 +64,45 @@ const INFO_CARDS = [
   { label: "Version", value: "v1.4.2" },
 ];
 
-// TODO: replace with real repo URL returned by GET /api/agents/:id/github-url
-const GITHUB_REPO_URL = "https://github.com/Anvila/under-grad-v1";
-
-export function GithubPublishModal({ onClose, defaultTab = "git" }: GithubPublishModalProps) {
+export function GithubPublishModal({
+  onClose,
+  defaultTab = "git",
+  agentName = "Anvila/under-grad",
+  githubRepoUrl = "https://github.com/Anvila/under-grad-v1",
+  githubCloneUrl = "https://github.com/Anvila/under-grad-v1.git",
+  githubZipUrl = "https://Anvila.dev/r/under-grad-v1/archive.zip",
+}: GithubPublishModalProps) {
   const [activeTab, setActiveTab] = useState<"git" | "zip">(defaultTab);
   const [toast, setToast] = useState<"success" | "error" | null>(null);
+  const [toastText, setToastText] = useState("");
 
   const isZip = activeTab === "zip";
+  const zipFileName = `${agentName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "agent"}.zip`;
 
   const textToCopy = isZip
-    ? "curl -L https://Anvila.dev/r/under-grad-v1/archive.zip -o under-grad-v1.zip"
-    : "git clone https://github.com/Anvila/under-grad-v1.git";
+    ? `curl -L ${githubZipUrl} -o ${zipFileName}`
+    : `git clone ${githubCloneUrl}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(textToCopy);
   };
 
-  const handleDownloadZip = () => {
+  const handleAction = () => {
+    const targetUrl = isZip ? githubZipUrl : githubRepoUrl;
+
+    if (!targetUrl) {
+      setToastText(isZip ? "Download URL unavailable" : "GitHub URL unavailable");
+      setToast("error");
+      setTimeout(() => setToast(null), 3000);
+      return;
+    }
+
+    window.open(targetUrl, "_blank", "noopener,noreferrer");
+
+    setToastText(isZip ? "Download started" : "GitHub opened");
     setToast("success");
     setTimeout(() => setToast(null), 3000);
   };
-
-  const handleOpenGithub = async () => {
-    try {
-      // TODO: endpoint — POST /api/agents/:id/github-redirect
-      // Expected response: { redirectUrl: string }
-      // const res = await fetch(`/api/agents/${agentId}/github-redirect`, { method: "POST" });
-      // const { redirectUrl } = await res.json();
-      // window.open(redirectUrl, "_blank", "noopener,noreferrer");
-      window.open(GITHUB_REPO_URL, "_blank", "noopener,noreferrer");
-    } catch {
-      setToast("error");
-      setTimeout(() => setToast(null), 3000);
-    }
-  };
-
-  const handleAction = isZip ? handleDownloadZip : handleOpenGithub;
 
   return (
     <>
@@ -108,7 +114,7 @@ export function GithubPublishModal({ onClose, defaultTab = "git" }: GithubPublis
           >
             {toast === "success" ? <SuccessCheckSVG /> : <ErrorSVG />}
             <span className="flex-1 text-[#0C0E0D] text-[14px] font-normal leading-normal">
-              {toast === "success" ? "File downloaded successfully" : "Download Failed!"}
+              {toastText || (toast === "success" ? "Action completed" : "Action failed")}
             </span>
             <button onClick={() => setToast(null)} className="cursor-pointer border-none bg-transparent p-0">
               <ToastCloseSVG />
@@ -131,7 +137,7 @@ export function GithubPublishModal({ onClose, defaultTab = "git" }: GithubPublis
                 Clone Agent
               </span>
               <span className="text-[16px] font-normal text-[#0C0E0D]">
-                Anvila/under-grad
+                {agentName}
               </span>
             </div>
             <button onClick={onClose} className="cursor-pointer border-none bg-transparent p-0">
