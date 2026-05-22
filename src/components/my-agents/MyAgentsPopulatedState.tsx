@@ -6,6 +6,20 @@ import { Activity, Globe, Lock, Download } from "lucide-react";
 import MyAgentsTable from "./MyAgentsTable";
 import { useAgent } from "@/context/agent";
 
+function buildPageWindow(currentPage: number, totalPages: number): (number | "...")[] {
+  const delta = 2;
+  const range: number[] = [];
+  for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+    range.push(i);
+  }
+  const pages: (number | "...")[] = [1];
+  if (range.length > 0 && range[0] > 2) pages.push("...");
+  pages.push(...range);
+  if (range.length > 0 && range[range.length - 1] < totalPages - 1) pages.push("...");
+  if (totalPages > 1) pages.push(totalPages);
+  return pages;
+}
+
 export default function MyAgentsPopulatedState() {
   const [activeTab, setActiveTab] = useState<"All" | "Public" | "Private">("All");
   const { agents, currentPage, totalPages, hasNext, hasPrev, goToPage } = useAgent();
@@ -111,37 +125,47 @@ export default function MyAgentsPopulatedState() {
       <MyAgentsTable filter={activeTab} agents={agents} />
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 py-6">
+        <nav aria-label="Agents pagination" className="flex items-center justify-center gap-2 py-6">
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={!hasPrev}
+            aria-label="Previous page"
             className="h-[32px] px-3 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Previous
           </button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => goToPage(page)}
-              className={`h-[32px] w-[32px] rounded-lg text-xs font-medium transition-colors ${
-                page === currentPage
-                  ? "bg-[#005F5A] text-white border border-[#005F5A]"
-                  : "border border-gray-200 text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
+          {buildPageWindow(currentPage, totalPages).map((page, idx) =>
+            page === "..." ? (
+              <span key={`ellipsis-${idx}`} className="h-[32px] w-[32px] flex items-center justify-center text-xs text-gray-400">
+                …
+              </span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => goToPage(page)}
+                aria-label={`Page ${page}`}
+                aria-current={page === currentPage ? "page" : undefined}
+                className={`h-[32px] w-[32px] rounded-lg text-xs font-medium transition-colors ${
+                  page === currentPage
+                    ? "bg-[#005F5A] text-white border border-[#005F5A]"
+                    : "border border-gray-200 text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                {page}
+              </button>
+            )
+          )}
 
           <button
             onClick={() => goToPage(currentPage + 1)}
             disabled={!hasNext}
+            aria-label="Next page"
             className="h-[32px] px-3 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Next
           </button>
-        </div>
+        </nav>
       )}
     </div>
   );
