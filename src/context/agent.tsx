@@ -34,8 +34,6 @@ interface AgentContextType {
 
 const AgentContext = createContext<AgentContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = "anvila_agents";
-
 export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [agents, setAgents] = useState<AgentData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,15 +67,25 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     setError(null);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      
-      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setAgents(Array.isArray(parsed) ? (parsed as AgentData[]) : []);
-      } else {
-        setAgents([]);
+      const res = await fetch("/api/personas");
+      if (!res.ok) {
+        setError("Failed to fetch agents");
+        return;
       }
+      const json = await res.json();
+      const items = Array.isArray(json?.data) ? json.data : [];
+      const mapped: AgentData[] = items.map((item: Record<string, unknown>) => ({
+        id: String(item.id ?? ""),
+        name: String(item.name ?? ""),
+        categories: String(item.category ?? ""),
+        visibility: String(item.visibility).toLowerCase() === "public" ? "Public" : "Private",
+        clone: 0,
+        owners: [],
+        created: item.created_at
+          ? new Date(String(item.created_at)).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+          : "",
+      }));
+      setAgents(mapped);
     } catch {
       setError("Failed to fetch agents");
     } finally {
@@ -104,9 +112,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const createAgent = async (newAgentData: Omit<AgentData, "id" | "created" | "clone" | "owners">) => {
     setIsLoading(true);
     try {
-    
       await new Promise((resolve) => setTimeout(resolve, 500));
-
       const newAgent: AgentData = {
         ...newAgentData,
         id: Math.random().toString(36).substring(2, 9),
@@ -116,27 +122,20 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
           { initials: "ME", username: "@current_user", color: "bg-blue-100 text-blue-700" },
         ],
       };
-
-      const updatedAgents = [newAgent, ...agents];
-      setAgents(updatedAgents);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedAgents));
+      setAgents((prev) => [newAgent, ...prev]);
     } catch (err) {
       setError("Failed to create agent");
-      throw err;  
+      throw err;
     } finally {
       setIsLoading(false);
     }
   };
- 
+
   const deleteAgent = async (id: string) => {
     setIsLoading(true);
     try {
-    
       await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const updatedAgents = agents.filter((a) => a.id !== id);
-      setAgents(updatedAgents);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedAgents));
+      setAgents((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
       setError("Failed to delete agent");
       throw err;
