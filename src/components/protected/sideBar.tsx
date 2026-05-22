@@ -70,6 +70,7 @@ function UserAvatar({
 }
  
 
+// Expanded Sidebar NavigationItems Component
 function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -77,7 +78,11 @@ function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <nav className="px-3 space-y-1">
       {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
-        const isActive = pathname === path || (path === "/generator" && pathname === "/generator/agent-screen");
+        const isActive =
+          pathname === path ||
+          (path === "/generator" &&
+            (pathname === "/generator/agent-screen" ||
+              pathname === "/generator/create-agent"));
         return (
           <button
             key={label}
@@ -161,7 +166,11 @@ function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
 
       <div className="w-full flex flex-col items-center gap-1">
         {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
-          const isActive = pathname === path || (path === "/generator" && pathname === "/generator/agent-screen");
+          const isActive =
+            pathname === path ||
+            (path === "/generator" &&
+              (pathname === "/generator/agent-screen" ||
+                pathname === "/generator/create-agent"));
           return (
             <button
               key={label}

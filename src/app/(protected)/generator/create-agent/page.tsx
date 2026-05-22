@@ -24,14 +24,14 @@ export default function CreateAgentPage() {
     <div className="flex h-full flex-col overflow-hidden bg-[#FBFBFB] md:rounded-2xl md:border md:border-gray-200 md:shadow-sm">
 
       {/* 2-column content area */}
-      <div className="flex flex-col md:flex-row min-h-0 flex-1 gap-3 px-2 md:px-4 pb-2 md:pb-4 overflow-y-auto md:overflow-hidden">
+      <div className="flex flex-col md:flex-row min-h-0 flex-1 gap-3 px-2 md:px-4 pb-2 md:pb-4 overflow-hidden">
         {/* Chat panel — fixed width on md+ */}
-        <div className="w-full md:w-72 xl:w-80 shrink-0 h-[60vh] md:h-full min-h-[500px] md:min-h-0 mb-4 md:mb-0">
+        <div className="hidden md:block md:w-72 xl:w-80 shrink-0 h-full">
           <ChatPanel messages={messages} onSend={handleSend} />
         </div>
         
         {/* Preview section */}
-        <div className="w-full md:flex-1 min-h-[600px] md:min-h-0 h-auto md:h-full flex flex-col">
+        <div className="w-full md:flex-1 h-full flex flex-col">
           <PreviewSection />
         </div>
       </div>
