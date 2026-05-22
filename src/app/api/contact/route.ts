@@ -5,11 +5,11 @@ import { BACKEND_URL } from "@/lib/consts";
 import { emailRegex } from "@/schemas/auth";
 
 const Schema = z.object({
-  full_name: z.string().min(1, "Please enter your full name."),
+  full_name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().regex(emailRegex, { message: "Please enter a valid email" }),
   phone: z.string().optional(),
   enquiry_type: z.string().min(1, "Please select an enquiry type."),
-  message: z.string().min(1, "Please enter a message."),
+  message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
 export async function POST(req: NextRequest) {
@@ -30,14 +30,18 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(parsed.data),
     });
 
-    const data = await res.json();
-
+     const text = await res.text();
+        let data: Record<string, string> = {};
+        try {
+          data = JSON.parse(text);
+        } catch {
+        }
     if (!res.ok) {
-      return NextResponse.json(
-        { message: data.detail ?? data.message ?? "Failed to send message" },
-        { status: res.status },
-      );
-    }
+  return NextResponse.json(
+    { message: data?.detail ?? data?.message ?? text ?? "Failed to send message" },
+    { status: res.status },
+  );
+}
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch {

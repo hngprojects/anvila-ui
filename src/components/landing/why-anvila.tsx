@@ -60,11 +60,9 @@ export function WhyAnvila() {
             with scattered prompts, and lack a clear structure for files that
             others can reuse.
           </p>
-          <Link href="/register">
           <Button className="hidden h-auto items-center justify-center gap-2.5 rounded-lg border-none bg-teal-brand p-4 text-lg font-medium leading-6 text-white transition-opacity hover:opacity-90 lg:flex lg:w-[287px]">
-            Try for Free
+            <Link href="/register">Try for Free</Link>
           </Button>
-          </Link>
         </div>
 
         <div className="grid w-full grid-cols-2 self-stretch lg:w-[620px] lg:self-auto">

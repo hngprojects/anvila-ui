@@ -15,10 +15,11 @@ export function FinalCTA() {
           expertise needed.
         </p>
 
-        <Button className="inline-flex h-auto items-center justify-center gap-2 rounded-lg border-[0.5px] border-teal-brand bg-teal-brand px-8 py-4 text-base font-medium leading-normal text-[#F6F7F7] transition-opacity hover:opacity-90">
-          <Link href="/register">
-            Start Building
-          </Link>
+        <Button
+          asChild
+          className="inline-flex h-auto items-center justify-center gap-2 rounded-lg border-[0.5px] border-teal-brand bg-teal-brand px-8 py-4 text-base font-medium leading-normal text-[`#F6F7F7`] transition-opacity hover:opacity-90"
+        >
+          <Link href="/register">Start Building</Link>
         </Button>
       </div>
     </section>

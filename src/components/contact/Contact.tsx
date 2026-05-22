@@ -140,7 +140,11 @@ export function Contact() {
           </h2>
 
           {submitted ? (
-            <div className="flex flex-col items-center gap-3 py-6 text-center">
+            <div
+              className="flex flex-col items-center gap-3 py-6 text-center"
+              role="status"
+              aria-live="polite"
+           >
               <p className="text-2xl font-medium text-logo">Message sent!</p>
               <p className="text-base text-copy-muted">
                 We&apos;ll get back to you as soon as possible.
@@ -149,7 +153,11 @@ export function Contact() {
           ) : (
             <>
               {serverError && (
-                <div className="mb-4 rounded-[6px] border border-red-300 bg-red-50 px-3 py-2">
+                 <div
+                  className="mb-4 rounded-[6px] border border-red-300 bg-red-50 px-3 py-2"
+                  role="alert"
+                  aria-live="assertive"
+                >
                   <p className="m-0 text-[12px] text-red-600">{serverError}</p>
                 </div>
               )}

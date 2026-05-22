@@ -5,6 +5,7 @@ import { AGENTS, CATEGORIES } from "@/data/agents"
 import { Category, Tag, AgentCardData } from "@/types";
 import { Github } from "./../icons";
 import Link from "next/link";
+import { Button } from "../ui/button";
 
 interface CategoryFilterProps {
   categories: Category[];
@@ -172,14 +173,13 @@ export function CTASection({
       <p className="text-center text-sm font-normal text-copy-muted max-w-[420px] mt-3 leading-[22px]">
         {body}
       </p>
-      <Link href="/register">
-      <button
-        onClick={onButtonClick}
-        className="mt-8 cursor-pointer rounded-lg bg-teal-brand px-8 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90 border-none"
-      >
-        {buttonText}
-      </button>
-      </Link>
+          <Button
+      asChild
+      onClick={onButtonClick}
+      className="mt-8 cursor-pointer rounded-lg bg-teal-brand px-8 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90 border-none"
+    >
+      <Link href="/register">{buttonText}</Link>
+    </Button>
     </section>
   );
 }

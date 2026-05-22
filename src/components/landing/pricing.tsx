@@ -112,14 +112,15 @@ export function Pricing() {
               Best for trying Anvila and publishing your first public setup
               packages.
             </p>
-            <Link href="/register">
+            
             <button
               type="button"
               className="flex h-[55.65px] cursor-pointer items-center justify-center gap-2.5 self-stretch whitespace-nowrap rounded-[10px] border-none bg-border-subtle px-4 py-4 text-lg font-bold text-zinc-900"
             >
-              Create free package
+               <Link href="/register">Create free package</Link>
+              
             </button>
-            </Link>
+        
             <div className="flex flex-col gap-4 self-stretch">
               <span className="text-sm font-semibold text-zinc-900">
                 What&apos;s included:
@@ -159,14 +160,16 @@ export function Pricing() {
               Best for creating more packages, private setups, client projects,
               and internal workflows.
             </p>
-            <Link href="/register">
+            
             <button
               type="button"
               className="flex h-[55.65px] cursor-pointer items-center justify-center gap-2.5 self-stretch whitespace-nowrap rounded-[10px] border-none bg-teal-brand px-4 py-4 text-lg font-bold text-white"
             >
+                <Link href="/register">
               Create paid package
+              </Link>
             </button>
-            </Link>
+          
             <div className="flex flex-col gap-4 self-stretch">
               <span className="text-sm font-semibold text-zinc-900">
                 Everything in Builder:

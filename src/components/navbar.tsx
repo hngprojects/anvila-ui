@@ -82,20 +82,24 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
             </Link>
           ) : (
             <>
-              <Link href="/login">
+              
                 <Button
                   variant="ghost"
                   className="h-10 px-10 items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo transition-opacity hover:opacity-80"
                 >
+                    <Link href="/login">
                   Log in
+                  </Link>
                 </Button>
-              </Link>
+              
 
-              <Link href="/register">
+              
                 <Button className="h-10 px-10 items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white transition-opacity hover:opacity-90">
+                      <Link href="/register">
                   Get Started
+                  </Link>
                 </Button>
-              </Link>
+            
             </>
           )}
         </div>
@@ -160,20 +164,25 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
               </Link>
             ) : (
               <>
-                <Link href="/login" className="w-full">
+                
                   <Button
+
                     variant="ghost"
                     className="h-10 w-full items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo"
                   >
+                    <Link href="/login">
                     Log in
+                    </Link>
                   </Button>
-                </Link>
+                
 
-                <Link href="/register" className="w-full">
+               
                   <Button className="h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white">
+                      <Link href="/register">
                     Get Started
+                    </Link>
                   </Button>
-                </Link>
+                
               </>
             )}
           </div>
