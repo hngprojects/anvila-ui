@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { AuthDialog } from "./auth-dialog";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/icons";
 import { NavLinkProps } from "@/types";
@@ -83,24 +82,24 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
             </Link>
           ) : (
             <>
-              <AuthDialog
-                trigger={
-                  <Button
-                    variant="ghost"
-                    className="h-10 px-10 items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo transition-opacity hover:opacity-80"
-                  >
-                    Log in
-                  </Button>
-                }
-              />
+              
+                <Button
+                  variant="ghost"
+                  className="h-10 px-10 items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo transition-opacity hover:opacity-80"
+                >
+                    <Link href="/login">
+                  Log in
+                  </Link>
+                </Button>
+              
 
-              <AuthDialog
-                trigger={
-                  <Button className="h-10 px-10 items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white transition-opacity hover:opacity-90">
-                    Get Started
-                  </Button>
-                }
-              />
+              
+                <Button className="h-10 px-10 items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white transition-opacity hover:opacity-90">
+                      <Link href="/register">
+                  Get Started
+                  </Link>
+                </Button>
+            
             </>
           )}
         </div>
@@ -156,7 +155,7 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
           </ul>
 
           <div className="mt-6 flex flex-col gap-3 border-t border-copy-muted/10 pt-6">
-            {waitlist ? (
+           {waitlist ? (
               <Link
                 href="/waitlist"
                 className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white"
@@ -165,23 +164,25 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
               </Link>
             ) : (
               <>
-                <AuthDialog
-                  trigger={
-                    <Button
-                      variant="ghost"
-                      className="h-10 w-full items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo"
-                    >
-                      Log in
-                    </Button>
-                  }
-                />
-                <AuthDialog
-                  trigger={
-                    <Button className="h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white">
-                      Get Started
-                    </Button>
-                  }
-                />
+                
+                  <Button
+
+                    variant="ghost"
+                    className="h-10 w-full items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo"
+                  >
+                    <Link href="/login">
+                    Log in
+                    </Link>
+                  </Button>
+                
+
+               
+                  <Button className="h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white">
+                      <Link href="/register">
+                    Get Started
+                    </Link>
+                  </Button>
+                
               </>
             )}
           </div>
