@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { AgentData, ChatMessage } from "@/interface/agent";
 
 interface AgentContextType {
@@ -46,6 +46,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [totalPages, setTotalPages] = useState(1);
   const [hasNext, setHasNext] = useState(false);
   const [hasPrev, setHasPrev] = useState(false);
+  const fetchIdRef = useRef(0);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
@@ -70,15 +71,18 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [identityExpanded, setIdentityExpanded] = useState(true);
 
   const fetchAgents = useCallback(async (page = 1) => {
+    const fetchId = ++fetchIdRef.current;
     setIsLoading(true);
     setError(null);
     try {
       const res = await fetch(`/api/personas?page=${page}&size=20`);
+      if (fetchId !== fetchIdRef.current) return;
       if (!res.ok) {
         setError("Failed to fetch agents");
         return;
       }
       const json = await res.json();
+      if (fetchId !== fetchIdRef.current) return;
       const items = Array.isArray(json?.data) ? json.data : [];
       const mapped: AgentData[] = items.map((item: Record<string, unknown>) => ({
         id: String(item.id ?? ""),
@@ -98,9 +102,10 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       setHasNext(Boolean(meta.has_next));
       setHasPrev(Boolean(meta.has_prev));
     } catch {
+      if (fetchId !== fetchIdRef.current) return;
       setError("Failed to fetch agents");
     } finally {
-      setIsLoading(false);
+      if (fetchId === fetchIdRef.current) setIsLoading(false);
     }
   }, []);
 
