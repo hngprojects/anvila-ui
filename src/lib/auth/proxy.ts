@@ -6,7 +6,7 @@ import {
   getTokensFromRequest,
   setAuthCookies,
 } from "@/lib/auth/cookies";
-import { authApi } from "@/lib/auth/api";
+import { authApi, extractAuthTokens, type AuthTokens } from "@/lib/auth/api";
 
 type TokenPair = {
   accessToken: string | null;
@@ -16,10 +16,7 @@ type TokenPair = {
 type AuthFetchResult = {
   res: Response | null;
   accessToken: string | null;
-  tokens?: {
-    access_token: string;
-    refresh_token: string;
-  };
+  tokens?: AuthTokens;
   refreshed: boolean;
 };
 
@@ -140,5 +137,5 @@ async function fetchWithAccess(
 async function refreshTokens(refreshToken: string) {
   const refreshResult = await authApi.refresh(refreshToken);
   if (!refreshResult.ok) return null;
-  return refreshResult.data.data.tokens;
+  return extractAuthTokens(refreshResult.data);
 }
