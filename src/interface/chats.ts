@@ -38,4 +38,5 @@ export interface AgentFile {
     id: string;
     name: string;
     content: string;
+    folder?: string; // optional: groups file into a named subfolder in the file tree
 };

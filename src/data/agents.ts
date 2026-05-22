@@ -120,9 +120,9 @@ export const AGENTS: AgentCardData[] = [
   },
 ];
 
-export const AGENT_TITLE = "Anatassia Rhodes - Content creator agent for NIOR";
+export const AGENT_TITLE = "Agent for physics under-grad";
 export const AGENT_SUBTITLE =
-  "Generated a full agent AI-powered content creator agent for a skincare brand";
+  "Generated a full agent profile for physics undergrad, skills, system prompts & MCP config automatically.";
 
 export const DEMO_FILES: AgentFile[] = [
   {
@@ -196,23 +196,129 @@ If the user's request falls outside Boundaries, respond:
 - First draft delivered within 5 minutes of brief confirmation.
 - Revisions within 2 minutes per round.`,
   },
+  // Skills files — grouped under the 'skills' subfolder in the file tree
+  {
+    id: "research-thesis",
+    name: "Research thesis.ts",
+    folder: "skills",
+    content: `// Research Thesis Skill
+// Gathers academic sources and synthesises research briefs.
+
+export async function researchThesis(topic: string) {
+  // TODO: integrate with academic search API
+  return { summary: "", sources: [] as string[] };
+}`,
+  },
+  {
+    id: "experiments",
+    name: "Experiments.ts",
+    folder: "skills",
+    content: `// Experiments Skill
+// Designs and evaluates experimental protocols.
+
+export async function runExperiment(hypothesis: string) {
+  // TODO: implement experiment runner
+  return { hypothesis, results: null };
+}`,
+  },
+  {
+    id: "growth-metrics",
+    name: "Growth metrics.ts",
+    folder: "skills",
+    content: `// Growth Metrics Skill
+// Tracks and reports growth KPIs.
+
+export function computeGrowthMetrics(data: number[]) {
+  const mean = data.reduce((a, b) => a + b, 0) / data.length;
+  return { mean, count: data.length };
+}`,
+  },
+  {
+    id: "solid-state",
+    name: "Solid state.ts",
+    folder: "skills",
+    content: `// Solid State Skill
+// Analyses solid-state physics problems.
+
+export function analyzeSolidState(params: Record<string, number>) {
+  return { ...params, analysed: true };
+}`,
+  },
+  {
+    id: "data-analysis",
+    name: "Data analysis.ts",
+    folder: "skills",
+    content: `// Data Analysis Skill
+// Processes datasets and returns statistical summaries.
+
+export function analyzeData(rows: number[][]) {
+  return { rowCount: rows.length, colCount: rows[0]?.length ?? 0 };
+}`,
+  },
+  {
+    id: "user-retention",
+    name: "User retention.ts",
+    folder: "skills",
+    content: `// User Retention Skill
+// Computes cohort retention rates.
+
+export function retentionRate(cohort: number[], followup: number[]) {
+  return followup.map((v, i) => (cohort[i] ? v / cohort[i] : 0));
+}`,
+  },
+  // Root-level files rendered after the skills folder
+  {
+    id: "readme",
+    name: "README.md",
+    content: `# Agent for physics under-grad
+
+under-grad is a research-focused AI agent built with Anvila. It browses the open web, extracts key evidence, and composes answers with inline citations.
+
+## Installation
+
+\`\`\`
+npx Anvila install Anvila/under-grad
+\`\`\`
+
+## Usage
+
+\`\`\`js
+import { underGrad } from "@Anvila/under-grad";
+const agent = new underGrad({ apiKey: process.env.AF_KEY });
+const answer = await agent.ask("What's the state of small LLMs in 2026?");
+console.log(answer.summary, answer.citations);
+\`\`\`
+
+## License
+
+MIT — fork freely, attribution appreciated.`,
+  },
+  {
+    id: "package",
+    name: "package.json",
+    content: `{
+  "name": "under-grad",
+  "version": "1.4.2",
+  "description": "Research-focused AI agent built with Anvila",
+  "license": "MIT",
+  "main": "index.ts"
+}`,
+  },
 ];
 
 export const MANIFEST: ManifestDataProps = {
-  name: "Anatassia Rhodes",
-  version: "0.1.0",
+  name: "under-grad",
+  version: "v1.4.2",
   model: "gemini-3-flash",
   license: "MIT",
-  files: 5,
+  files: 12,
   skills: [
     "Research thesis",
     "Data analysis",
     "Experiments",
     "Solid state",
     "Growth metrics",
-    "Web Search",
-    "File Generator",
-    "GitHub Push"
+    "User retention",
   ],
 };
 

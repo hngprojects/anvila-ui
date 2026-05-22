@@ -64,13 +64,14 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   });
   const [identityExpanded, setIdentityExpanded] = useState(true);
 
-  // Simulate an API call to fetch agents
+  // TODO: endpoint — GET /api/agents
+  // Replace the localStorage fallback below with: const data = await fetch("/api/agents").then(r => r.json())
   const fetchAgents = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      
+
       const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
@@ -100,11 +101,12 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   }, [fetchAgents]);
 
 
-  // Simulate an API call to create an agent
+  // TODO: endpoint — POST /api/agents  { name, categories, visibility }
+  // Replace the localStorage logic below with: const newAgent = await fetch("/api/agents", { method: "POST", body: JSON.stringify(newAgentData) }).then(r => r.json())
   const createAgent = async (newAgentData: Omit<AgentData, "id" | "created" | "clone" | "owners">) => {
     setIsLoading(true);
     try {
-    
+
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const newAgent: AgentData = {
@@ -128,10 +130,12 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     }
   };
  
+  // TODO: endpoint — DELETE /api/agents/:id
+  // Replace the localStorage logic below with: await fetch(`/api/agents/${id}`, { method: "DELETE" })
   const deleteAgent = async (id: string) => {
     setIsLoading(true);
     try {
-    
+
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const updatedAgents = agents.filter((a) => a.id !== id);

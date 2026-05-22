@@ -60,6 +60,9 @@ const INFO_CARDS = [
   { label: "Version", value: "v1.4.2" },
 ];
 
+// TODO: replace with real repo URL returned by GET /api/agents/:id/github-url
+const GITHUB_REPO_URL = "https://github.com/Anvila/under-grad-v1";
+
 export function GithubPublishModal({ onClose, defaultTab = "git" }: GithubPublishModalProps) {
   const [activeTab, setActiveTab] = useState<"git" | "zip">(defaultTab);
   const [toast, setToast] = useState<"success" | "error" | null>(null);
@@ -74,10 +77,26 @@ export function GithubPublishModal({ onClose, defaultTab = "git" }: GithubPublis
     navigator.clipboard.writeText(textToCopy);
   };
 
-  const handleAction = () => {
+  const handleDownloadZip = () => {
     setToast("success");
     setTimeout(() => setToast(null), 3000);
   };
+
+  const handleOpenGithub = async () => {
+    try {
+      // TODO: endpoint — POST /api/agents/:id/github-redirect
+      // Expected response: { redirectUrl: string }
+      // const res = await fetch(`/api/agents/${agentId}/github-redirect`, { method: "POST" });
+      // const { redirectUrl } = await res.json();
+      // window.open(redirectUrl, "_blank", "noopener,noreferrer");
+      window.open(GITHUB_REPO_URL, "_blank", "noopener,noreferrer");
+    } catch {
+      setToast("error");
+      setTimeout(() => setToast(null), 3000);
+    }
+  };
+
+  const handleAction = isZip ? handleDownloadZip : handleOpenGithub;
 
   return (
     <>

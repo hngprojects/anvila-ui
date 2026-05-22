@@ -1,15 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Activity, Globe, Lock, Download } from "lucide-react";
 import MyAgentsTable from "./MyAgentsTable";
 import { useAgent } from "@/context/agent";
 
+// TODO: endpoint — GET /api/agents/stats
+// Expected response: { weeklyNew: number, publicGrowth: string, privateGrowth: string, downloadsGrowth: string }
+// Replace the hardcoded trend strings below ("+ 2 this week", "+12.4%") with values from this endpoint
+
 export default function MyAgentsPopulatedState() {
   const [activeTab, setActiveTab] = useState<"All" | "Public" | "Private">("All");
   const { agents } = useAgent();
 
+  // Derived from local agent state; will be replaced by API response when endpoint is live
   const totalCount = agents.length;
   const publicCount = agents.filter(a => a.visibility === "Public").length;
   const privateCount = agents.filter(a => a.visibility === "Private").length;

@@ -39,7 +39,7 @@ export default function DeleteAgentModal({ agentName, onCancel, onConfirmDelete 
            <button  type="button" onClick={onCancel} className="flex-1 rounded-lg border border-gray-200 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors">
             Cancel
           </button>
-            <button  type="button" onClick={onConfirmDelete}  className="flex-1 rounded-lg bg-[`#DC2626`] hover:bg-[`#B91C1C`] px-4 py-2 text-xs font-medium text-white cursor-pointer transition-all duration-200">
+            <button  type="button" onClick={onConfirmDelete}  className="flex-1 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] px-4 py-2 text-xs font-medium text-white cursor-pointer transition-all duration-200">
            Delete Agent
           </button>
         </div>
