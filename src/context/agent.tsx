@@ -7,11 +7,15 @@ interface AgentContextType {
   agents: AgentData[];
   isLoading: boolean;
   error: string | null;
-  fetchAgents: () => Promise<void>;
+  fetchAgents: (page?: number) => Promise<void>;
   createAgent: (agent: Omit<AgentData, "id" | "created" | "clone" | "owners">) => Promise<void>;
   deleteAgent: (id: string) => Promise<void>;
+  currentPage: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+  goToPage: (page: number) => void;
   
-  // Chat Persistence State
   messages: ChatMessage[];
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   prompt: string;
@@ -38,8 +42,11 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [agents, setAgents] = useState<AgentData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrev, setHasPrev] = useState(false);
 
-  // Chat Persistence State
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
@@ -62,12 +69,11 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   });
   const [identityExpanded, setIdentityExpanded] = useState(true);
 
-  // Simulate an API call to fetch agents
-  const fetchAgents = useCallback(async () => {
+  const fetchAgents = useCallback(async (page = 1) => {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/personas");
+      const res = await fetch(`/api/personas?page=${page}&size=20`);
       if (!res.ok) {
         setError("Failed to fetch agents");
         return;
@@ -86,12 +92,21 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
           : "",
       }));
       setAgents(mapped);
+      const meta = json?.meta ?? {};
+      setCurrentPage(meta.page ?? page);
+      setTotalPages(meta.pages ?? 1);
+      setHasNext(Boolean(meta.has_next));
+      setHasPrev(Boolean(meta.has_prev));
     } catch {
       setError("Failed to fetch agents");
     } finally {
       setIsLoading(false);
     }
   }, []);
+
+  const goToPage = useCallback((page: number) => {
+    fetchAgents(page);
+  }, [fetchAgents]);
 
   useEffect(() => {
     let active = true;
@@ -108,7 +123,6 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   }, [fetchAgents]);
 
 
-  // Simulate an API call to create an agent
   const createAgent = async (newAgentData: Omit<AgentData, "id" | "created" | "clone" | "owners">) => {
     setIsLoading(true);
     try {
@@ -153,6 +167,11 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
         fetchAgents,
         createAgent,
         deleteAgent,
+        currentPage,
+        totalPages,
+        hasNext,
+        hasPrev,
+        goToPage,
         messages,
         setMessages,
         prompt,
