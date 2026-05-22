@@ -4,6 +4,8 @@ import { useState } from "react";
 import { AGENTS, CATEGORIES } from "@/data/agents"
 import { Category, Tag, AgentCardData } from "@/types";
 import { Github } from "./../icons";
+import Link from "next/link";
+import { Button } from "../ui/button";
 
 interface CategoryFilterProps {
   categories: Category[];
@@ -171,12 +173,13 @@ export function CTASection({
       <p className="text-center text-sm font-normal text-copy-muted max-w-[420px] mt-3 leading-[22px]">
         {body}
       </p>
-      <button
-        onClick={onButtonClick}
-        className="mt-8 cursor-pointer rounded-lg bg-teal-brand px-8 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90 border-none"
-      >
-        {buttonText}
-      </button>
+          <Button
+      asChild
+      onClick={onButtonClick}
+      className="mt-8 cursor-pointer rounded-lg bg-teal-brand px-8 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90 border-none"
+    >
+      <Link href="/register">{buttonText}</Link>
+    </Button>
     </section>
   );
 }
@@ -193,7 +196,7 @@ export function Explore() {
     <main className="min-h-screen bg-white">
       <HeroSection
         title="Explore Reusable AI Agent Setup Packages"
-        subtitle="Browse public AgentForge packages for marketing, development, research, finance, and operations. Clone a setup, adapt the files, or use it as a starting point for your own agent pack"
+        subtitle="Browse public Anvila packages for marketing, development, research, finance, and operations. Clone a setup, adapt the files, or use it as a starting point for your own agent pack"
       />
 
       <section className="bg-background">
@@ -210,7 +213,7 @@ export function Explore() {
 
       <CTASection
         heading="Can't find the setup you need?"
-        body="Describe the agent setup you want, and AgentForge will help you turn it into a reusable package with files, Skills, and GitHub-ready structure."
+        body="Describe the agent setup you want, and Anvila will help you turn it into a reusable package with files, Skills, and GitHub-ready structure."
         buttonText="Create your own package"
       />
     </main>
