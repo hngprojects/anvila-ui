@@ -50,7 +50,7 @@ export default function GeneratorComposer() {
     },
   );
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = prompt.trim();
     if (!trimmed || isSubmitting) return;
@@ -61,7 +61,7 @@ export default function GeneratorComposer() {
     try {
       clearDraft();
       const result = await generateAgent(trimmed, file);
-      fetchAgents();
+      await fetchAgents();
       router.push(`/generator/${result.agentId}`);
     } catch (err) {
       setError(
