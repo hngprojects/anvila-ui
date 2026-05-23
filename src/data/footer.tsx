@@ -5,9 +5,9 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Our Services",
     links: [
-      { label: "Create Package", href: "/login" },
+      { label: "Create Package", href: "/register" },
       { label: "Browse Registry", href: "/explore" },
-      { label: "GitHub Publishing", href: "/login" },
+      // { label: "GitHub Publishing", href: "/login" },
       { label: "Pricing", href: "/pricing" },
       { label: "Early Access", href: "/waitlist" },
     ],
@@ -18,17 +18,17 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: "Home", href: "/" },
       { label: "About Us", href: "/about" },
       { label: "FAQ", href: "/faq" },
-      { label: "Contacts", href: "/contact" },
-      { label: "Partners", href: "/contact" },
+      { label: "Contact us", href: "/contact" },
+      // { label: "Partners", href: "/c" },
     ],
   },
-  {
-    title: "Support & Legal",
-    links: [
-      { label: "Twitter / X", href: "https://x.com/anviladev" },
-      { label: "LinkedIn", href: "https://www.linkedin.com/company/anvila-dev" },
-    ],
-  },
+ {
+  title: "Socials",
+  links: [
+    { label: "Twitter / X", href: "https://x.com/anviladev", isExternal: true },
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/anvila-dev", isExternal: true },
+  ],
+},
 ];
 
 export const SOCIAL_LINKS = [
@@ -39,5 +39,5 @@ export const SOCIAL_LINKS = [
 export const LEGAL_LINKS = [
   { label: "Privacy Policy", href: "/privacy_policy" },
   { label: "Terms of service", href: "/terms" },
-  { label: "Cookies Policy", href: "/" },
+  // { label: "Cookies Policy", href: "#" },
 ];

@@ -3,18 +3,23 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { AgentData, ChatMessage } from "@/interface/agent";
 
+type CreateAgentInput = Pick<AgentData, "name" | "categories" | "visibility"> &
+  Partial<Pick<AgentData, "description" | "status" | "githubRepoUrl" | "publishedAt">>;
+
 interface AgentContextType {
   agents: AgentData[];
   isLoading: boolean;
   error: string | null;
-  fetchAgents: (page?: number) => Promise<void>;
-  createAgent: (agent: Omit<AgentData, "id" | "created" | "clone" | "owners">) => Promise<void>;
+  fetchAgents: (page?: number, status?: string) => Promise<void>;
+  createAgent: (agent: CreateAgentInput) => Promise<void>;
   deleteAgent: (id: string) => Promise<void>;
   currentPage: number;
   totalPages: number;
   hasNext: boolean;
   hasPrev: boolean;
   goToPage: (page: number) => void;
+  statusFilter: string;
+  setStatusFilter: (status: string) => void;
   
   messages: ChatMessage[];
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
@@ -46,6 +51,7 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [totalPages, setTotalPages] = useState(1);
   const [hasNext, setHasNext] = useState(false);
   const [hasPrev, setHasPrev] = useState(false);
+  const [statusFilter, setStatusFilterState] = useState("");
   const fetchIdRef = useRef(0);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -70,12 +76,22 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   });
   const [identityExpanded, setIdentityExpanded] = useState(true);
 
-  const fetchAgents = useCallback(async (page = 1) => {
+  const fetchAgents = useCallback(async (page = 1, status = statusFilter) => {
     const fetchId = ++fetchIdRef.current;
     setIsLoading(true);
     setError(null);
+
+    const params = new URLSearchParams({
+      page: String(page),
+      size: "20",
+    });
+
+    if (status) params.set("status", status);
+
     try {
-      const res = await fetch(`/api/personas?page=${page}&size=20`);
+      const res = await fetch(`/api/personas?${params.toString()}`, {
+        cache: "no-store",
+      });
       if (fetchId !== fetchIdRef.current) return;
       if (!res.ok) {
         setError("Failed to fetch agents");
@@ -86,9 +102,13 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
       const items = Array.isArray(json?.data) ? json.data : [];
       const mapped: AgentData[] = items.map((item: Record<string, unknown>) => ({
         id: String(item.id ?? ""),
-        name: String(item.name ?? ""),
+        name: String(item.name ?? "Untitled agent"),
+        description: String(item.description_summary ?? ""),
         categories: String(item.category ?? ""),
         visibility: String(item.visibility).toLowerCase() === "public" ? "Public" : "Private",
+        status: String(item.status ?? ""),
+        githubRepoUrl: String(item.github_repo_url ?? ""),
+        publishedAt: String(item.published_at ?? ""),
         clone: 0,
         owners: [],
         created: item.created_at
@@ -107,10 +127,15 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     } finally {
       if (fetchId === fetchIdRef.current) setIsLoading(false);
     }
-  }, []);
+  }, [statusFilter]);
 
   const goToPage = useCallback((page: number) => {
-    fetchAgents(page);
+    fetchAgents(page, statusFilter);
+  }, [fetchAgents, statusFilter]);
+
+  const setStatusFilter = useCallback((status: string) => {
+    setStatusFilterState(status);
+    fetchAgents(1, status);
   }, [fetchAgents]);
 
   useEffect(() => {
@@ -128,12 +153,16 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   }, [fetchAgents]);
 
 
-  const createAgent = async (newAgentData: Omit<AgentData, "id" | "created" | "clone" | "owners">) => {
+  const createAgent = async (newAgentData: CreateAgentInput) => {
     setIsLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       const newAgent: AgentData = {
         ...newAgentData,
+        description: newAgentData.description ?? "",
+        status: newAgentData.status ?? "draft",
+        githubRepoUrl: newAgentData.githubRepoUrl ?? "",
+        publishedAt: newAgentData.publishedAt ?? "",
         id: Math.random().toString(36).substring(2, 9),
         created: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }),
         clone: 0,
@@ -177,6 +206,8 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
         hasNext,
         hasPrev,
         goToPage,
+        statusFilter,
+        setStatusFilter,
         messages,
         setMessages,
         prompt,

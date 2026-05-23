@@ -9,7 +9,7 @@ import type { AgentSession } from "@/lib/personas";
 
 import {
   CirclePlus,
-  Search,
+  // Search,
   Globe,
   Bot,
   ChevronDown,
@@ -23,7 +23,7 @@ import {
 
 const NAV_ITEMS = [
   { icon: CirclePlus, label: "Create Agent", path: "/generator" },
-  { icon: Search, label: "Search", path: "/agents/search" },
+  // { icon: Search, label: "Search", path: "/agents/search" },
   { icon: Globe, label: "Explore", path: "/generator/explore" },
   { icon: Bot, label: "My Agents", path: "/generator/my-agents" },
   { icon: Github, label: "GitHub", path: "/generator/github" },
