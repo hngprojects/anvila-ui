@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { getTokensFromRequest } from '@/lib/auth/cookies'
 
 const PUBLIC_PATHS = new Set([

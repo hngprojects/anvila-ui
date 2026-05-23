@@ -1,4 +1,4 @@
-import { FaqSection } from "@/types";
+﻿import { FaqSection } from "@/types";
 
 export const FAQ_SECTIONS: FaqSection[] = [
   {
