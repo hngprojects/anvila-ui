@@ -17,8 +17,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
           "You can create reusable AI agent setup packages for use across products, workflows, learning projects, and internal systems. Packages can include identity.md, soul.md, dna.md, overview.md, 
       },
       {
-        question:
-          "Do I need to know a file schema or formatting system before using Anvila?",
+        question: "Do I need to know a file schema or formatting system before using Anvila?",
         answer:
           "No. Anvila is designed so users can describe the agent setup they need in natural language without learning a schema or file format.",
       },
