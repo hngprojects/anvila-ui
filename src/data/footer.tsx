@@ -5,9 +5,9 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Our Services",
     links: [
-      { label: "Create Package", href: "/login" },
+      { label: "Create Package", href: "/register" },
       { label: "Browse Registry", href: "/explore" },
-      { label: "GitHub Publishing", href: "/login" },
+      // { label: "GitHub Publishing", href: "/login" },
       { label: "Pricing", href: "/pricing" },
       { label: "Early Access", href: "/waitlist" },
     ],

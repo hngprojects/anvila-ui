@@ -80,7 +80,7 @@ export function FaqPage() {
       <section className="w-full max-w-[960px] mx-auto px-5 sm:px-10 lg:px-20 pb-20 flex flex-col gap-12">
         {FAQ_SECTIONS.map((section) => (
           <div key={section.id} id={section.id} className="flex flex-col gap-6">
-            <h2 className="text-teal-brand font-semibold text-lg">
+            <h2 className="text-teal-brand font-semibold text-lg pl-2">
               {section.title}
             </h2>
 

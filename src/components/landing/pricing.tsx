@@ -53,8 +53,8 @@ const BUILDER_FEATURES = [
 
 const FAQS = [
   {
-    q: 'What does "one-time per agent" mean?',
-    a: "You pay once to turn a specific agent setup private. No recurring subscriptions.",
+    q: "What does the monthly Builder plan include?",
+    a: "Builder is $5 per month for extra package creation and private setup features as they roll out.",
   },
   {
     q: "Can I make a public agent private later?",
@@ -93,8 +93,8 @@ export function Pricing() {
         </h2>
 
         <p className="m-0 max-w-[665px] text-base font-normal leading-6 text-copy-muted">
-          Create your first 3 public setup packages for free. Pay once when you
-          need more packages or want to keep a package private.
+          Create your first 3 public setup packages for free. Upgrade monthly
+          when you need more packages or want to keep a package private.
         </p>
       </div>
 
@@ -104,8 +104,8 @@ export function Pricing() {
           <div className="flex items-center gap-1.5 self-stretch rounded-t-[20px] bg-border-subtle px-6 py-3">
             <span className="text-lg font-semibold text-zinc-900">Starter</span>
           </div>
-          <div className="flex flex-1 flex-col items-start gap-4 self-stretch rounded-[20px] border border-white bg-white p-6">
-            <div className="flex items-baseline">
+          <div className="flex flex-1 flex-col items-start gap-6 self-stretch rounded-[20px] border border-white bg-white p-8">
+            <div className="flex items-baseline gap-2">
               <span className="text-4xl font-semibold text-copy-muted">$0</span>
             </div>
             <p className="m-0 min-h-[72px] text-base font-normal leading-6 text-copy-muted">
@@ -121,7 +121,7 @@ export function Pricing() {
               
             </button>
         
-            <div className="flex flex-col gap-4 self-stretch">
+            <div className="flex flex-col gap-5 self-stretch">
               <span className="text-sm font-semibold text-zinc-900">
                 What&apos;s included:
               </span>
@@ -151,10 +151,10 @@ export function Pricing() {
               </span>
             </div>
           </div>
-          <div className="flex flex-1 flex-col items-start gap-4 self-stretch rounded-[20px] border border-white bg-white p-6">
-            <div className="flex items-baseline gap-1">
+          <div className="flex flex-1 flex-col items-start gap-6 self-stretch rounded-[20px] border border-white bg-white p-8">
+            <div className="flex items-baseline gap-2">
               <span className="text-4xl font-semibold text-copy-muted">$5</span>
-              <span className="text-sm text-zinc-500">one time payment</span>
+              <span className="text-sm text-zinc-500">per month</span>
             </div>
             <p className="m-0 min-h-[72px] text-base font-normal leading-6 text-copy-muted">
               Best for creating more packages, private setups, client projects,
@@ -170,7 +170,7 @@ export function Pricing() {
               </Link>
             </button>
           
-            <div className="flex flex-col gap-4 self-stretch">
+            <div className="flex flex-col gap-5 self-stretch">
               <span className="text-sm font-semibold text-zinc-900">
                 Everything in Builder:
               </span>

@@ -17,12 +17,17 @@ export function CategoryFilter({
   return (
     <div className="mb-10 -mx-6 px-6 sm:-mx-10 sm:px-10 xl:-mx-20 xl:px-20">
       <div className="border-b border-copy-muted/20">
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+        <div
+          className="flex gap-2 overflow-x-auto scrollbar-hide"
+          role="tablist"
+          aria-label="Agent categories"
+        >
           {categories.map((cat) => (
             <button
               key={cat}
               type="button"
               onClick={() => onCategoryChange(cat)}
+               aria-pressed={activeCategory === cat}
               className="relative shrink-0 cursor-pointer border-none bg-none px-4 pb-3 transition-colors"
             >
               <span
@@ -68,9 +73,10 @@ export function AgentTag({ tag }: AgentTagProps) {
 
 interface AgentCardProps {
   agent: AgentCardData;
+  onView?: (agent: AgentCardData) => void;
 }
 
-export function AgentCard({ agent }: AgentCardProps) {
+export function AgentCard({ agent, onView }: AgentCardProps) {
   return (
     <div
       className="flex flex-col justify-between rounded-xl border border-copy-muted/20 bg-white p-6"
@@ -109,6 +115,9 @@ export function AgentCard({ agent }: AgentCardProps) {
 
         <button
           type="button"
+           onClick={() => onView?.(agent)}
+          disabled={!onView}
+          aria-disabled={!onView}
           className="cursor-pointer rounded-md bg-primary px-5 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 border-none"
         >
           View
@@ -120,15 +129,18 @@ export function AgentCard({ agent }: AgentCardProps) {
 
 interface AgentGridProps {
   agents: AgentCardData[];
+   onAgentView?: (agent: AgentCardData) => void;
 }
 
-export function AgentGrid({ agents }: AgentGridProps) {
+export function AgentGrid({ agents, onAgentView }: AgentGridProps) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {agents.map((agent, idx) => (
         <AgentCard
           key={`${agent.title}-${idx}`}
           agent={agent}
+          onView={onAgentView}
+        
         />
       ))}
     </div>

@@ -60,9 +60,9 @@ export default function Footer() {
           {/* Link columns */}
           {FOOTER_COLUMNS.map((column) => (
             <div key={column.title} className="flex flex-col gap-4">
-              <h4 className="text-sm font-semibold text-footer-text">
+              <h3 className="text-sm font-semibold text-footer-text">
                 {column.title}
-              </h4>
+              </h3>
               <ul className="flex flex-col gap-3">
                 {column.links.map((link) => (
                   <li key={link.label}>
