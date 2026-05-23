@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/icons";
 import { NavLinkProps } from "@/types";
-import { useAuth } from "@/context/auth"; // adjust import path as needed
+import { useAuth } from "@/context/auth";
 
 const NAVLINKS = [
   { href: "/", label: "Home" },
