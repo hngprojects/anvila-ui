@@ -25,6 +25,8 @@ const PUBLIC_PATHS = new Set([
   "/about",
   "/generator",
   "/explore",
+  "/404",
+  "/coming-soon",
 ])
 
 /** Prefixes that are always public (static assets, Next internals, our own API routes) */

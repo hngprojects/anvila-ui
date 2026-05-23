@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AgentData } from "@/interface/agent";
 import { useAgent } from "@/context/agent";
 
@@ -18,7 +19,7 @@ export default function MyAgentsTable({ filter, agents }: { filter: "All" | "Pub
           <div className="col-span-2">Agent</div>
           <div>Categories</div>
           <div>Visibility</div>
-          <div>Clone</div>
+          <div>Status</div>
           <div>Owners</div>
           <div className="flex justify-between items-center w-full col-span-1">
             <span>Created</span>
@@ -50,7 +51,9 @@ export default function MyAgentsTable({ filter, agents }: { filter: "All" | "Pub
                 </span>
               </div>
 
-              <div className="text-gray-600">{agent.clone}</div>
+              <div className="text-gray-600 capitalize">
+                {agent.status ? agent.status.replace(/_/g, " ") : "-"}
+              </div>
 
               <div className="flex items-center gap-2 min-w-0 shrink-0">
                 {agent.owners.map((owner, idx) => (
@@ -68,9 +71,12 @@ export default function MyAgentsTable({ filter, agents }: { filter: "All" | "Pub
               <div className="flex justify-between items-center w-full col-span-1 min-w-0 shrink-0">
                 <span className="text-gray-600">{agent.created}</span>
                 <div className="flex items-center gap-2 shrink-0">
-                  <button className="px-3 py-1 rounded-full border border-gray-200 text-xs font-medium text-gray-700 hover:bg-white transition-colors bg-white/50">
+                  <Link
+                    href={`/generator/${agent.id}`}
+                    className="px-3 py-1 rounded-full border border-gray-200 text-xs font-medium text-gray-700 hover:bg-white transition-colors bg-white/50"
+                  >
                     View
-                  </button>
+                  </Link>
                   <button 
                     onClick={() => deleteAgent(agent.id)}
                     className="px-3 py-1 rounded-full border border-red-200 text-xs font-medium text-red-500 hover:bg-red-50 transition-colors bg-white/50"
