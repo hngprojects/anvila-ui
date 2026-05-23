@@ -21,9 +21,10 @@ export const PRICING_TIERS: PricingTier[] = [
     name: "Professional",
     pricePrefix: "$",
     price: "5",
-    priceNote: "one time payment",
+    priceNote: "per month",
     description: "Best for fast agent and operations",
     ctaText: "Go Private",
+    ctaHref: "/coming-soon",
     features: [
       "Everything in public",
       "Private GitHub repository",
@@ -40,8 +41,8 @@ export const PRICING_TIERS: PricingTier[] = [
 
 export const FAQS = [
   {
-    q: 'What does "one-time per agent" mean?',
-    a: "You pay once to turn a specific agent setup private. No recurring subscriptions.",
+    q: "What does the monthly Professional plan include?",
+    a: "Professional is $5 per month for private agent features, private GitHub publishing, and registry controls as they roll out.",
   },
   {
     q: "Can I make a public agent private later?",

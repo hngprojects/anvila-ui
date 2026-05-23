@@ -39,7 +39,7 @@ export const AboutPage = () => {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#A1A1AA] mb-8">
             <div className="w-2 h-2 rounded-full bg-orange-400" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-[#52525B]">
-              About
+              About Anvila
             </span>
           </div>
           <h1 className="text-5xl md:text-[60px] font-medium text-[#000000] mb-8 leading-tight">

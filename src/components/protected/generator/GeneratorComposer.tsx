@@ -1,26 +1,53 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, useRef, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUp, FileText, Loader2, Paperclip, X } from "lucide-react";
 
 import { useAuth } from "@/context/auth";
 import { generateAgent } from "@/components/protected/generator/api";
+import { useDraft } from "@/hooks/useDraft";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = [".txt", ".md", ".pdf", ".docx"];
 
+type ComposerDraft = { prompt: string };
+
 export default function GeneratorComposer() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [prompt, setPrompt] = useState("");
+
+  const queryPrompt =
+    searchParams.get("message") ?? searchParams.get("prompt") ?? "";
+
+  const [prompt, setPrompt] = useState(queryPrompt);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const firstName = user?.display_name?.split(" ")[0] ?? "there";
   const canSubmit = prompt.trim().length > 0 && !isSubmitting;
+
+  useEffect(() => {
+    if (!queryPrompt) return;
+    const next = new URLSearchParams(searchParams.toString());
+    next.delete("message");
+    next.delete("prompt");
+    const clean = next.toString();
+    router.replace(`/generator${clean ? `?${clean}` : ""}`, { scroll: false });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { clearDraft } = useDraft<ComposerDraft>(
+    "generator:composer",
+    { prompt },
+    (draft) => {
+      // Only restore draft if there was no query param
+      if (!queryPrompt && draft.prompt) setPrompt(draft.prompt);
+    },
+  );
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -31,10 +58,13 @@ export default function GeneratorComposer() {
     setIsSubmitting(true);
 
     try {
+      clearDraft();
       const result = await generateAgent(trimmed, file);
       router.push(`/generator/${result.agentId}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not start generation");
+      setError(
+        err instanceof Error ? err.message : "Could not start generation",
+      );
       setIsSubmitting(false);
     }
   }
@@ -48,7 +78,9 @@ export default function GeneratorComposer() {
     }
 
     const name = nextFile.name.toLowerCase();
-    const hasAllowedExtension = ALLOWED_EXTENSIONS.some((ext) => name.endsWith(ext));
+    const hasAllowedExtension = ALLOWED_EXTENSIONS.some((ext) =>
+      name.endsWith(ext),
+    );
 
     if (!hasAllowedExtension) {
       setError("Only txt, md, pdf, and docx files are supported.");
@@ -73,7 +105,10 @@ export default function GeneratorComposer() {
             </h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="rounded-[28px] border border-gray-200 bg-white p-3 shadow-sm">
+          <form
+            onSubmit={handleSubmit}
+            className="rounded-[28px] border border-gray-200 bg-white p-3 shadow-sm"
+          >
             {file && (
               <div className="mb-3 flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm">
                 <div className="flex min-w-0 items-center gap-2 text-gray-700">
