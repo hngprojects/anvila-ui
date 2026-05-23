@@ -25,8 +25,12 @@ export interface AgentOwner {
 export interface AgentData {
   id: string;
   name: string;
+  description: string;
   categories: string;
   visibility: AgentVisibility;
+  status: string;
+  githubRepoUrl: string;
+  publishedAt: string;
   clone: number;
   owners: AgentOwner[];
   created: string;
