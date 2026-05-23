@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/icons";
 import { NavLinkProps } from "@/types";
+import { useAuth } from "@/context/auth";
 
 const NAVLINKS = [
   { href: "/", label: "Home" },
@@ -31,6 +31,7 @@ const NavLink = ({
       onClick={onClick}
       className={cn(
         "font-medium text-lg leading-normal transition-opacity hover:opacity-70",
+        "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         isActive ? "text-teal-brand" : "text-logo",
         isMobile && "block w-full py-2",
       )}
@@ -39,6 +40,64 @@ const NavLink = ({
     </Link>
   );
 };
+
+function AuthButtons({
+  isMobile = false,
+  onNavigate,
+}: {
+  isMobile?: boolean;
+  onNavigate?: () => void;
+}) {
+  const { user, isLoading } = useAuth();
+
+  const baseLink =
+    "inline-flex items-center justify-center rounded-lg font-medium text-base transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
+
+  const ghostLink = cn(
+    baseLink,
+    "border border-copy-muted/30 bg-muted-bg/20 text-logo hover:opacity-80",
+    isMobile ? "h-10 w-full" : "h-10 px-10",
+  );
+
+  const primaryLink = cn(
+    baseLink,
+    "border border-primary bg-primary text-white hover:opacity-90",
+    isMobile ? "h-10 w-full" : "h-10 px-10",
+  );
+
+  if (isLoading) {
+    return isMobile ? (
+      <div className="flex flex-col gap-3">
+        <div className="h-10 w-full animate-pulse rounded-lg bg-muted-bg/40" />
+        <div className="h-10 w-full animate-pulse rounded-lg bg-primary/20" />
+      </div>
+    ) : (
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-28 animate-pulse rounded-lg bg-muted-bg/40" />
+        <div className="h-10 w-32 animate-pulse rounded-lg bg-primary/20" />
+      </div>
+    );
+  }
+
+  if (user) {
+    return (
+      <Link href="/generator" className={primaryLink} onClick={onNavigate}>
+        Open Generator
+      </Link>
+    );
+  }
+
+  return (
+    <>
+      <Link href="/login" className={ghostLink} onClick={onNavigate}>
+        Log in
+      </Link>
+      <Link href="/register" className={primaryLink} onClick={onNavigate}>
+        Get Started
+      </Link>
+    </>
+  );
+}
 
 export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -51,7 +110,7 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
       <nav className="flex w-full items-center justify-between px-5 py-3 sm:px-10 lg:px-20">
         <Link
           href="/"
-          className="flex items-center gap-2 shrink-0 outline-hidden focus:outline-hidden focus-visible:outline-hidden"
+          className="flex items-center gap-2 shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           <Logo />
           <span className="text-xl font-bold text-logo sm:text-2xl">
@@ -81,26 +140,7 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
               Join Waitlist
             </Link>
           ) : (
-            <>
-              
-                <Button
-                  variant="ghost"
-                  className="h-10 px-10 items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo transition-opacity hover:opacity-80"
-                >
-                    <Link href="/login">
-                  Log in
-                  </Link>
-                </Button>
-              
-
-              
-                <Button className="h-10 px-10 items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white transition-opacity hover:opacity-90">
-                      <Link href="/register">
-                  Get Started
-                  </Link>
-                </Button>
-            
-            </>
+            <AuthButtons />
           )}
         </div>
 
@@ -155,7 +195,7 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
           </ul>
 
           <div className="mt-6 flex flex-col gap-3 border-t border-copy-muted/10 pt-6">
-           {waitlist ? (
+            {waitlist ? (
               <Link
                 href="/waitlist"
                 className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white"
@@ -163,27 +203,7 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
                 Join Waitlist
               </Link>
             ) : (
-              <>
-                
-                  <Button
-
-                    variant="ghost"
-                    className="h-10 w-full items-center justify-center rounded-lg border border-copy-muted/30 bg-muted-bg/20 font-medium text-base text-logo"
-                  >
-                    <Link href="/login">
-                    Log in
-                    </Link>
-                  </Button>
-                
-
-               
-                  <Button className="h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white">
-                      <Link href="/register">
-                    Get Started
-                    </Link>
-                  </Button>
-                
-              </>
+              <AuthButtons isMobile onNavigate={closeMobileMenu} />
             )}
           </div>
         </div>
