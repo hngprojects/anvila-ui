@@ -46,8 +46,10 @@ export default function Footer() {
                 <Link
                   key={social.label}
                   href={social.href}
-                  aria-label={social.label}
-                  className="text-footer-text/70 transition-colors hover:text-footer-text"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label={social.label}
+                   className="text-footer-text/70 transition-colors hover:text-footer-text"
                 >
                   <social.icon size={18} strokeWidth={1.5} />
                 </Link>
@@ -67,6 +69,10 @@ export default function Footer() {
                     <Link
                       href={link.href}
                       className="text-sm font-normal text-footer-text/70 transition-colors hover:text-footer-text"
+                       {...(link.isExternal && {
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                      })}
                     >
                       {link.label}
                     </Link>
