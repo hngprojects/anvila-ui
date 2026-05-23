@@ -62,7 +62,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: "Can I keep my package private?",
         answer:
-          "Yes. Pay a one-time $5 fee per agent to make it private. Private packages are hidden from the registry and published to a private GitHub repository.",
+          "Private publishing is planned for the $5/month Professional plan. Private packages will be hidden from the registry and published to a private GitHub repository.",
       },
     ],
   },
