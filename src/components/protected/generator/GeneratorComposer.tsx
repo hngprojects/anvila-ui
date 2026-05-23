@@ -46,7 +46,6 @@ export default function GeneratorComposer() {
     "generator:composer",
     { prompt },
     (draft) => {
-      // Only restore draft if there was no query param
       if (!queryPrompt && draft.prompt) setPrompt(draft.prompt);
     },
   );
