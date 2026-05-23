@@ -120,7 +120,8 @@ export function Hero() {
             aria-label="Submit"
             disabled={!canSubmit}
             onClick={() => {
-              if (canSubmit) router.push("/register");
+              if (canSubmit)
+                router.push(`/generator?prompt=${encodeURIComponent(value)}`);
             }}
             className={`flex shrink-0 items-center justify-center rounded-full border-none p-3 transition-all md:p-4 ${
               canSubmit
