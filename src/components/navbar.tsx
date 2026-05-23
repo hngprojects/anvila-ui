@@ -41,7 +41,13 @@ const NavLink = ({
   );
 };
 
-function AuthButtons({ isMobile = false }: { isMobile?: boolean }) {
+function AuthButtons({
+  isMobile = false,
+  onNavigate,
+}: {
+  isMobile?: boolean;
+  onNavigate?: () => void;
+}) {
   const { user, isLoading } = useAuth();
 
   const baseLink =
@@ -75,18 +81,18 @@ function AuthButtons({ isMobile = false }: { isMobile?: boolean }) {
 
   if (user) {
     return (
-      <Link href="/generator" className={primaryLink}>
-        Dashboard
+      <Link href="/generator" className={primaryLink} onClick={onNavigate}>
+        Open Generator
       </Link>
     );
   }
 
   return (
     <>
-      <Link href="/login" className={ghostLink}>
+      <Link href="/login" className={ghostLink} onClick={onNavigate}>
         Log in
       </Link>
-      <Link href="/register" className={primaryLink}>
+      <Link href="/register" className={primaryLink} onClick={onNavigate}>
         Get Started
       </Link>
     </>
@@ -197,7 +203,7 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
                 Join Waitlist
               </Link>
             ) : (
-              <AuthButtons isMobile />
+              <AuthButtons isMobile onNavigate={closeMobileMenu} />
             )}
           </div>
         </div>
