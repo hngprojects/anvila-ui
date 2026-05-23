@@ -9,12 +9,14 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: "What is Anvila?",
         answer:
-          "Anvila helps users scaffold reusable AI agent setup packages from a plain-language description. It generates structured Markdown files that define an agent's identity, tone, behavior, worki
+          "Anvila helps users scaffold reusable AI agent setup packages from a plain-language description. " +
+          "It generates structured Markdown files that define an agent's identity, tone, behavior, working context, and capabilities.",
       },
       {
         question: "What can I create with Anvila?",
         answer:
-          "You can create reusable AI agent setup packages for use across products, workflows, learning projects, and internal systems. Packages can include identity.md, soul.md, dna.md, overview.md, 
+          "You can create reusable AI agent setup packages for use across products, workflows, learning projects, " +
+          "and internal systems. Packages can include identity.md, soul.md, dna.md, overview.md, heartbeat.md, README.md, and matched Skills.",
       },
       {
         question: "Do I need to know a file schema or formatting system before using Anvila?",
