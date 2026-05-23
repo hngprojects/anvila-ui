@@ -4,6 +4,21 @@ type ApiResult<T> =
   | { ok: true; data: T }
   | { ok: false; message: string; status: number }
 
+export interface AuthTokens {
+  access_token: string
+  refresh_token?: string
+  token_type?: string
+}
+
+export interface FastApiRefreshResponse {
+  success: boolean
+  message: string
+  data: {
+    access_token: string
+    token_type: 'bearer'
+  }
+}
+
 async function apiFetch<T>(
   path: string,
   init: RequestInit = {}
@@ -53,6 +68,43 @@ export interface FastApiAuthResponse {
   }
 }
 
+export function extractAuthTokens(raw: unknown): AuthTokens | null {
+  const root = asRecord(raw)
+  const data = asRecord(root.data)
+
+  const candidates = [
+    asRecord(data.tokens),
+    data,
+    root,
+  ]
+
+  for (const candidate of candidates) {
+    const accessToken = candidate.access_token
+    const refreshToken = candidate.refresh_token
+
+    if (typeof accessToken === 'string') {
+      return {
+        access_token: accessToken,
+        ...(typeof refreshToken === 'string' ? { refresh_token: refreshToken } : {}),
+        token_type: typeof candidate.token_type === 'string' ? candidate.token_type : 'bearer',
+      }
+    }
+  }
+
+  return null
+}
+
+export function extractAuthUser(raw: unknown) {
+  const root = asRecord(raw)
+  const data = asRecord(root.data)
+  return data.user ?? root.user ?? null
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+  return value as Record<string, unknown>
+}
+
 export interface FastApiRegisterResponse {
   success: boolean
   message: string
@@ -97,7 +149,7 @@ export const authApi = {
     }),
 
   refresh: (refresh_token: string) =>
-    apiFetch<FastApiAuthResponse>('/api/v1/auth/refresh', {
+    apiFetch<FastApiRefreshResponse>('/api/v1/auth/refresh', {
       method: 'POST',
       body: JSON.stringify({ refresh_token }),
     }),

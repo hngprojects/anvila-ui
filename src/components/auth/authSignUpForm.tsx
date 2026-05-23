@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useDraft } from "@/hooks/useDraft";
 import Link from "next/link";
 import {
   Mail,
@@ -32,6 +33,8 @@ const PW_RULES = [
     test: (v: string) => /[^A-Za-z0-9]/.test(v),
   },
 ];
+
+const REGISTER_DRAFT_KEY = "anvila:register-draft";
 
 function getStrength(pw: string) {
   const score = PW_RULES.filter((r) => r.test(pw)).length;
@@ -65,7 +68,6 @@ export function AuthSignUpForm() {
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [pwTouched, setPwTouched] = useState(false);
-  const [agreed, setAgreed] = useState(false);
   const [bannerError, setBannerError] = useState<string | null>(null);
 
   const {
@@ -73,10 +75,17 @@ export function AuthSignUpForm() {
     handleSubmit,
     control,
     setValue,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<RegisterInput>({
     resolver: zodResolver(RegisterSchema),
-    defaultValues: { agreed: false },
+    defaultValues: {
+      display_name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      agreed: false,
+    },
     mode: "onBlur",
   });
 
@@ -84,6 +93,21 @@ export function AuthSignUpForm() {
   const emailValue = useWatch({ control, name: "email" }) ?? "";
   const password = useWatch({ control, name: "password" }) ?? "";
   const cpwValue = useWatch({ control, name: "confirmPassword" }) ?? "";
+  const agreed = useWatch({ control, name: "agreed" }) ?? false;
+
+  const { clearDraft } = useDraft(
+    REGISTER_DRAFT_KEY,
+    { display_name: nameValue, email: emailValue, agreed },
+    (draft) => {
+      reset({
+        display_name: draft.display_name ?? "",
+        email: draft.email ?? "",
+        password: "",
+        confirmPassword: "",
+        agreed: draft.agreed ?? false,
+      });
+    },
+  );
 
   const nameEmpty = nameValue.length === 0;
   const emailEmpty = emailValue.length === 0;
@@ -117,6 +141,7 @@ export function AuthSignUpForm() {
         return;
       }
 
+      clearDraft();
       // Redirect to verify-email page with masked email as query param
       const encoded = encodeURIComponent(values.email);
       router.push(`/confirm-email?email=${encoded}`);
@@ -371,7 +396,6 @@ export function AuthSignUpForm() {
               type="checkbox"
               checked={agreed}
               onChange={(e) => {
-                setAgreed(e.target.checked);
                 setValue("agreed", e.target.checked, { shouldValidate: true });
               }}
               className="h-[14px] w-[14px] accent-[color:var(--color-primary)]"

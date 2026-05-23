@@ -16,16 +16,18 @@ const COOKIE_BASE = {
 
 export function setAuthCookies(
   res: NextResponse,
-  tokens: { access_token: string; refresh_token: string },
+  tokens: { access_token: string; refresh_token?: string },
 ) {
   res.cookies.set(ACCESS_TOKEN_KEY, tokens.access_token, {
     ...COOKIE_BASE,
     maxAge: ACCESS_MAX_AGE,
   });
-  res.cookies.set(REFRESH_TOKEN_KEY, tokens.refresh_token, {
-    ...COOKIE_BASE,
-    maxAge: REFRESH_MAX_AGE,
-  });
+  if (tokens.refresh_token) {
+    res.cookies.set(REFRESH_TOKEN_KEY, tokens.refresh_token, {
+      ...COOKIE_BASE,
+      maxAge: REFRESH_MAX_AGE,
+    });
+  }
   return res;
 }
 

@@ -1,15 +1,15 @@
-import { Facebook, Twitter, Linkedin, Instagram } from "@/components/icons";
+import { Twitter, Linkedin } from "@/components/icons";
 import { FooterColumn } from "@/types";
 
 export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Our Services",
     links: [
-      { label: "Create Package", href: "#" },
+      { label: "Create Package", href: "/register" },
       { label: "Browse Registry", href: "/explore" },
-      { label: "GitHub Publishing", href: "#" },
+      // { label: "GitHub Publishing", href: "/login" },
       { label: "Pricing", href: "/pricing" },
-      { label: "Early Access", href: "#" },
+      { label: "Early Access", href: "/waitlist" },
     ],
   },
   {
@@ -18,31 +18,26 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: "Home", href: "/" },
       { label: "About Us", href: "/about" },
       { label: "FAQ", href: "/faq" },
-      { label: "Contacts", href: "/contact" },
-      { label: "Partners", href: "#" },
+      { label: "Contact us", href: "/contact" },
+      { label: "Partners", href: "/contact" },
     ],
   },
   {
     title: "Support & Legal",
     links: [
-      { label: "GitHub", href: "#" },
-      { label: "Twitter / X", href: "#" },
-      { label: "LinkedIn", href: "#" },
-      { label: "Discord", href: "#" },
-      { label: "Product Hunt", href: "#" },
+      { label: "Twitter / X", href: "https://x.com/anviladev" },
+      { label: "LinkedIn", href: "https://www.linkedin.com/company/anvila-dev" },
     ],
   },
 ];
 
 export const SOCIAL_LINKS = [
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Instagram, href: "#", label: "Instagram" },
+  { icon: Twitter, href: "https://x.com/anviladev", label: "Twitter" },
+  { icon: Linkedin, href: "https://www.linkedin.com/company/anvila-dev", label: "LinkedIn" },
 ];
 
 export const LEGAL_LINKS = [
   { label: "Privacy Policy", href: "/privacy_policy" },
-  { label: "Terms of service", href: "#" },
-  { label: "Cookies Policy", href: "#" },
+  { label: "Terms of service", href: "/terms" },
+  // { label: "Cookies Policy", href: "/" },
 ];

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 function PlusIcon({ size = 14 }: { size?: number }) {
   const isSmall = size <= 14;
@@ -38,11 +39,11 @@ function ArrowUpIcon({ className = "" }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width="20"
+      height="20"
       viewBox="0 0 24 24"
       fill="none"
-      className={`shrink-0 ${className}`}
+      className={`h-4 w-4 shrink-0 md:h-5 md:w-5 ${className}`}
     >
       <path
         d="M12 20L12 4M6 10L12 4L18 10"
@@ -63,7 +64,9 @@ const CAREER_CHIPS = [
 ];
 
 export function Hero() {
+  const router = useRouter();
   const [value, setValue] = useState("");
+  const canSubmit = value.trim().length > 0;
 
   return (
     <section className="relative w-full overflow-hidden border-t border-zinc-100 bg-[#FAFAFA]">
@@ -94,10 +97,10 @@ export function Hero() {
 
         <div className="mx-auto flex w-full max-w-[800px] items-center justify-between gap-2 rounded-3xl border border-border-subtle bg-white p-4 shadow-[0_6px_18px_-2px_rgba(0,0,0,0.10)] md:h-[77px] md:gap-0.5 md:px-6">
           <div className="flex flex-1 items-center gap-2 md:gap-0">
-            <span className="md:hidden">
+            <span className="hidden md:hidden">
               <PlusIcon size={24} />
             </span>
-            <span className="hidden md:inline">
+            <span className="hidden">
               <PlusIcon size={14} />
             </span>
             <label htmlFor="agent-setup-input" className="sr-only">
@@ -115,10 +118,14 @@ export function Hero() {
           <button
             type="button"
             aria-label="Submit"
-            className={`flex shrink-0 cursor-pointer items-center justify-center rounded-full border-none p-4 transition-all ${
-              value.trim().length > 0
-                ? "bg-teal-accent text-white hover:bg-teal-accent/80"
-                : "bg-muted-bg text-copy-heading"
+            disabled={!canSubmit}
+            onClick={() => {
+              if (canSubmit) router.push("/register");
+            }}
+            className={`flex shrink-0 items-center justify-center rounded-full border-none p-3 transition-all md:p-4 ${
+              canSubmit
+                ? "cursor-pointer bg-teal-brand text-white hover:bg-primary"
+                : "cursor-not-allowed bg-muted-bg text-teal-brand"
             }`}
           >
             <ArrowUpIcon />
@@ -134,7 +141,7 @@ export function Hero() {
               <button
                 key={chip}
                 type="button"
-                className={`inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-2xl border-none px-4 py-2.5 text-base font-medium leading-normal md:px-5 ${
+                className={`inline-flex items-center justify-center whitespace-nowrap rounded-2xl border-none px-4 py-2.5 text-base font-medium leading-normal md:px-5 ${
                   isActive
                     ? "bg-[#F0FDFA] text-teal-brand md:bg-zinc-100 md:text-copy-muted"
                     : "bg-zinc-100 text-copy-muted"
