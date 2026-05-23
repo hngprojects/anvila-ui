@@ -15,21 +15,31 @@ export async function GET(req: NextRequest) {
   backendUrl.searchParams.set("page", page);
   backendUrl.searchParams.set("size", size);
 
-  const res = await fetch(backendUrl, { cache: "no-store" });
-  const raw = await res.json().catch(() => null);
+  try {
+    const res = await fetch(backendUrl, { cache: "no-store" });
+    const raw = await res.json().catch(() => null);
 
-  if (!res.ok) {
-    return NextResponse.json(
-      { message: getBackendMessage(raw) },
-      { status: res.status },
-    );
+    if (!res.ok || !raw) {
+      return NextResponse.json({ data: emptyExploreResult(page, size) }, { status: 200 });
+    }
+
+    return NextResponse.json({ data: normalizeExplore(raw) }, { status: 200 });
+  } catch {
+    return NextResponse.json({ data: emptyExploreResult(page, size) }, { status: 200 });
   }
-
-  return NextResponse.json({ data: normalizeExplore(raw) });
 }
 
-function getBackendMessage(raw: unknown) {
-  if (!raw || typeof raw !== "object") return "Could not load agents";
-  const record = raw as Record<string, unknown>;
-  return typeof record.message === "string" ? record.message : "Could not load agents";
+function emptyExploreResult(page: string, size: string) {
+  return {
+    personas: [],
+    categories: [],
+    meta: {
+      page: Number(page) || 1,
+      size: Number(size) || 12,
+      total: 0,
+      pages: 1,
+      hasNext: false,
+      hasPrev: false,
+    },
+  };
 }
