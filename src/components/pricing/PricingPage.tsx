@@ -114,12 +114,13 @@ export function PricingPage() {
         </div>
 
         <div className="w-full flex justify-center px-5 pb-16 sm:pb-20">
-          <Link href="/faq">
-            <button className="w-[358px] h-[48px] rounded-lg border border-teal-brand flex items-center justify-center transition-opacity hover:opacity-80">
-              <span className="text-teal-brand font-medium text-[18px] leading-[100%]">
-                See more
-              </span>
-            </button>
+          <Link
+            href="/faq"
+            className="w-[358px] h-[48px] rounded-lg border border-teal-brand flex items-center justify-center transition-opacity hover:opacity-80"
+          >
+            <span className="text-teal-brand font-medium text-[18px] leading-[100%]">
+              See more
+            </span>
           </Link>
         </div>
       </section>
