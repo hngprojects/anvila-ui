@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 
 type DeleteAgentModalProps = {
   agentName: string;
+  isDeleting?: boolean;
   onCancel: () => void;
   onConfirmDelete: () => void;
 };
 
-export default function DeleteAgentModal({ agentName, onCancel, onConfirmDelete }: DeleteAgentModalProps) {
+export default function DeleteAgentModal({ agentName, isDeleting, onCancel, onConfirmDelete }: DeleteAgentModalProps) {
   return (
     <div
       role="dialog"
@@ -31,10 +32,10 @@ export default function DeleteAgentModal({ agentName, onCancel, onConfirmDelete 
         </div>
 
         <div className="mt-6 flex flex-row gap-2">
-          <Button type="button" size="sm" onClick={onCancel} className="flex-1 border border-[#005F5A] bg-[#005F5A] px-4 py-2 text-xs font-medium text-white hover:bg-[#005F5A]">
+          <Button type="button" size="sm" disabled={isDeleting} onClick={onCancel} className="flex-1 border border-[#005F5A] bg-[#005F5A] px-4 py-2 text-xs font-medium text-white hover:bg-[#005F5A] disabled:cursor-not-allowed disabled:opacity-60">
             Cancel
           </Button>
-          <Button type="button" variant="destructive" size="sm" onClick={onConfirmDelete} className="flex-1 border border-red-600 bg-white px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-50 hover:border-red-600 hover:text-red-600">
+          <Button type="button" variant="destructive" size="sm" disabled={isDeleting} onClick={onConfirmDelete} className="flex-1 border border-red-600 bg-white px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-50 hover:border-red-600 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-60">
             Delete Agent
           </Button>
         </div>

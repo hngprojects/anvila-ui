@@ -20,6 +20,7 @@ export default function MyAgentsTable({
   const { deleteAgent } = useAgent();
   const [pendingDeleteAgentId, setPendingDeleteAgentId] = useState<string | null>(null);
   const [isDeleteSuccessOpen, setIsDeleteSuccessOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const filteredAgents = agents.filter((agent) => {
     if (filter === "All") return true;
@@ -32,14 +33,20 @@ export default function MyAgentsTable({
   );
 
   const handleConfirmDelete = async () => {
-    if (!pendingDeleteAgent) return;
-    if (onDeleteAgent) {
-      await onDeleteAgent(pendingDeleteAgent.id);
-    } else {
-      await deleteAgent(pendingDeleteAgent.id);
+    if (!pendingDeleteAgent || isDeleting) return;
+    setIsDeleting(true);
+    try {
+      if (onDeleteAgent) {
+        await onDeleteAgent(pendingDeleteAgent.id);
+      } else {
+        await deleteAgent(pendingDeleteAgent.id);
+      }
+      setPendingDeleteAgentId(null);
+      setIsDeleteSuccessOpen(true);
+    } catch {
+    } finally {
+      setIsDeleting(false);
     }
-    setPendingDeleteAgentId(null);
-    setIsDeleteSuccessOpen(true);
   };
 
   return (
@@ -131,7 +138,11 @@ export default function MyAgentsTable({
       {pendingDeleteAgent && (
         <DeleteAgentModal
           agentName={pendingDeleteAgent.name}
-          onCancel={() => setPendingDeleteAgentId(null)}
+          isDeleting={isDeleting}
+          onCancel={() => {
+            if (isDeleting) return;
+            setPendingDeleteAgentId(null);
+          }}
           onConfirmDelete={handleConfirmDelete}
         />
       )}
