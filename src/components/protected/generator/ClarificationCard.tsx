@@ -8,6 +8,7 @@ import type { ClarificationAnswer } from "@/components/protected/generator/api";
 
 interface ClarificationCardProps {
   payload: ClarificationPayload;
+  answers?: ClarificationAnswer[];
   readOnly?: boolean;
   isSubmitting?: boolean;
   onSubmit?: (answers: ClarificationAnswer[]) => void;
@@ -15,12 +16,19 @@ interface ClarificationCardProps {
 
 export default function ClarificationCard({
   payload,
+  answers: providedAnswers,
   readOnly,
   isSubmitting,
   onSubmit,
 }: ClarificationCardProps) {
   const [expanded, setExpanded] = useState(!readOnly);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [answers, setAnswers] = useState<Record<string, string>>(
+    () =>
+      (providedAnswers ?? []).reduce<Record<string, string>>((acc, item) => {
+        acc[item.id] = item.answer;
+        return acc;
+      }, {}),
+  );
 
   function updateAnswer(questionId: string, answer: string) {
     setAnswers((current) => ({
@@ -70,7 +78,9 @@ export default function ClarificationCard({
         <div className="space-y-4 px-4 py-4">
           {payload.questions.map((question, index) => {
             const selected = answers[question.id] ?? "";
-            const showInput = !readOnly && (question.allowCustom || question.options.length === 0);
+            const isOptionAnswer = question.options.includes(selected);
+            const customAnswer = isOptionAnswer ? "" : selected;
+            const showInput = question.allowCustom || question.options.length === 0 || Boolean(customAnswer);
 
             return (
               <div key={question.id} className="rounded-xl border border-gray-100 bg-gray-50/70 p-3">
@@ -78,7 +88,7 @@ export default function ClarificationCard({
                   {index + 1}. {question.question}
                 </p>
 
-                {!readOnly && question.options.length > 0 && (
+                {question.options.length > 0 && (
                   <div className="mt-3 flex flex-col gap-2">
                     {question.options.map((option) => {
                       const active = selected === option;
@@ -87,11 +97,14 @@ export default function ClarificationCard({
                         <button
                           key={option}
                           type="button"
-                          onClick={() => updateAnswer(question.id, option)}
+                          onClick={() => {
+                            if (!readOnly) updateAnswer(question.id, option);
+                          }}
+                          disabled={readOnly}
                           className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
                             active
                               ? "border-[#0C5D56] bg-[#0C5D56]/10 text-[#0C5D56]"
-                              : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
+                              : "border-gray-200 bg-white text-gray-700"
                           }`}
                         >
                           {option}
@@ -103,12 +116,13 @@ export default function ClarificationCard({
 
                 {showInput && (
                   <input
-                    value={
-                      question.options.includes(selected) ? "" : selected
-                    }
-                    onChange={(event) => updateAnswer(question.id, event.target.value)}
+                    value={customAnswer}
+                    onChange={(event) => {
+                      if (!readOnly) updateAnswer(question.id, event.target.value);
+                    }}
                     placeholder={question.options.length > 0 ? "Other answer" : "Type your answer"}
-                    className="mt-3 h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-[#0C5D56]"
+                    readOnly={readOnly}
+                    className="mt-3 h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-[#0C5D56] read-only:cursor-default read-only:bg-gray-100"
                   />
                 )}
 

@@ -557,8 +557,8 @@ function ChatItemView({
     return (
       <ClarificationCard
         payload={item.payload}
+        answers={item.answers}
         readOnly={item.readOnly}
-        // answers={item.answers}
         isSubmitting={isClarifying}
         onSubmit={onClarificationSubmit}
       />
@@ -645,7 +645,7 @@ function messagesToChatItems(messages: AgentMessage[]): ChatItem[] {
           round: payload.round || message.roundNumber,
         },
         readOnly: true,
-        answers: [],
+        answers: extractClarificationAnswers(message.parsedContent),
       };
     }
 
@@ -655,6 +655,26 @@ function messagesToChatItems(messages: AgentMessage[]): ChatItem[] {
       text: message.content,
     };
   });
+}
+
+function extractClarificationAnswers(value: unknown): ClarificationAnswer[] {
+  if (!value || typeof value !== "object") return [];
+  const record = value as Record<string, unknown>;
+
+  if (Array.isArray(record.answers)) {
+    return record.answers
+      .map((item) => {
+        if (!item || typeof item !== "object") return null;
+        const answer = item as Record<string, unknown>;
+        const id = typeof answer.id === "string" ? answer.id : "";
+        const text = typeof answer.answer === "string" ? answer.answer : "";
+        if (!id || !text.trim()) return null;
+        return { id, answer: text };
+      })
+      .filter((item): item is ClarificationAnswer => Boolean(item));
+  }
+
+  return [];
 }
 
 function mergeFiles(
