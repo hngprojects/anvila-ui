@@ -101,7 +101,7 @@ export default function GeneratorComposer() {
         <div className="w-full max-w-3xl">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-semibold tracking-normal text-gray-950 md:text-3xl">
-              What agent should Anvila forge, {firstName}?
+              What should we do today, {firstName}?
             </h1>
           </div>
 
@@ -126,55 +126,55 @@ export default function GeneratorComposer() {
               </div>
             )}
 
-            <div className="flex items-end gap-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                accept=".txt,.md,.pdf,.docx,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                onChange={(event) => {
-                  handleFileSelect(event.target.files?.[0] ?? null);
-                  event.target.value = "";
-                }}
-              />
+            <div className="flex items-center gap-2">
+  <input
+    ref={fileInputRef}
+    type="file"
+    className="hidden"
+    accept=".txt,.md,.pdf,.docx,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    onChange={(event) => {
+      handleFileSelect(event.target.files?.[0] ?? null);
+      event.target.value = "";
+    }}
+  />
 
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="mb-1 flex size-10 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-                title="Attach file"
-              >
-                <Paperclip size={18} />
-              </button>
+  <button
+    type="button"
+    onClick={() => fileInputRef.current?.click()}
+    className="flex size-10 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+    title="Attach file"
+  >
+    <Paperclip size={18} />
+  </button>
 
-              <textarea
-                value={prompt}
-                onChange={(event) => setPrompt(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" && !event.shiftKey) {
-                    event.preventDefault();
-                    event.currentTarget.form?.requestSubmit();
-                  }
-                }}
-                placeholder="Describe your agent..."
-                rows={3}
-                className="max-h-56 min-h-24 flex-1 resize-none bg-transparent px-1 py-3 text-base text-gray-900 outline-none placeholder:text-gray-400 md:text-lg"
-                disabled={isSubmitting}
-              />
+  <textarea
+    value={prompt}
+    onChange={(event) => setPrompt(event.target.value)}
+    onKeyDown={(event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        event.currentTarget.form?.requestSubmit();
+      }
+    }}
+    placeholder="Describe your agent..."
+    rows={1}
+    className="max-h-56 flex-1 resize-none bg-transparent px-1 py-2 text-base text-gray-900 outline-none placeholder:text-gray-400 md:text-lg"
+    disabled={isSubmitting}
+  />
 
-              <button
-                type="submit"
-                disabled={!canSubmit}
-                className="mb-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-[#0C5D56] text-white transition hover:bg-[#094a45] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
-                title="Generate agent"
-              >
-                {isSubmitting ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <ArrowUp size={18} />
-                )}
-              </button>
-            </div>
+  <button
+    type="submit"
+    disabled={!canSubmit}
+    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#0C5D56] text-white transition hover:bg-[#094a45] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
+    title="Generate agent"
+  >
+    {isSubmitting ? (
+      <Loader2 size={18} className="animate-spin" />
+    ) : (
+      <ArrowUp size={18} />
+    )}
+  </button>
+</div>
           </form>
 
           {error && (
