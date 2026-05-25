@@ -36,7 +36,7 @@ export default function MyAgentsTable({ filter, agents }: { filter: "All" | "Pub
             <div className="col-span-2">Agent</div>
             <div>Categories</div>
             <div>Visibility</div>
-            <div>Clone</div>
+            <div>Status</div>
             <div>Owners</div>
             <div className="flex justify-between items-center w-full col-span-1">
               <span>Created</span>
@@ -68,7 +68,9 @@ export default function MyAgentsTable({ filter, agents }: { filter: "All" | "Pub
                   </span>
                 </div>
 
-                <div className="text-gray-600">{agent.clone}</div>
+                <div className="text-gray-600 capitalize">
+                  {agent.status ? agent.status.replace(/_/g, " ") : "-"}
+                </div>
 
                 <div className="flex items-center gap-2 min-w-0 shrink-0">
                   {agent.owners.map((owner, idx) => (

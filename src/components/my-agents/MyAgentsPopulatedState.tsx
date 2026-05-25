@@ -22,7 +22,16 @@ function buildPageWindow(currentPage: number, totalPages: number): (number | "..
 
 export default function MyAgentsPopulatedState() {
   const [activeTab, setActiveTab] = useState<"All" | "Public" | "Private">("All");
-  const { agents, currentPage, totalPages, hasNext, hasPrev, goToPage } = useAgent();
+  const {
+    agents,
+    currentPage,
+    totalPages,
+    hasNext,
+    hasPrev,
+    goToPage,
+    statusFilter,
+    setStatusFilter,
+  } = useAgent();
 
   const totalCount = agents.length;
   const publicCount = agents.filter(a => a.visibility === "Public").length;
@@ -35,12 +44,29 @@ export default function MyAgentsPopulatedState() {
     <div className="flex flex-col w-full h-full bg-white md:bg-[#FBFBFB] p-4 md:p-6 overflow-y-auto">
       <header className="hidden md:flex items-center justify-between gap-4 mb-8 w-full">
         <h1 className="text-[28px] font-semibold text-gray-900">My Agents</h1>
-        <Link
-          href="/generator"
-          className="inline-flex items-center justify-center h-[36px] rounded-lg border border-[#005F5A] bg-white px-4 text-xs font-semibold text-[#52525B] hover:bg-teal-50/50 transition-colors gap-1.5"
-        >
-          <span className="text-[#52525B] text-base leading-none font-medium">+</span> New Agent
-        </Link>
+        <div className="flex items-center gap-3">
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="h-[36px] rounded-lg border border-gray-200 bg-white px-3 text-xs font-semibold text-gray-600 outline-none focus:border-[#005F5A]"
+            aria-label="Filter agents by status"
+          >
+            <option value="">All statuses</option>
+            <option value="draft">Draft</option>
+            <option value="needs_clarification">Needs clarification</option>
+            <option value="generating">Generating</option>
+            <option value="skills_matching">Skills matching</option>
+            <option value="generated">Generated</option>
+            <option value="published">Published</option>
+            <option value="failed">Failed</option>
+          </select>
+          <Link
+            href="/generator"
+            className="inline-flex items-center justify-center h-[36px] rounded-lg border border-[#005F5A] bg-white px-4 text-xs font-semibold text-[#52525B] hover:bg-teal-50/50 transition-colors gap-1.5"
+          >
+            <span className="text-[#52525B] text-base leading-none font-medium">+</span> New Agent
+          </Link>
+        </div>
       </header>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 mt-2 md:mt-0">

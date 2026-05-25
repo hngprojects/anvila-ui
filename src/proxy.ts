@@ -1,10 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { getTokensFromRequest } from '@/lib/auth/cookies'
 
-/**
- * Public paths — no auth required.
- * Everything else is protected by default.
- */
 const PUBLIC_PATHS = new Set([
   '/',
   '/login',
@@ -17,17 +13,18 @@ const PUBLIC_PATHS = new Set([
   '/forgot-password/check-mail',
   '/reset-password/success',
   '/auth/oauth/callback',
-  "/privacy_policy",
-  "/terms",
-  "/pricing",
-  "/faq",
-  "/contact",
-  "/about",
-  "/generator",
-  "/explore",
+  '/faq',
+  '/about',
+  '/contact',
+  '/pricing',
+  '/privacy_policy',
+  '/terms',
+  '/explore',
+  '/generator',
+  '/404',
+  '/coming-soon',
 ])
 
-/** Prefixes that are always public (static assets, Next internals, our own API routes) */
 const PUBLIC_PREFIXES = ['/_next', '/favicon', '/api/auth', '/static', '/images']
 
 function isPublic(pathname: string): boolean {
@@ -50,7 +47,6 @@ export function proxy(req: NextRequest) {
 
   if (!accessToken) {
     const loginUrl = new URL('/login', req.url)
-    // Preserve the intended destination so we can redirect after login
     loginUrl.searchParams.set('next', pathname)
     return NextResponse.redirect(loginUrl)
   }
@@ -61,5 +57,3 @@ export function proxy(req: NextRequest) {
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*|api/).*)'],
 }
-
-

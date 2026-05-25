@@ -8,6 +8,8 @@ interface PricingCardProps {
 
 export const PricingCard = ({ tier }: PricingCardProps) => {
   const isHighlighted = tier.highlighted ?? false;
+  const ctaHref = tier.ctaHref ?? "/register";
+
   return (
     <div
       className={`flex flex-col gap-0 p-0.5 rounded-[20px] flex-1 ${
@@ -33,11 +35,11 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
       </div>
 
       <div
-        className={`flex flex-col gap-6 p-6 bg-white rounded-[18px] flex-1 ${
+        className={`flex flex-col gap-8 p-8 bg-white rounded-[18px] flex-1 ${
           isHighlighted ? "border border-muted-bg" : ""
         }`}
       >
-        <div className="flex items-baseline gap-1.5">
+        <div className="flex items-baseline gap-2">
           {tier.pricePrefix && (
             <span className="text-copy-muted text-4xl font-semibold leading-[44px]">
               {tier.pricePrefix}
@@ -47,16 +49,16 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
             {tier.price}
           </span>
           {tier.priceNote && (
-            <span className="text-copy-muted/50 text-xs leading-6 self-center">
+            <span className="text-copy-muted text-xs leading-6 self-center">
               {tier.priceNote}
             </span>
           )}
         </div>
 
-        <p className="text-copy-muted/60 text-base leading-6 -mt-4">
+        <p className="text-copy-muted text-base leading-6">
           {tier.description}
         </p>
-          <Link href="/register">
+          <Link href={ctaHref}>
         <button
           className={`w-full flex items-center justify-center gap-2.5 rounded-[10px] cursor-pointer transition-opacity hover:opacity-80 ${
             isHighlighted
@@ -76,7 +78,7 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
 
         <hr className="border-background" />
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           <p className="text-copy-muted text-base font-semibold leading-6">
             {tier.featureListTitle ?? "What's included:"}
           </p>

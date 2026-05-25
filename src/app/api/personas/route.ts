@@ -11,14 +11,23 @@ import {
 const QuerySchema = z.object({
   page: z.coerce.number().int().min(1).catch(1),
   size: z.coerce.number().int().min(1).max(100).catch(20),
+  status: z.string().trim().optional(),
 });
 
 export async function GET(req: NextRequest) {
-  const { page, size } = QuerySchema.parse({
+  const { page, size, status } = QuerySchema.parse({
     page: req.nextUrl.searchParams.get("page"),
     size: req.nextUrl.searchParams.get("size"),
+    status: req.nextUrl.searchParams.get("status") ?? undefined,
   });
-  const result = await authFetch(req, `/api/v1/personas?page=${page}&size=${size}`);
+  const params = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+  });
+
+  if (status) params.set("status", status);
+
+  const result = await authFetch(req, `/api/v1/personas?${params.toString()}`);
 
   if (!result.res) return unauthorized();
 
