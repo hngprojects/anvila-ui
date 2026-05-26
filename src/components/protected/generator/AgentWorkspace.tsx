@@ -74,6 +74,9 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState("");
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reconnectAttemptsRef = useRef(0);
+  const [streamReconnectNonce, setStreamReconnectNonce] = useState(0);
 
   const canPreview = PREVIEW_STATUSES.has(persona?.status ?? "");
   const isTerminal = STREAM_DONE_STATUSES.has(persona?.status ?? "");
@@ -148,6 +151,14 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     });
   }, [items]);
 
+  useEffect(() => {
+    return () => {
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+      }
+    };
+  }, []);
+
   const refreshPersona = useCallback(async () => {
     const nextPersona = await fetchAgent(agentId);
     setPersona(nextPersona);
@@ -179,6 +190,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     upsertStatus("stream-status", statusCopy(persona.status));
 
     source.addEventListener("start", () => {
+      reconnectAttemptsRef.current = 0;
       upsertStatus("stream-status", "Starting generation...");
     });
 
@@ -229,6 +241,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
 
       closed = true;
       source.close();
+      reconnectAttemptsRef.current = 0;
       setActiveClarificationId("");
       setItems((current) => [
         ...withoutStatus(current),
@@ -254,6 +267,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
 
       closed = true;
       source.close();
+      reconnectAttemptsRef.current = 0;
       setActiveClarificationId("");
       setPersona((current) => (current ? { ...current, status: "failed" } : current));
       setItems((current) => [
@@ -266,13 +280,28 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
       if (closed) return;
       closed = true;
       source.close();
+      const attempts = reconnectAttemptsRef.current;
+      if (attempts < 3) {
+        const nextAttempt = attempts + 1;
+        reconnectAttemptsRef.current = nextAttempt;
+        const delay = nextAttempt * 1500;
+        upsertStatus(
+          "stream-status",
+          `Connection lost. Reconnecting (${nextAttempt}/3)...`,
+        );
+        reconnectTimerRef.current = setTimeout(() => {
+          setStreamReconnectNonce((value) => value + 1);
+        }, delay);
+        return;
+      }
+      reconnectAttemptsRef.current = 0;
       setPersona((current) => (current ? { ...current, status: "failed" } : current));
       setItems((current) => [
         ...withoutStatus(current),
         {
           id: `error-${Date.now()}`,
           type: "error",
-          text: "The stream disconnected. Start a fresh prompt to try again.",
+          text: "The stream disconnected after multiple retries. Start a fresh prompt to try again.",
         },
       ]);
     };
@@ -290,6 +319,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     persona,
     refreshPersona,
     streamRun,
+    streamReconnectNonce,
     upsertItem,
     upsertStatus,
   ]);
