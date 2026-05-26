@@ -1,10 +1,11 @@
 "use client";
 
-import { FormEvent, useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUp, FileText, Loader2, Paperclip, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
+import { useAgent } from "@/context/agent";
 import { generateAgent } from "@/components/protected/generator/api";
 import { useDraft } from "@/hooks/useDraft";
 
@@ -17,6 +18,7 @@ export default function GeneratorComposer() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
+  const { fetchAgents } = useAgent();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const queryPrompt =
@@ -44,12 +46,11 @@ export default function GeneratorComposer() {
     "generator:composer",
     { prompt },
     (draft) => {
-      // Only restore draft if there was no query param
       if (!queryPrompt && draft.prompt) setPrompt(draft.prompt);
     },
   );
 
-  async function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = prompt.trim();
     if (!trimmed || isSubmitting) return;
@@ -60,6 +61,7 @@ export default function GeneratorComposer() {
     try {
       clearDraft();
       const result = await generateAgent(trimmed, file);
+      await fetchAgents();
       router.push(`/generator/${result.agentId}`);
     } catch (err) {
       setError(
