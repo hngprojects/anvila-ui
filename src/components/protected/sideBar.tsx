@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo, Github } from "@/components/icons";
 import { rememberSession } from "@/components/protected/generator/api";
@@ -68,20 +68,27 @@ function RecentSection() {
   const [deletingId, setDeletingId] = useState("");
   const pathname = usePathname();
   const router = useRouter();
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const loadSessions = useCallback(async () => {
+     abortControllerRef.current?.abort();
+     const controller = new AbortController();
+    abortControllerRef.current = controller;
     setIsLoading(true);
 
     try {
       const res = await fetch("/api/chat/sessions?size=5", {
         cache: "no-store",
+        signal: controller.signal,
       });
       const json = await res.json();
 
       if (res.ok) {
         setSessions(Array.isArray(json.data) ? json.data : []);
       }
-    } catch {
+    } catch (error) {
+       console.error("Failed to load sessions:", error);
+      if (error instanceof Error && error.name === 'AbortError') return;
       setSessions([]);
     } finally {
       setIsLoading(false);
@@ -102,7 +109,8 @@ function RecentSection() {
         if (!cancelled && res.ok) {
           setSessions(Array.isArray(json.data) ? json.data : []);
         }
-      } catch {
+      } catch (error) {
+         console.error("Failed to load sessions:", error);
         if (!cancelled) setSessions([]);
       } finally {
         if (!cancelled) setIsLoading(false);
