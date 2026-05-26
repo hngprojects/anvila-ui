@@ -1,20 +1,20 @@
 "use client";
+
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
+import { Mail, ArrowLeft, CircleCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import * as z from "zod";
-import { Mail, ChevronLeft, Loader2 } from "lucide-react";
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Logo, IconPrefix } from "@/components/icons";
+import { authApi } from "@/lib/auth/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { authApi } from "@/lib/auth/api";
+import  {emailRegex}  from "@/lib/schemas";
 
 const formSchema = z.object({
-  email: z
-    .string()
-    .email({ message: "Invalid email address" }),
+  email: z.string().regex(emailRegex, { message: "Invalid email address" }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -27,24 +27,28 @@ export default function ForgotPasswordForm() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-    },
+    defaultValues: { email: "" },
   });
 
-  const handleFormSubmit = async(values: FormValues) => {
+  const email = useWatch({ control, name: "email" }) ?? "";
+  const emailEmpty = email.length === 0;
+  const emailValid = !errors.email && email.length > 0;
+
+  const handleFormSubmit = async (values: FormValues) => {
     setIsLoading(true);
     setApiError(null);
 
     const formattedEmail = values.email.trim();
-
     const result = await authApi.forgotPassword({ email: formattedEmail });
 
     if (result.ok) {
-      router.push(`/forgot-password/check-mail?email=${encodeURIComponent(formattedEmail)}`);
+      router.push(
+        `/forgot-password/check-mail?email=${encodeURIComponent(formattedEmail)}`
+      );
     } else {
       setApiError(result.message);
       setIsLoading(false);
@@ -53,48 +57,76 @@ export default function ForgotPasswordForm() {
 
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
-      {/* Back Link Component */}
-      <Link 
-        href="/login" 
-        className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors"
-      >
-        <ChevronLeft size={16} /> Back
-      </Link>
-
-      <div className="text-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#101828] md:mb-2 tracking-tight">Forgot Password?</h1>
-        <p className="text-xs md:text-sm text-[#667085]">Enter your details to receive a reset link</p>
+      {/* Logo — mobile only */}
+      <div className="flex md:hidden justify-center">
+        <Logo />
       </div>
 
-      <form className="space-y-3 md:space-y-5" onSubmit={handleSubmit(handleFormSubmit)}>
-        <div className="space-y-1.5">
-          <Label htmlFor="email-input" className="text-xs font-semibold text-[#344054]">
+      {/* Back button */}
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={() => router.back()}
+        className="hidden cursor-pointer items-center gap-1 self-start px-0 pb-2 pt-3 text-[16px] font-medium text-[#111] md:flex hover:bg-transparent"
+      >
+        <ArrowLeft size={13} />
+        <span>Back</span>
+      </Button>
+
+      {/* Header */}
+      <div className="mb-6 text-center">
+        <h1 className="mb-1 text-[34px] font-bold text-[#0C0E0D]">
+          Forgot Password?
+        </h1>
+        <p className="m-0 text-[16px] text-[#A1A1AA]">
+          Enter your email to receive a reset link.
+        </p>
+      </div>
+
+      {/* Server / API error */}
+      {apiError && (
+        <div className="mb-4 rounded-[6px] border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
+          <p className="m-0 text-[12px] text-[#DC2626]">{apiError}</p>
+        </div>
+      )}
+
+      <form
+        onSubmit={handleSubmit(handleFormSubmit)}
+        className="flex flex-col gap-4"
+      >
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="email"
+            className="text-[16px] font-medium text-[#000000]"
+          >
             Email
-          </Label>
-          
+          </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#667085] z-10" />
-            
+            <IconPrefix icon={Mail} show={emailEmpty} />
             <Input
-              id="email-input"
+              {...register("email")}
+              id="email"
               type="email"
               placeholder="Enter email address"
               aria-invalid={!!errors.email}
-              readOnly={isLoading}
-              className={`pl-10 pr-4 w-full rounded-lg ${isLoading ? "opacity-60 cursor-not-allowed select-none focus-visible:ring-0" : ""}`}
-              {...register("email")}
+              aria-describedby={errors.email ? "email-error" : undefined}
+              className={`w-full rounded-[8px] border bg-[#F6F7F7] py-[11px] text-[16px] text-[#000000] outline-none transition-all placeholder:text-[#000000] shadow-none focus-visible:ring-0 ${
+                errors.email
+                  ? "border-[#E24B4A]"
+                  : emailValid
+                    ? "border-[#0F6E56]"
+                    : "border-[#D1D5DB]"
+             } ${emailEmpty ? "pl-[34px] pr-[12px]" : emailValid ? "pl-[12px] pr-[30px]" : "pl-[12px] pr-[12px]"}`}
             />
+            {emailValid && (
+              <span className="absolute right-[10px] top-1/2 flex -translate-y-1/2 text-[#0F6E56]">
+                <CircleCheck size={14} />
+              </span>
+            )}
           </div>
-          
           {errors.email && (
-            <p className="text-[10px] text-destructive font-medium pl-1">
+             <p id="email-error" className="m-0 text-[11px] text-[`#DC2626`]">
               {errors.email.message}
-            </p>
-          )}
-
-          {apiError && (
-            <p className="text-[10px] text-destructive font-medium pl-1 mt-1">
-              {apiError}
             </p>
           )}
         </div>
@@ -102,18 +134,25 @@ export default function ForgotPasswordForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full py-2.5 bg-[#004D4D] hover:bg-[#003636] text-white shadow-sm transition-all"
+          className={`w-full rounded-[8px] px-3 py-3 text-[14px] font-medium text-white transition-all ${
+            isLoading
+              ? "cursor-not-allowed bg-[#0F4F4A] opacity-60"
+              : "cursor-pointer bg-[#0F4F4A] hover:bg-[#0a3835]"
+          }`}
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="animate-spin h-4 w-4" />
-              Sending...
-            </>
-          ) : (
-            "Send Reset Link"
-          )}
+          {isLoading ? "Sending..." : "Send Reset Link"}
         </Button>
       </form>
+
+      <p className="mt-4 text-center text-[18px] text-[#000000]">
+        {"Remember your password?"}{" "}
+        <Link
+          href="/login"
+          className="font-semibold text-[#0F6E56] no-underline"
+        >
+          Sign In
+        </Link>
+      </p>
     </div>
   );
 }
