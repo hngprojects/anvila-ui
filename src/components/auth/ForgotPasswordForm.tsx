@@ -7,9 +7,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Logo } from "@/components/icons";
-import { IconPrefix } from "@/components/icons";
+import { Logo, IconPrefix } from "@/components/icons";
 import { authApi } from "@/lib/auth/api";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -60,15 +61,16 @@ export default function ForgotPasswordForm() {
         <Logo />
       </div>
 
-    
-      <button
+      {/* Back button */}
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => router.back()}
-        className="hidden cursor-pointer items-center gap-1 self-start border-0 bg-transparent px-0 pb-2 pt-3 text-[16px] font-medium text-[#111] md:flex"
+        className="hidden cursor-pointer items-center gap-1 self-start px-0 pb-2 pt-3 text-[16px] font-medium text-[#111] md:flex hover:bg-transparent"
       >
         <ArrowLeft size={13} />
         <span>Back</span>
-      </button>
+      </Button>
 
       {/* Header */}
       <div className="mb-6 text-center">
@@ -91,7 +93,6 @@ export default function ForgotPasswordForm() {
         onSubmit={handleSubmit(handleFormSubmit)}
         className="flex flex-col gap-4"
       >
-       
         <div className="flex flex-col gap-1">
           <label
             htmlFor="email"
@@ -101,13 +102,13 @@ export default function ForgotPasswordForm() {
           </label>
           <div className="relative">
             <IconPrefix icon={Mail} show={emailEmpty} />
-            <input
+            <Input
               {...register("email")}
               id="email"
               type="email"
               placeholder="Enter email address"
               aria-invalid={!!errors.email}
-              className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[16px] text-[#000000] outline-none transition-all placeholder:text-[#000000] ${
+              className={`w-full rounded-[8px] border bg-[#F6F7F7] py-[11px] text-[16px] text-[#000000] outline-none transition-all placeholder:text-[#000000] shadow-none focus-visible:ring-0 ${
                 errors.email
                   ? "border-[#E24B4A]"
                   : emailValid
@@ -128,21 +129,19 @@ export default function ForgotPasswordForm() {
           )}
         </div>
 
-        
-        <button
+        <Button
           type="submit"
           disabled={isLoading}
           className={`w-full rounded-[8px] px-3 py-3 text-[14px] font-medium text-white transition-all ${
             isLoading
               ? "cursor-not-allowed bg-[#0F4F4A] opacity-60"
-              : "cursor-pointer bg-[#0F4F4A]"
+              : "cursor-pointer bg-[#0F4F4A] hover:bg-[#0a3835]"
           }`}
         >
           {isLoading ? "Sending..." : "Send Reset Link"}
-        </button>
+        </Button>
       </form>
 
-     
       <p className="mt-4 text-center text-[18px] text-[#000000]">
         {"Remember your password?"}{" "}
         <Link
