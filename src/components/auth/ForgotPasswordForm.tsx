@@ -11,9 +11,10 @@ import { Logo, IconPrefix } from "@/components/icons";
 import { authApi } from "@/lib/auth/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import  {emailRegex}  from "@/lib/schemas";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
+  email: z.string().regex(emailRegex, { message: "Invalid email address" }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -57,7 +58,7 @@ export default function ForgotPasswordForm() {
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
       {/* Logo — mobile only */}
-      <div className="hidden max-[700px]:flex justify-center">
+      <div className="flex md:hidden justify-center">
         <Logo />
       </div>
 
@@ -108,13 +109,14 @@ export default function ForgotPasswordForm() {
               type="email"
               placeholder="Enter email address"
               aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
               className={`w-full rounded-[8px] border bg-[#F6F7F7] py-[11px] text-[16px] text-[#000000] outline-none transition-all placeholder:text-[#000000] shadow-none focus-visible:ring-0 ${
                 errors.email
                   ? "border-[#E24B4A]"
                   : emailValid
                     ? "border-[#0F6E56]"
                     : "border-[#D1D5DB]"
-              } ${emailEmpty ? "pl-[34px]" : "pl-[12px] pr-[12px]"}`}
+             } ${emailEmpty ? "pl-[34px] pr-[12px]" : emailValid ? "pl-[12px] pr-[30px]" : "pl-[12px] pr-[12px]"}`}
             />
             {emailValid && (
               <span className="absolute right-[10px] top-1/2 flex -translate-y-1/2 text-[#0F6E56]">
@@ -123,7 +125,7 @@ export default function ForgotPasswordForm() {
             )}
           </div>
           {errors.email && (
-            <p className="m-0 text-[11px] text-[#DC2626]">
+             <p id="email-error" className="m-0 text-[11px] text-[`#DC2626`]">
               {errors.email.message}
             </p>
           )}
