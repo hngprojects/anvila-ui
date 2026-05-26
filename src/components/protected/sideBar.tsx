@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo, Github } from "@/components/icons";
 import { rememberSession } from "@/components/protected/generator/api";
@@ -18,8 +18,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
-
- 
 
 const NAV_ITEMS = [
   { icon: CirclePlus, label: "Create Agent", path: "/generator" },
@@ -60,7 +58,7 @@ function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* RECENT ITEMS                                */
+/* RECENT ITEMS                                                                */
 /* -------------------------------------------------------------------------- */
 
 function RecentSection() {
@@ -71,16 +69,36 @@ function RecentSection() {
   const pathname = usePathname();
   const router = useRouter();
 
+  const loadSessions = useCallback(async () => {
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/chat/sessions?size=5", {
+        cache: "no-store",
+      });
+      const json = await res.json();
+
+      if (res.ok) {
+        setSessions(Array.isArray(json.data) ? json.data : []);
+      }
+    } catch {
+      setSessions([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+
   useEffect(() => {
     let cancelled = false;
 
-    async function loadSessions() {
+    async function load() {
       setIsLoading(true);
-
       try {
-        const res = await fetch("/api/chat/sessions?size=5", { cache: "no-store" });
+        const res = await fetch("/api/chat/sessions?size=5", {
+          cache: "no-store",
+        });
         const json = await res.json();
-
         if (!cancelled && res.ok) {
           setSessions(Array.isArray(json.data) ? json.data : []);
         }
@@ -91,12 +109,18 @@ function RecentSection() {
       }
     }
 
-    loadSessions();
+    load();
 
     return () => {
       cancelled = true;
     };
   }, [pathname]);
+
+
+  useEffect(() => {
+    window.addEventListener("agent:generated", loadSessions);
+    return () => window.removeEventListener("agent:generated", loadSessions);
+  }, [loadSessions]);
 
   async function handleDeleteSession(session: AgentSession) {
     const confirmed = window.confirm("Delete this chat session?");
@@ -197,7 +221,7 @@ function RecentSection() {
 }
 
 /* -------------------------------------------------------------------------- */
-/* COLLAPSED SIDEBAR                             */
+/* COLLAPSED SIDEBAR                                                           */
 /* -------------------------------------------------------------------------- */
 
 function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
@@ -240,7 +264,7 @@ function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* EXPANDED SIDEBAR                             */
+/* EXPANDED SIDEBAR                                                            */
 /* -------------------------------------------------------------------------- */
 
 function ExpandedSidebar({ onCollapse }: { onCollapse: () => void }) {
@@ -264,7 +288,7 @@ function ExpandedSidebar({ onCollapse }: { onCollapse: () => void }) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* MOBILE DRAWER                              */
+/* MOBILE DRAWER                                                               */
 /* -------------------------------------------------------------------------- */
 
 function MobileDrawer({ onClose }: { onClose: () => void }) {
@@ -289,7 +313,7 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* SIDEBAR                                  */
+/* SIDEBAR                                                                     */
 /* -------------------------------------------------------------------------- */
 
 export default function Sidebar({
@@ -319,7 +343,9 @@ function isNavActive(pathname: string, path: string) {
   if (path !== "/generator") return false;
 
   const reservedRoutes = new Set(
-    NAV_ITEMS.filter((item) => item.path !== "/generator").map((item) => item.path),
+    NAV_ITEMS.filter((item) => item.path !== "/generator").map(
+      (item) => item.path,
+    ),
   );
 
   return pathname.startsWith("/generator/") && !reservedRoutes.has(pathname);
