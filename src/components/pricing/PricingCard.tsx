@@ -58,8 +58,8 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
         <p className="text-copy-muted text-base leading-6">
           {tier.description}
         </p>
-          <Link href={ctaHref}>
-        <button
+        <Link
+          href={ctaHref}
           className={`w-full flex items-center justify-center gap-2.5 rounded-[10px] cursor-pointer transition-opacity hover:opacity-80 ${
             isHighlighted
               ? "h-[55px] bg-teal-brand border-none hover:opacity-90"
@@ -73,7 +73,6 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
           >
             {tier.ctaText}
           </span>
-        </button>
         </Link>
 
         <hr className="border-background" />
