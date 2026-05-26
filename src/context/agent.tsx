@@ -1,10 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import { AgentData, ChatMessage } from "@/interface/agent";
 
 type CreateAgentInput = Pick<AgentData, "name" | "categories" | "visibility"> &
-  Partial<Pick<AgentData, "description" | "status" | "githubRepoUrl" | "publishedAt">>;
+  Partial<
+    Pick<AgentData, "description" | "status" | "githubRepoUrl" | "publishedAt">
+  >;
 
 interface AgentContextType {
   agents: AgentData[];
@@ -20,7 +29,7 @@ interface AgentContextType {
   goToPage: (page: number) => void;
   statusFilter: string;
   setStatusFilter: (status: string) => void;
-  
+
   messages: ChatMessage[];
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   prompt: string;
@@ -30,9 +39,13 @@ interface AgentContextType {
   radioStep: number;
   setRadioStep: React.Dispatch<React.SetStateAction<number>>;
   selectedRadioOptions: Record<number, string>;
-  setSelectedRadioOptions: React.Dispatch<React.SetStateAction<Record<number, string>>>;
+  setSelectedRadioOptions: React.Dispatch<
+    React.SetStateAction<Record<number, string>>
+  >;
   radioOtherText: Record<number, string>;
-  setRadioOtherText: React.Dispatch<React.SetStateAction<Record<number, string>>>;
+  setRadioOtherText: React.Dispatch<
+    React.SetStateAction<Record<number, string>>
+  >;
   textStep: number;
   setTextStep: React.Dispatch<React.SetStateAction<number>>;
   textAnswers: Record<number, string>;
@@ -58,7 +71,9 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const [prompt, setPrompt] = useState("");
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [radioStep, setRadioStep] = useState<number>(1);
-  const [selectedRadioOptions, setSelectedRadioOptions] = useState<Record<number, string>>({
+  const [selectedRadioOptions, setSelectedRadioOptions] = useState<
+    Record<number, string>
+  >({
     1: "",
     2: "",
     3: "",
@@ -76,67 +91,84 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   });
   const [identityExpanded, setIdentityExpanded] = useState(true);
 
-  const fetchAgents = useCallback(async (page = 1, status = statusFilter) => {
-    const fetchId = ++fetchIdRef.current;
-    setIsLoading(true);
-    setError(null);
+  const fetchAgents = useCallback(
+    async (page = 1, status = statusFilter) => {
+      const fetchId = ++fetchIdRef.current;
+      setIsLoading(true);
+      setError(null);
 
-    const params = new URLSearchParams({
-      page: String(page),
-      size: "20",
-    });
-
-    if (status) params.set("status", status);
-
-    try {
-      const res = await fetch(`/api/personas?${params.toString()}`, {
-        cache: "no-store",
+      const params = new URLSearchParams({
+        page: String(page),
+        size: "20",
       });
-      if (fetchId !== fetchIdRef.current) return;
-      if (!res.ok) {
+
+      if (status) params.set("status", status);
+
+      try {
+        const res = await fetch(`/api/personas?${params.toString()}`, {
+          cache: "no-store",
+        });
+        if (fetchId !== fetchIdRef.current) return;
+        if (!res.ok) {
+          setError("Failed to fetch agents");
+          return;
+        }
+        const json = await res.json();
+        if (fetchId !== fetchIdRef.current) return;
+        const items = Array.isArray(json?.data) ? json.data : [];
+        const mapped: AgentData[] = items.map(
+          (item: Record<string, unknown>) => ({
+            id: String(item.id ?? ""),
+            name: String(item.name ?? "Untitled agent"),
+            description: String(item.description_summary ?? ""),
+            categories: String(item.category ?? ""),
+            visibility:
+              String(item.visibility).toLowerCase() === "public"
+                ? "Public"
+                : "Private",
+            status: String(item.status ?? ""),
+            githubRepoUrl: String(item.github_repo_url ?? ""),
+            publishedAt: String(item.published_at ?? ""),
+            clone: 0,
+            owners: [],
+            created: item.created_at
+              ? new Date(String(item.created_at)).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })
+              : "",
+          }),
+        );
+        setAgents(mapped);
+        const meta = json?.meta ?? {};
+        setCurrentPage(meta.page ?? page);
+        setTotalPages(meta.pages ?? 1);
+        setHasNext(Boolean(meta.has_next));
+        setHasPrev(Boolean(meta.has_prev));
+      } catch {
+        if (fetchId !== fetchIdRef.current) return;
         setError("Failed to fetch agents");
-        return;
+      } finally {
+        if (fetchId === fetchIdRef.current) setIsLoading(false);
       }
-      const json = await res.json();
-      if (fetchId !== fetchIdRef.current) return;
-      const items = Array.isArray(json?.data) ? json.data : [];
-      const mapped: AgentData[] = items.map((item: Record<string, unknown>) => ({
-        id: String(item.id ?? ""),
-        name: String(item.name ?? "Untitled agent"),
-        description: String(item.description_summary ?? ""),
-        categories: String(item.category ?? ""),
-        visibility: String(item.visibility).toLowerCase() === "public" ? "Public" : "Private",
-        status: String(item.status ?? ""),
-        githubRepoUrl: String(item.github_repo_url ?? ""),
-        publishedAt: String(item.published_at ?? ""),
-        clone: 0,
-        owners: [],
-        created: item.created_at
-          ? new Date(String(item.created_at)).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-          : "",
-      }));
-      setAgents(mapped);
-      const meta = json?.meta ?? {};
-      setCurrentPage(meta.page ?? page);
-      setTotalPages(meta.pages ?? 1);
-      setHasNext(Boolean(meta.has_next));
-      setHasPrev(Boolean(meta.has_prev));
-    } catch {
-      if (fetchId !== fetchIdRef.current) return;
-      setError("Failed to fetch agents");
-    } finally {
-      if (fetchId === fetchIdRef.current) setIsLoading(false);
-    }
-  }, [statusFilter]);
+    },
+    [statusFilter],
+  );
 
-  const goToPage = useCallback((page: number) => {
-    fetchAgents(page, statusFilter);
-  }, [fetchAgents, statusFilter]);
+  const goToPage = useCallback(
+    (page: number) => {
+      fetchAgents(page, statusFilter);
+    },
+    [fetchAgents, statusFilter],
+  );
 
-  const setStatusFilter = useCallback((status: string) => {
-    setStatusFilterState(status);
-    fetchAgents(1, status);
-  }, [fetchAgents]);
+  const setStatusFilter = useCallback(
+    (status: string) => {
+      setStatusFilterState(status);
+      fetchAgents(1, status);
+    },
+    [fetchAgents],
+  );
 
   useEffect(() => {
     let active = true;
@@ -152,7 +184,6 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
     };
   }, [fetchAgents]);
 
-
   const createAgent = async (newAgentData: CreateAgentInput) => {
     setIsLoading(true);
     try {
@@ -164,10 +195,17 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
         githubRepoUrl: newAgentData.githubRepoUrl ?? "",
         publishedAt: newAgentData.publishedAt ?? "",
         id: Math.random().toString(36).substring(2, 9),
-        created: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        created: new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
         clone: 0,
         owners: [
-          { initials: "ME", username: "@current_user", color: "bg-blue-100 text-blue-700" },
+          {
+            initials: "ME",
+            username: "@current_user",
+            color: "bg-blue-100 text-blue-700",
+          },
         ],
       };
       setAgents((prev) => [newAgent, ...prev]);
@@ -182,7 +220,13 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
   const deleteAgent = async (id: string) => {
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const res = await fetch(`/api/personas/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json?.message ?? "Failed to delete agent");
+      }
       setAgents((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
       setError("Failed to delete agent");
