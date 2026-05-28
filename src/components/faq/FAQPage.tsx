@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -21,8 +21,8 @@ function SectionPill({ label, isActive, onClick }: SectionPillProps) {
       onClick={onClick}
       className={
         isActive
-          ? "w-[140px] shrink-0 cursor-pointer rounded-xl border border-teal-brand bg-white px-3 py-3 text-sm font-medium text-teal-brand transition-colors hover:bg-teal-brand/5 whitespace-pre-line text-center leading-snug"
-          : "w-[140px] shrink-0 cursor-pointer rounded-xl border border-copy-muted/20 bg-white px-3 py-3 text-sm font-medium text-copy-muted transition-colors hover:border-copy-muted/30 hover:text-logo whitespace-pre-line text-center leading-snug"
+          ? "w-[140px] shrink-0 cursor-pointer rounded-xl border border-teal-brand bg-white px-3 py-3 text-sm font-medium text-teal-brand transition-colors hover:bg-teal-brand/5 whitespace-pre-line text-center leading-snug focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-brand focus-visible:ring-offset-2"
+          : "w-[140px] shrink-0 cursor-pointer rounded-xl border border-copy-muted/20 bg-white px-3 py-3 text-sm font-medium text-copy-muted transition-colors hover:border-copy-muted/30 hover:text-logo whitespace-pre-line text-center leading-snug focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-brand focus-visible:ring-offset-2"
       }
     >
       {label}
@@ -35,6 +35,7 @@ export function FaqPage() {
   const [activeSection, setActiveSection] = useState<string>(
     FAQ_SECTIONS[0].id,
   );
+  const faqContainerRef = useRef<HTMLElement>(null);
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
@@ -43,6 +44,41 @@ export function FaqPage() {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+
+  useEffect(() => {
+    const container = faqContainerRef.current;
+    if (!container) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
+      const target = e.target as HTMLElement;
+      if (target.getAttribute("data-slot") !== "accordion-trigger") return;
+      e.preventDefault();
+      e.stopPropagation();
+      const triggers = Array.from(
+        container.querySelectorAll<HTMLButtonElement>(
+          '[data-slot="accordion-trigger"]',
+        ),
+      );
+      const len = triggers.length;
+      if (e.key === "Home") {
+        requestAnimationFrame(() => triggers[0]?.focus());
+        return;
+      }
+      if (e.key === "End") {
+        requestAnimationFrame(() => triggers[len - 1]?.focus());
+        return;
+      }
+      const idx = triggers.indexOf(target as HTMLButtonElement);
+      if (idx === -1) return;
+      if (e.key === "ArrowDown") requestAnimationFrame(() => triggers[Math.min(idx + 1, len - 1)]?.focus());
+      else if (e.key === "ArrowUp") requestAnimationFrame(() => triggers[Math.max(idx - 1, 0)]?.focus());
+    };
+    container.addEventListener("keydown", handleKeyDown, { capture: true });
+    return () =>
+      container.removeEventListener("keydown", handleKeyDown, {
+        capture: true,
+      });
+  }, []);
 
   return (
     <main className="min-h-screen bg-background">
@@ -77,7 +113,10 @@ export function FaqPage() {
         </div>
       </section>
 
-      <section className="w-full max-w-[960px] mx-auto px-5 sm:px-10 lg:px-20 pb-20 flex flex-col gap-12">
+      <section
+        ref={faqContainerRef}
+        className="w-full max-w-[960px] mx-auto px-5 sm:px-10 lg:px-20 pb-20 flex flex-col gap-12"
+      >
         {FAQ_SECTIONS.map((section) => (
           <div key={section.id} id={section.id} className="flex flex-col gap-6">
             <h2 className="text-teal-brand font-semibold text-lg pl-2">
