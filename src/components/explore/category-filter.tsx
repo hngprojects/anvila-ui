@@ -14,15 +14,15 @@ export function CategoryFilter({
       <div className="border-b border-copy-muted/20">
         <div
           className="flex gap-2 overflow-x-auto scrollbar-hide"
-          role="tablist"
+          role="group"
           aria-label="Filter agents by category"
         >
           {categories.map((cat) => (
             <button
               key={cat}
+              type="button"
               onClick={() => onCategoryChange(cat)}
-              role="tab"
-              aria-selected={activeCategory === cat}
+              aria-pressed={activeCategory === cat}
               aria-label={`Filter by ${cat}`}
               className="relative shrink-0 cursor-pointer border-none bg-none px-4 pb-3 transition-colors"
             >
