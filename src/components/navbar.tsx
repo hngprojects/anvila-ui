@@ -81,7 +81,7 @@ function AuthButtons({
 
   if (user) {
     return (
-      <Link href="/generator" className={primaryLink} onClick={onNavigate}>
+      <Link href="/generator" className={primaryLink} onClick={onNavigate} aria-label="Open generator">
         Open Generator
       </Link>
     );
@@ -89,10 +89,10 @@ function AuthButtons({
 
   return (
     <>
-      <Link href="/login" className={ghostLink} onClick={onNavigate}>
+      <Link href="/login" className={ghostLink} aria-label="Log in to your account" onClick={onNavigate}>
         Log in
       </Link>
-      <Link href="/register" className={primaryLink} onClick={onNavigate}>
+      <Link href="/register" className={primaryLink} aria-label="Create a new account" onClick={onNavigate}>
         Get Started
       </Link>
     </>
@@ -109,7 +109,7 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
     <header className="sticky top-0 z-50 w-full bg-background">
       <nav className="flex w-full items-center justify-between px-5 py-3 sm:px-10 lg:px-20">
         <Link
-          href="/"
+          href="/" aria-label="Go to Anvila home page" title="Anvila home"
           className="flex items-center gap-2 shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           <Logo />
@@ -136,6 +136,7 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
             <Link
               href="/waitlist"
               className="inline-flex h-10 items-center justify-center rounded-lg border border-primary bg-primary px-10 font-medium text-base text-white transition-opacity hover:opacity-90"
+              aria-label="Join the waitlist"
             >
               Join Waitlist
             </Link>
@@ -199,6 +200,7 @@ export default function Navbar({ waitlist = false }: { waitlist?: boolean }) {
               <Link
                 href="/waitlist"
                 className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-primary bg-primary font-medium text-base text-white"
+                aria-label="Join the waitlist"
               >
                 Join Waitlist
               </Link>
