@@ -53,7 +53,7 @@ export function FaqPage() {
       const target = e.target as HTMLElement;
       if (target.getAttribute("data-slot") !== "accordion-trigger") return;
       e.preventDefault();
-      e.stopImmediatePropagation();
+      e.stopPropagation();
       const triggers = Array.from(
         container.querySelectorAll<HTMLButtonElement>(
           '[data-slot="accordion-trigger"]',
@@ -70,8 +70,8 @@ export function FaqPage() {
       }
       const idx = triggers.indexOf(target as HTMLButtonElement);
       if (idx === -1) return;
-      if (e.key === "ArrowDown") triggers[Math.min(idx + 1, len - 1)]?.focus();
-      else if (e.key === "ArrowUp") triggers[Math.max(idx - 1, 0)]?.focus();
+      if (e.key === "ArrowDown") requestAnimationFrame(() => triggers[Math.min(idx + 1, len - 1)]?.focus());
+      else if (e.key === "ArrowUp") requestAnimationFrame(() => triggers[Math.max(idx - 1, 0)]?.focus());
     };
     container.addEventListener("keydown", handleKeyDown, { capture: true });
     return () =>
