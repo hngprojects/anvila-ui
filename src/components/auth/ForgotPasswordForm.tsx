@@ -9,6 +9,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Logo, IconPrefix } from "@/components/icons";
 import { authApi } from "@/lib/auth/api";
+import { FieldError } from "@/components/ui/field-error";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import  {emailRegex}  from "@/lib/schemas";
@@ -124,11 +125,7 @@ export default function ForgotPasswordForm() {
               </span>
             )}
           </div>
-          {errors.email && (
-             <p id="email-error" className="m-0 text-[11px] text-[`#DC2626`]">
-              {errors.email.message}
-            </p>
-          )}
+          <FieldError id="email-error" message={errors.email?.message} />
         </div>
 
         <Button

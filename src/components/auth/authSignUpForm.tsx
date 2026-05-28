@@ -20,6 +20,7 @@ import { RegisterSchema, type RegisterInput } from "@/schemas/auth";
 import { AuthOAuthButtons } from "./authOAthButtons";
 import { IconPrefix } from "@/components/icons";
 import { Logo } from "@/components/icons";
+import { FieldError } from "@/components/ui/field-error";
 
 const PW_RULES = [
   { label: "At least 8 characters", test: (v: string) => v.length >= 8 },
@@ -204,6 +205,8 @@ export function AuthSignUpForm() {
                 id="display_name"
                 type="text"
                 placeholder="Enter full name"
+                aria-invalid={!!errors.display_name}
+                aria-describedby={errors.display_name ? "display_name-error" : undefined}
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
                   errors.display_name
@@ -213,11 +216,7 @@ export function AuthSignUpForm() {
                 ].join(" ")}
               />
             </div>
-            {errors.display_name && (
-              <p className="m-0 text-[11px] text-red-600">
-                {errors.display_name.message}
-              </p>
-            )}
+            <FieldError id="display_name-error" message={errors.display_name?.message} />
           </div>
 
           {/* Email */}
@@ -235,6 +234,8 @@ export function AuthSignUpForm() {
                 id="email"
                 type="email"
                 placeholder="Enter email address"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "email-error" : undefined}
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
                   errors.email
@@ -244,11 +245,7 @@ export function AuthSignUpForm() {
                 ].join(" ")}
               />
             </div>
-            {errors.email && (
-              <p className="m-0 text-[11px] text-red-600">
-                {errors.email.message}
-              </p>
-            )}
+            <FieldError id="email-error" message={errors.email?.message} />
           </div>
 
           {/* Password */}
@@ -267,6 +264,8 @@ export function AuthSignUpForm() {
                 type={showPw ? "text" : "password"}
                 placeholder="Enter password"
                 onFocus={() => setPwTouched(true)}
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? "password-error" : undefined}
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
                   errors.password
@@ -345,6 +344,7 @@ export function AuthSignUpForm() {
                 })}
               </div>
             )}
+            <FieldError id="password-error" message={errors.password?.message} />
           </div>
 
           {/* Confirm Password */}
@@ -362,6 +362,8 @@ export function AuthSignUpForm() {
                 id="confirmPassword"
                 type={showConfirm ? "text" : "password"}
                 placeholder="Confirm your password"
+                aria-invalid={!!errors.confirmPassword}
+                aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none placeholder:text-[color:var(--color-copy-muted)]",
                   errors.confirmPassword
@@ -383,11 +385,7 @@ export function AuthSignUpForm() {
                 {showConfirm ? <Eye size={15} /> : <EyeClosed size={15} />}
               </button>
             </div>
-            {errors.confirmPassword && (
-              <p className="m-0 text-[11px] text-red-600">
-                {errors.confirmPassword.message}
-              </p>
-            )}
+            <FieldError id="confirmPassword-error" message={errors.confirmPassword?.message} />
           </div>
 
           {/* Terms */}
@@ -398,6 +396,7 @@ export function AuthSignUpForm() {
               onChange={(e) => {
                 setValue("agreed", e.target.checked, { shouldValidate: true });
               }}
+              aria-describedby={errors.agreed ? "agreed-error" : undefined}
               className="h-[14px] w-[14px] accent-[color:var(--color-primary)]"
             />
             <span className="text-[12px]">
@@ -410,11 +409,7 @@ export function AuthSignUpForm() {
               </Link>
             </span>
           </label>
-          {errors.agreed && (
-            <p className="m-0 text-[11px] text-red-600">
-              {errors.agreed.message}
-            </p>
-          )}
+          <FieldError id="agreed-error" message={errors.agreed?.message} />
 
           {/* Submit */}
           <button
