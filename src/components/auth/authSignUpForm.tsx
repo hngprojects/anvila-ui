@@ -143,7 +143,6 @@ export function AuthSignUpForm() {
       }
 
       clearDraft();
-      // Redirect to verify-email page with masked email as query param
       const encoded = encodeURIComponent(values.email);
       router.push(`/confirm-email?email=${encoded}`);
     } catch {
