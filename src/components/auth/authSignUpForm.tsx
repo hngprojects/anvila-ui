@@ -201,7 +201,7 @@ export function AuthSignUpForm() {
                 type="text"
                 placeholder="Enter full name"
                 aria-invalid={!!errors.display_name}
-                aria-describedby="display_name-error"
+                aria-describedby={errors.display_name ? "display_name-error" : undefined}
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
                   errors.display_name
@@ -229,7 +229,7 @@ export function AuthSignUpForm() {
                 type="email"
                 placeholder="Enter email address"
                 aria-invalid={!!errors.email}
-                aria-describedby="email-error"
+                aria-describedby={errors.email ? "email-error" : undefined}
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
                   errors.email
@@ -258,7 +258,7 @@ export function AuthSignUpForm() {
                 placeholder="Enter password"
                 onFocus={() => setPwTouched(true)}
                 aria-invalid={!!errors.password}
-                aria-describedby="password-error"
+                aria-describedby={errors.password ? "password-error" : undefined}
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
                   errors.password
@@ -354,7 +354,7 @@ export function AuthSignUpForm() {
                 type={showConfirm ? "text" : "password"}
                 placeholder="Confirm your password"
                 aria-invalid={!!errors.confirmPassword}
-                aria-describedby="confirmPassword-error"
+                aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none placeholder:text-[color:var(--color-copy-muted)]",
                   errors.confirmPassword

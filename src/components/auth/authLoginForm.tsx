@@ -16,7 +16,7 @@ import { LoginSchema, type LoginInput } from "../schemas/auth";
 import { AuthOAuthButtons } from "./authOAthButtons";
 import { Logo } from "@/components/icons";
 import { IconPrefix } from "@/components/icons";
-import { useAuth } from '@/context/auth'
+import { useAuth } from '@/context/auth';
 import { FieldError } from "@/components/ui/field-error";
 
 export const AuthLoginForm = () => {
@@ -119,7 +119,7 @@ export const AuthLoginForm = () => {
               type="email"
               placeholder="Enter email address"
               aria-invalid={!!errors.email}
-              aria-describedby="email-error"
+              aria-describedby={errors.email ? "email-error" : undefined}
               className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[16px] text-[#000000] outline-none transition-all placeholder:text-[#000000] ${
                 errors.email
                   ? "border-[#E24B4A]"
@@ -152,7 +152,7 @@ export const AuthLoginForm = () => {
               type={showPw ? "text" : "password"}
               placeholder="Enter password"
               aria-invalid={!!errors.password}
-              aria-describedby="password-error"
+              aria-describedby={errors.password ? "password-error" : undefined}
               className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[16px] text-[#111] outline-none transition-all placeholder:text-[#000000] ${
                 errors.password ? "border-[#E24B4A]" : "border-[#D1D5DB]"
               } ${passwordEmpty ? "pl-[34px]" : "pl-[12px] pr-[40px]"}`}
