@@ -27,7 +27,7 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
         {tier.badge && (
           <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white">
             <FireIcon />
-            <span className="text-copy-muted text-[10px] leading-none tracking-wide">
+            <span className="text-copy-muted text-xs leading-none tracking-wide">
               {tier.badge.text}
             </span>
           </div>
