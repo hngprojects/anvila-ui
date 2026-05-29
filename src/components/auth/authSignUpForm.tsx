@@ -20,6 +20,7 @@ import { RegisterSchema, type RegisterInput } from "@/schemas/auth";
 import { AuthOAuthButtons } from "./authOAthButtons";
 import { IconPrefix } from "@/components/icons";
 import { Logo } from "@/components/icons";
+import { FieldError } from "@/components/ui/field-error";
 
 const PW_RULES = [
   { label: "At least 8 characters", test: (v: string) => v.length >= 8 },
@@ -142,7 +143,6 @@ export function AuthSignUpForm() {
       }
 
       clearDraft();
-      // Redirect to verify-email page with masked email as query param
       const encoded = encodeURIComponent(values.email);
       router.push(`/confirm-email?email=${encoded}`);
     } catch {
@@ -153,12 +153,10 @@ export function AuthSignUpForm() {
   return (
     <>
       <div className="flex w-full max-w-[520px] flex-col rounded-2xl border border-[color:var(--color-border-subtle)] bg-[color:var(--color-background)] px-6 py-6 sm:px-8 sm:py-8">
-        {/* Logo — mobile only */}
         <div className="hidden max-[700px]:flex justify-center">
           <Logo />
         </div>
 
-        {/* Back */}
         <button
           type="button"
           onClick={() => router.back()}
@@ -168,7 +166,6 @@ export function AuthSignUpForm() {
           <span>Back</span>
         </button>
 
-        {/* Header */}
         <div className="mb-5 mt-1 text-center">
           <h1 className="mb-1 text-[32px] font-bold text-[color:var(--color-copy-heading)]">
             Create account
@@ -179,7 +176,7 @@ export function AuthSignUpForm() {
         </div>
 
         {bannerError && (
-          <div className="mb-3 rounded-[6px] border border-red-300 bg-red-50 px-3 py-2">
+          <div role="alert" className="mb-3 rounded-[6px] border border-red-300 bg-red-50 px-3 py-2">
             <p className="m-0 text-[12px] text-red-600">{bannerError}</p>
           </div>
         )}
@@ -189,7 +186,6 @@ export function AuthSignUpForm() {
           className="flex flex-col gap-[14px]"
           noValidate
         >
-          {/* Full Name */}
           <div className="flex flex-col gap-1">
             <label
               htmlFor="display_name"
@@ -204,6 +200,8 @@ export function AuthSignUpForm() {
                 id="display_name"
                 type="text"
                 placeholder="Enter full name"
+                aria-invalid={!!errors.display_name}
+                aria-describedby="display_name-error"
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
                   errors.display_name
@@ -213,14 +211,9 @@ export function AuthSignUpForm() {
                 ].join(" ")}
               />
             </div>
-            {errors.display_name && (
-              <p className="m-0 text-[11px] text-red-600">
-                {errors.display_name.message}
-              </p>
-            )}
+            <FieldError id="display_name-error" message={errors.display_name?.message} />
           </div>
 
-          {/* Email */}
           <div className="flex flex-col gap-1">
             <label
               htmlFor="email"
@@ -235,6 +228,8 @@ export function AuthSignUpForm() {
                 id="email"
                 type="email"
                 placeholder="Enter email address"
+                aria-invalid={!!errors.email}
+                aria-describedby="email-error"
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
                   errors.email
@@ -244,14 +239,9 @@ export function AuthSignUpForm() {
                 ].join(" ")}
               />
             </div>
-            {errors.email && (
-              <p className="m-0 text-[11px] text-red-600">
-                {errors.email.message}
-              </p>
-            )}
+            <FieldError id="email-error" message={errors.email?.message} />
           </div>
 
-          {/* Password */}
           <div className="flex flex-col gap-1">
             <label
               htmlFor="password"
@@ -267,6 +257,8 @@ export function AuthSignUpForm() {
                 type={showPw ? "text" : "password"}
                 placeholder="Enter password"
                 onFocus={() => setPwTouched(true)}
+                aria-invalid={!!errors.password}
+                aria-describedby="password-error"
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none transition-all placeholder:text-[color:var(--color-copy-muted)]",
                   errors.password
@@ -302,7 +294,6 @@ export function AuthSignUpForm() {
               </div>
             </div>
 
-            {/* Strength meter + rules */}
             {showPwRules && (
               <div className="mt-1 flex flex-col gap-[6px]">
                 <div className="flex items-center gap-[6px]">
@@ -345,9 +336,9 @@ export function AuthSignUpForm() {
                 })}
               </div>
             )}
+            <FieldError id="password-error" message={errors.password?.message} />
           </div>
 
-          {/* Confirm Password */}
           <div className="flex flex-col gap-1">
             <label
               htmlFor="confirmPassword"
@@ -362,6 +353,8 @@ export function AuthSignUpForm() {
                 id="confirmPassword"
                 type={showConfirm ? "text" : "password"}
                 placeholder="Confirm your password"
+                aria-invalid={!!errors.confirmPassword}
+                aria-describedby="confirmPassword-error"
                 className={[
                   "w-full rounded-[8px] border bg-[color:var(--color-background)] py-[11px] text-sm text-[color:var(--color-copy-heading)] outline-none placeholder:text-[color:var(--color-copy-muted)]",
                   errors.confirmPassword
@@ -383,14 +376,9 @@ export function AuthSignUpForm() {
                 {showConfirm ? <Eye size={15} /> : <EyeClosed size={15} />}
               </button>
             </div>
-            {errors.confirmPassword && (
-              <p className="m-0 text-[11px] text-red-600">
-                {errors.confirmPassword.message}
-              </p>
-            )}
+            <FieldError id="confirmPassword-error" message={errors.confirmPassword?.message} />
           </div>
 
-          {/* Terms */}
           <label className="flex cursor-pointer items-center gap-2 text-[12px] font-normal text-[color:var(--color-copy-heading)]">
             <input
               type="checkbox"
@@ -410,13 +398,8 @@ export function AuthSignUpForm() {
               </Link>
             </span>
           </label>
-          {errors.agreed && (
-            <p className="m-0 text-[11px] text-red-600">
-              {errors.agreed.message}
-            </p>
-          )}
+          <FieldError id="agreed-error" message={errors.agreed?.message} />
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={isSubmitting}
