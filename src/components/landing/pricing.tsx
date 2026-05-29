@@ -146,7 +146,7 @@ export function Pricing() {
             <span className="text-lg font-semibold text-white">Builder</span>
             <div className="flex items-center gap-1 rounded-[20px] bg-white px-2.5 py-1">
               <FireIcon />
-              <span className="text-[10px] font-semibold text-[#7A7A7A]">
+              <span className="text-xs font-semibold text-[#7A7A7A]">
                 MOST POPULAR
               </span>
             </div>

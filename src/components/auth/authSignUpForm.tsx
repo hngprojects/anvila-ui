@@ -386,6 +386,7 @@ export function AuthSignUpForm() {
               onChange={(e) => {
                 setValue("agreed", e.target.checked, { shouldValidate: true });
               }}
+              aria-describedby={errors.agreed ? "agreed-error" : undefined}
               className="h-[14px] w-[14px] accent-[color:var(--color-primary)]"
             />
             <span className="text-[12px]">

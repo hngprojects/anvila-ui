@@ -49,7 +49,7 @@ export default function Footer() {
                    target="_blank"
                    rel="noopener noreferrer"
                    aria-label={social.label}
-                   className="text-footer-text/70 transition-colors hover:text-footer-text"
+                   className="inline-flex h-11 w-11 items-center justify-center text-footer-text/70 transition-colors hover:text-footer-text"
                 >
                   <social.icon size={18} strokeWidth={1.5} />
                 </Link>

@@ -109,6 +109,7 @@ export function Hero() {
             <input
               id="agent-setup-input"
               type="text"
+              autoComplete="off"
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder="Describe your agent setup"
