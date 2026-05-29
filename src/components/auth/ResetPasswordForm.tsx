@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { authApi } from "@/lib/auth/api";
+import { FieldError } from "@/components/ui/field-error";
 
 const resetPasswordSchema = z
   .object({
@@ -100,9 +101,11 @@ export default function SetNewPasswordForm() {
             </div>
             <input
               type={showPassword ? "text" : "password"}
-              readOnly={isLoading || !token} 
+              readOnly={isLoading || !token}
               {...register("password")}
               placeholder="Enter password"
+              aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? "reset-password-error" : undefined}
               className={`w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm outline-none transition-all ${
                 errors.password 
                   ? "border-red-500 focus:ring-red-100" 
@@ -118,9 +121,7 @@ export default function SetNewPasswordForm() {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          {errors.password && (
-            <p className="text-[11px] text-red-500 font-medium ml-1">{errors.password.message}</p>
-          )}
+          <FieldError id="reset-password-error" message={errors.password?.message} />
         </div>
 
         {/* Confirm Password Field */}
@@ -135,6 +136,8 @@ export default function SetNewPasswordForm() {
               readOnly={isLoading || !token}
               {...register("confirmPassword")}
               placeholder="Re-enter password"
+              aria-invalid={!!errors.confirmPassword}
+              aria-describedby={errors.confirmPassword ? "reset-confirmPassword-error" : undefined}
               className={`w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm outline-none transition-all ${
                 errors.confirmPassword 
                   ? "border-red-500 focus:ring-red-100" 
@@ -150,12 +153,9 @@ export default function SetNewPasswordForm() {
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          {errors.confirmPassword && (
-            <p className="text-[11px] text-red-500 font-medium ml-1">{errors.confirmPassword.message}</p>
-          )}
-
+          <FieldError id="reset-confirmPassword-error" message={errors.confirmPassword?.message} />
           {apiError && (
-            <p className="text-[11px] text-red-500 font-medium ml-1 mt-1">{apiError}</p>
+            <FieldError id="reset-api-error" message={apiError} />
           )}
         </div>
 
