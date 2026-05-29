@@ -16,7 +16,7 @@ import {
 import { Github } from "@/components/icons";
 import MarkdownPreview from "@/components/create-agent/MarkDownPreview";
 import { GithubPublishModal } from "@/components/publish-modal";
-import type { AgentFileContent, AgentPersona, AgentSkill } from "@/lib/personas";
+import type { AgentPersona, AgentFileContent, AgentSkill } from "@/types/agent";
 
 interface AgentPreviewPanelProps {
   persona: AgentPersona | null;
