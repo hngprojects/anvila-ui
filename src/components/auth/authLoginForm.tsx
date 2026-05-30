@@ -71,7 +71,6 @@ export const AuthLoginForm = () => {
 
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
-      {/* Logo — mobile only */}
       <div className="hidden max-[700px]:flex justify-center">
         <Logo />
       </div>
@@ -95,7 +94,7 @@ export const AuthLoginForm = () => {
       </div>
 
       {serverError && (
-        <div className="mb-4 rounded-[6px] border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
+        <div role="alert" className="mb-4 rounded-[6px] border border-[#FCA5A5] bg-[#FEF2F2] px-3 py-2">
           <p className="m-0 text-[12px] text-[#DC2626]">{serverError}</p>
         </div>
       )}
@@ -138,7 +137,6 @@ export const AuthLoginForm = () => {
           <FieldError id="login-email-error" message={errors.email?.message} />
         </div>
 
-        {/* Password */}
         <div className="flex flex-col gap-1">
           <label
             htmlFor="password"
@@ -171,7 +169,6 @@ export const AuthLoginForm = () => {
           <FieldError id="login-password-error" message={errors.password?.message} />
         </div>
 
-        {/* Remember me + Forgot */}
         <div className="flex items-center justify-between">
           <label className="flex cursor-pointer items-center gap-[6px] text-[14px] text-[#111]">
             <input
@@ -190,7 +187,6 @@ export const AuthLoginForm = () => {
           </Link>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={isSubmitting}
