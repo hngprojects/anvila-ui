@@ -146,7 +146,8 @@ function TopNav({
       <button
         type="button"
         onClick={onSaveAsPrivate}
-        className="flex h-8 items-center rounded-2xl px-3 font-sans text-sm font-normal text-save-private"
+        disabled={!onSaveAsPrivate}
+        className="flex h-8 items-center rounded-2xl px-3 font-sans text-sm font-normal text-save-private disabled:cursor-not-allowed disabled:opacity-40"
       >
         Save as Private
       </button>

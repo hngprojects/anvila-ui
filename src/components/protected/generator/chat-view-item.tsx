@@ -36,7 +36,7 @@ export function ChatItemView({
           <span className="flex-1 font-sans text-sm leading-6 text-gray-800">{item.text}</span>
           <button
             type="button"
-            onClick={() => navigator.clipboard.writeText(item.text)}
+            onClick={() => navigator.clipboard.writeText(item.text).catch(() => {})}
             className="shrink-0"
             aria-label="Copy message"
           >
