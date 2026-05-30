@@ -6,11 +6,11 @@ import {
   Logo,
   SidebarPanelIcon,
   NavPlusIcon,
+  NavSearchIcon,
   NavExploreIcon,
   NavMyAgentsIcon,
   NavGithubCatIcon,
 } from "@/components/icons";
-
 import { rememberSession } from "@/components/protected/generator/api";
 import UserMenu from "@/components/protected/UserMenu";
 import { ChevronDown, Trash2, X } from "lucide-react";
@@ -18,6 +18,7 @@ import type { AgentSession } from "@/types/agent";
 
 const NAV_ITEMS = [
   { icon: NavPlusIcon, label: "Create Agent", path: "/generator" },
+  { icon: NavSearchIcon, label: "Search", path: "/agents/search" },
   { icon: NavExploreIcon, label: "Explore", path: "/generator/explore" },
   { icon: NavMyAgentsIcon, label: "My Agents", path: "/generator/my-agents" },
   { icon: NavGithubCatIcon, label: "GitHub", path: "/generator/github" },
