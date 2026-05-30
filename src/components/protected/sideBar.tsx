@@ -67,25 +67,30 @@ function RecentSection() {
   const [deletingId, setDeletingId] = useState("");
   const pathname = usePathname();
   const router = useRouter();
-  const [typing, setTyping] = useState<{ agentId: string; display: string } | null>(null);
+  const [typing, setTyping] = useState<{
+    agentId: string;
+    display: string;
+  } | null>(null);
 
-   useEffect(() => {
+  useEffect(() => {
     if (typeof BroadcastChannel === "undefined") return;
     const bc = new BroadcastChannel("agent-sessions");
+    let interval: ReturnType<typeof setInterval> | null = null;
 
     bc.onmessage = (event) => {
       const { type, agentId, name } = event.data ?? {};
       if (type !== "update-name" || !agentId || !name) return;
+      if (interval) clearInterval(interval);
       let i = 0;
       setTyping({ agentId, display: "" });
 
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         i++;
         const display = name.slice(0, i);
         setTyping({ agentId, display });
 
         if (i >= name.length) {
-          clearInterval(interval);
+          if (interval) clearInterval(interval);
           setSessions((prev) =>
             prev.map((s) =>
               s.agentId === agentId ? { ...s, personaName: name } : s,
@@ -96,9 +101,11 @@ function RecentSection() {
       }, 40);
     };
 
-    return () => bc.close();
+    return () => {
+      if (interval) clearInterval(interval);
+      bc.close();
+    };
   }, []);
-
 
   useEffect(() => {
     let cancelled = false;
