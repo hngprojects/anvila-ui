@@ -1,5 +1,6 @@
 import { CheckCircle2, Loader2 } from "lucide-react";
 
+import { FileIcon, ChatCopyIcon } from "@/components/icons";
 import { type ClarificationAnswer } from "@/components/protected/generator/api";
 import {
   CLARIFICATION_FALLBACK_MESSAGE,
@@ -30,9 +31,17 @@ export function ChatItemView({
 }) {
   if (item.type === "user") {
     return (
-      <div className="flex justify-end">
-        <div className="max-w-[85%] rounded-2xl rounded-br-md bg-gray-100 px-4 py-3 text-sm leading-6 text-gray-800">
-          {item.text}
+      <div className="flex w-full justify-end">
+        <div className="flex min-h-[62px] w-[360px] items-center gap-5 rounded-2xl bg-user-bubble p-2.5">
+          <span className="flex-1 font-sans text-sm leading-6 text-gray-800">{item.text}</span>
+          <button
+            type="button"
+            onClick={() => navigator.clipboard.writeText(item.text).catch(() => {})}
+            className="shrink-0"
+            aria-label="Copy message"
+          >
+            <ChatCopyIcon />
+          </button>
         </div>
       </div>
     );
@@ -133,16 +142,22 @@ export function ChatItemView({
   }
 
   return (
-    <div className="mr-auto max-w-2xl rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="text-sm text-gray-800">{item.text}</p>
-      {canPreview && (
-        <button
-          onClick={onPreview}
-          className="mt-3 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-        >
-          Preview
-        </button>
-      )}
+    <div className="flex w-full items-center justify-center self-stretch rounded-[15px] border-[2.5px] border-tag-border bg-[rgba(182,184,189,0.20)] px-1 py-[14px] shadow-[0_25px_50px_-12px_rgba(142,81,255,0.10)]">
+      <div className="flex items-center gap-4 px-4">
+        <FileIcon className="size-12 shrink-0" />
+        <div className="flex flex-col gap-1">
+          <p className="font-sans text-xs font-semibold text-dark-fg">{item.text}</p>
+          {canPreview && (
+            <button
+              type="button"
+              onClick={onPreview}
+              className="flex h-10 items-center justify-center rounded-2xl border border-border-subtle bg-white px-4 font-sans text-sm font-bold text-dark-fg"
+            >
+              Preview
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
