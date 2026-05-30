@@ -47,7 +47,7 @@ export function AuthProvider({
   const logout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
     setUser(null)
-    router.push('/login')
+    router.replace('/login')
   }, [router])
 
   return (

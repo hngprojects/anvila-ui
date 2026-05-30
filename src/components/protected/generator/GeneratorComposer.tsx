@@ -1,20 +1,30 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useRef, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUp, FileText, Loader2, Paperclip, X } from "lucide-react";
-
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
+import { useAgent } from "@/context/agent";
 import { generateAgent } from "@/components/protected/generator/api";
+import { useDraft } from "@/hooks/useDraft";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = [".txt", ".md", ".pdf", ".docx"];
 
+type ComposerDraft = { prompt: string };
+
 export default function GeneratorComposer() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
+  const { fetchAgents } = useAgent();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [prompt, setPrompt] = useState("");
+
+  const queryPrompt =
+    searchParams.get("message") ?? searchParams.get("prompt") ?? "";
+
+  const [prompt, setPrompt] = useState(queryPrompt);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,7 +32,25 @@ export default function GeneratorComposer() {
   const firstName = user?.display_name?.split(" ")[0] ?? "there";
   const canSubmit = prompt.trim().length > 0 && !isSubmitting;
 
-  async function handleSubmit(event: FormEvent) {
+  useEffect(() => {
+    if (!queryPrompt) return;
+    const next = new URLSearchParams(searchParams.toString());
+    next.delete("message");
+    next.delete("prompt");
+    const clean = next.toString();
+    router.replace(`/generator${clean ? `?${clean}` : ""}`, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { clearDraft } = useDraft<ComposerDraft>(
+    "generator:composer",
+    { prompt },
+    (draft) => {
+      if (!queryPrompt && draft.prompt) setPrompt(draft.prompt);
+    },
+  );
+
+  async function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = prompt.trim();
     if (!trimmed || isSubmitting) return;
@@ -31,10 +59,14 @@ export default function GeneratorComposer() {
     setIsSubmitting(true);
 
     try {
+      clearDraft();
       const result = await generateAgent(trimmed, file);
+      await fetchAgents();
       router.push(`/generator/${result.agentId}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not start generation");
+      setError(
+        err instanceof Error ? err.message : "Could not start generation",
+      );
       setIsSubmitting(false);
     }
   }
@@ -48,7 +80,9 @@ export default function GeneratorComposer() {
     }
 
     const name = nextFile.name.toLowerCase();
-    const hasAllowedExtension = ALLOWED_EXTENSIONS.some((ext) => name.endsWith(ext));
+    const hasAllowedExtension = ALLOWED_EXTENSIONS.some((ext) =>
+      name.endsWith(ext),
+    );
 
     if (!hasAllowedExtension) {
       setError("Only txt, md, pdf, and docx files are supported.");
@@ -69,11 +103,14 @@ export default function GeneratorComposer() {
         <div className="w-full max-w-3xl">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-semibold tracking-normal text-gray-950 md:text-3xl">
-              What agent should Anvila forge, {firstName}?
+              What should we do today, {firstName}?
             </h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="rounded-[28px] border border-gray-200 bg-white p-3 shadow-sm">
+          <form
+            onSubmit={handleSubmit}
+            className="rounded-[28px] border border-gray-200 bg-white p-3 shadow-sm"
+          >
             {file && (
               <div className="mb-3 flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm">
                 <div className="flex min-w-0 items-center gap-2 text-gray-700">
@@ -91,7 +128,7 @@ export default function GeneratorComposer() {
               </div>
             )}
 
-            <div className="flex items-end gap-2">
+            <div className="flex items-center gap-2">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -103,14 +140,16 @@ export default function GeneratorComposer() {
                 }}
               />
 
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => fileInputRef.current?.click()}
-                className="mb-1 flex size-10 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                className="shrink-0 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900"
                 title="Attach file"
               >
                 <Paperclip size={18} />
-              </button>
+              </Button>
 
               <textarea
                 value={prompt}
@@ -122,15 +161,16 @@ export default function GeneratorComposer() {
                   }
                 }}
                 placeholder="Describe your agent..."
-                rows={3}
-                className="max-h-56 min-h-24 flex-1 resize-none bg-transparent px-1 py-3 text-base text-gray-900 outline-none placeholder:text-gray-400 md:text-lg"
+                rows={1}
+                className="max-h-56 flex-1 resize-none bg-transparent px-1 py-2 text-base text-gray-900 outline-none placeholder:text-gray-400 md:text-lg"
                 disabled={isSubmitting}
               />
 
-              <button
+              <Button
                 type="submit"
+                size="icon"
                 disabled={!canSubmit}
-                className="mb-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-[#0C5D56] text-white transition hover:bg-[#094a45] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
+                className="shrink-0 rounded-full bg-[#0C5D56] text-white hover:bg-[#094a45] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
                 title="Generate agent"
               >
                 {isSubmitting ? (
@@ -138,7 +178,7 @@ export default function GeneratorComposer() {
                 ) : (
                   <ArrowUp size={18} />
                 )}
-              </button>
+              </Button>
             </div>
           </form>
 

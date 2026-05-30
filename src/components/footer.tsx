@@ -46,8 +46,10 @@ export default function Footer() {
                 <Link
                   key={social.label}
                   href={social.href}
-                  aria-label={social.label}
-                  className="text-footer-text/70 transition-colors hover:text-footer-text"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label={social.label}
+                   className="inline-flex h-11 w-11 items-center justify-center text-footer-text/70 transition-colors hover:text-footer-text"
                 >
                   <social.icon size={18} strokeWidth={1.5} />
                 </Link>
@@ -58,15 +60,19 @@ export default function Footer() {
           {/* Link columns */}
           {FOOTER_COLUMNS.map((column) => (
             <div key={column.title} className="flex flex-col gap-4">
-              <h4 className="text-sm font-semibold text-footer-text">
+              <h3 className="text-sm font-semibold text-footer-text">
                 {column.title}
-              </h4>
+              </h3>
               <ul className="flex flex-col gap-3">
                 {column.links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
                       className="text-sm font-normal text-footer-text/70 transition-colors hover:text-footer-text"
+                       {...(link.isExternal && {
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                      })}
                     >
                       {link.label}
                     </Link>

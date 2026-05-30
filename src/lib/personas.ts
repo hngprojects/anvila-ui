@@ -1,105 +1,9 @@
-export type PersonaStatus =
-  | "draft"
-  | "needs_clarification"
-  | "generating"
-  | "skills_matching"
-  | "generated"
-  | "published"
-  | "failed";
-
-export interface AgentSkill {
-  slug: string;
-  name: string;
-  description: string;
-  tags: string[];
-}
-
-export interface AgentFileContent {
-  id: string;
-  key: string;
-  name: string;
-  label: string;
-  content: string;
-}
-
-export interface AgentManifest {
-  name: string;
-  version: string;
-  model: string;
-  license: string;
-  files: number;
-}
-
-export interface AgentPersona {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  status: PersonaStatus | string;
-  visibility: string;
-  githubRepoUrl: string;
-  githubCloneUrl: string;
-  githubZipUrl: string;
-  publishedAt: string;
-  createdAt: string;
-  files: AgentFileContent[];
-  skills: AgentSkill[];
-  manifest: AgentManifest;
-}
-
-export interface AgentGenerateResult {
-  status: string;
-  agentId: string;
-  personaId: string;
-  sessionId: string;
-  jobId: string;
-}
-
-export interface AgentSession {
-  sessionId: string;
-  agentId: string;
-  personaName: string;
-  lastMessagePreview: string;
-  lastMessageAt: string;
-  status: string;
-}
-
-export interface PaginatedMeta {
-  size: number;
-  hasMore: boolean;
-  nextCursor: string | null;
-}
-
-export interface AgentMessage {
-  id: string;
-  role: "user" | "assistant" | string;
-  content: string;
-  roundNumber: number;
-  createdAt: string;
-  parsedContent: unknown | null;
-}
-
-export interface ClarificationQuestion {
-  id: string;
-  question: string;
-  options: string[];
-  allowCustom: boolean;
-}
-
-export interface ClarificationPayload {
-  round: number;
-  questions: ClarificationQuestion[];
-}
-
-export interface PublishLinks {
-  githubRepoUrl: string;
-  githubCloneUrl: string;
-  githubZipUrl: string;
-  publishedAt: string;
-}
+import type { AgentGenerateResult, AgentPersona, AgentFileContent, AgentSession, PaginatedMeta, AgentMessage, ClarificationPayload, AgentSkill } from "@/types/agent";
 
 export const PREVIEW_STATUSES = new Set(["generated", "published"]);
 export const STREAM_DONE_STATUSES = new Set(["generated", "published", "failed"]);
+export const CLARIFICATION_FALLBACK_MESSAGE =
+  "I can create this agent, but I need a few details first so the persona matches what you have in mind.";
 
 const FILES = [
   { key: "readme_md", name: "readme.md", label: "Readme" },
@@ -241,19 +145,25 @@ export function normalizeClarificationPayload(raw: unknown): ClarificationPayloa
   const data = Array.isArray(raw)
     ? { round: 0, questions: raw }
     : getRecord(raw);
+  const questionsValue = getQuestionsValue(data.questions);
+  const questionsRecord = getRecord(data.questions);
 
   return {
-    round: getNumber(data.round),
-    questions: getArray(data.questions).map((item) => {
+    round: getNumber(data.round, getNumber(questionsRecord.round)),
+    message: decodeBasicHtmlEntities(getString(data.message)),
+    questions: getArray(questionsValue).map((item) => {
       const question = getRecord(item);
 
       return {
         id: getString(question.id),
-        question: getString(question.question),
+        question: decodeBasicHtmlEntities(getString(question.question)),
         options: getArray(question.options)
-          .map((option) => getString(option))
+          .map((option) => decodeBasicHtmlEntities(getString(option)))
           .filter(Boolean),
-        allowCustom: Boolean(question.allow_custom),
+        allowCustom: Boolean(question.allow_custom ?? question.allowCustom),
+        answer: question.answer
+          ? decodeBasicHtmlEntities(getString(question.answer))
+          : undefined,
       };
     }),
   };
@@ -262,7 +172,10 @@ export function normalizeClarificationPayload(raw: unknown): ClarificationPayloa
 export function isClarificationPayload(value: unknown): value is ClarificationPayload {
   if (Array.isArray(value)) return true;
   const record = getRecord(value);
-  return Array.isArray(record.questions);
+  return (
+    Array.isArray(record.questions) ||
+    Array.isArray(getRecord(record.questions).questions)
+  );
 }
 
 export function stripUserInputWrapper(value: string) {
@@ -310,10 +223,30 @@ function getArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
 }
 
+function getQuestionsValue(value: unknown) {
+  if (Array.isArray(value)) return value;
+  return getRecord(value).questions;
+}
+
 function getString(value: unknown, fallback = ""): string {
   return typeof value === "string" ? value : fallback;
 }
 
 function getNumber(value: unknown, fallback = 0): number {
-  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+function decodeBasicHtmlEntities(value: string) {
+  return value
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&");
 }

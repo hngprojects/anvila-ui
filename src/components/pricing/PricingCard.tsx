@@ -27,7 +27,7 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
         {tier.badge && (
           <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white">
             <FireIcon />
-            <span className="text-copy-muted text-[10px] leading-none tracking-wide">
+            <span className="text-copy-muted text-xs leading-none tracking-wide">
               {tier.badge.text}
             </span>
           </div>
@@ -58,8 +58,8 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
         <p className="text-copy-muted text-base leading-6">
           {tier.description}
         </p>
-          <Link href={ctaHref}>
-        <button
+        <Link
+          href={ctaHref}
           className={`w-full flex items-center justify-center gap-2.5 rounded-[10px] cursor-pointer transition-opacity hover:opacity-80 ${
             isHighlighted
               ? "h-[55px] bg-teal-brand border-none hover:opacity-90"
@@ -73,7 +73,6 @@ export const PricingCard = ({ tier }: PricingCardProps) => {
           >
             {tier.ctaText}
           </span>
-        </button>
         </Link>
 
         <hr className="border-background" />

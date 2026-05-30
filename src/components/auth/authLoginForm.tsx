@@ -16,7 +16,8 @@ import { LoginSchema, type LoginInput } from "../schemas/auth";
 import { AuthOAuthButtons } from "./authOAthButtons";
 import { Logo } from "@/components/icons";
 import { IconPrefix } from "@/components/icons";
-import { useAuth } from '@/context/auth'
+import { useAuth } from '@/context/auth';
+import { FieldError } from "@/components/ui/field-error";
 
 export const AuthLoginForm = () => {
   const router = useRouter();
@@ -119,6 +120,7 @@ export const AuthLoginForm = () => {
               type="email"
               placeholder="Enter email address"
               aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "login-email-error" : undefined}
               className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[16px] text-[#000000] outline-none transition-all placeholder:text-[#000000] ${
                 errors.email
                   ? "border-[#E24B4A]"
@@ -133,11 +135,7 @@ export const AuthLoginForm = () => {
               </span>
             )}
           </div>
-          {errors.email && (
-            <p className="m-0 text-[11px] text-[#DC2626]">
-              {errors.email.message}
-            </p>
-          )}
+          <FieldError id="login-email-error" message={errors.email?.message} />
         </div>
 
         {/* Password */}
@@ -156,6 +154,7 @@ export const AuthLoginForm = () => {
               type={showPw ? "text" : "password"}
               placeholder="Enter password"
               aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? "login-password-error" : undefined}
               className={`w-full rounded-[8px] border bg-[#F6F7F7] border-[#B1B5B4] py-[11px] text-[16px] text-[#111] outline-none transition-all placeholder:text-[#000000] ${
                 errors.password ? "border-[#E24B4A]" : "border-[#D1D5DB]"
               } ${passwordEmpty ? "pl-[34px]" : "pl-[12px] pr-[40px]"}`}
@@ -169,11 +168,7 @@ export const AuthLoginForm = () => {
               {showPw ? <Eye size={15} /> : <EyeClosed size={15} />}
             </button>
           </div>
-          {errors.password && (
-            <p className="m-0 text-[11px] text-[#DC2626]">
-              {errors.password.message}
-            </p>
-          )}
+          <FieldError id="login-password-error" message={errors.password?.message} />
         </div>
 
         {/* Remember me + Forgot */}

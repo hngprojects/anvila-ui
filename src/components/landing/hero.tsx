@@ -109,6 +109,7 @@ export function Hero() {
             <input
               id="agent-setup-input"
               type="text"
+              autoComplete="off"
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder="Describe your agent setup"
@@ -120,7 +121,8 @@ export function Hero() {
             aria-label="Submit"
             disabled={!canSubmit}
             onClick={() => {
-              if (canSubmit) router.push("/register");
+              if (canSubmit)
+                router.push(`/generator?prompt=${encodeURIComponent(value)}`);
             }}
             className={`flex shrink-0 items-center justify-center rounded-full border-none p-3 transition-all md:p-4 ${
               canSubmit
@@ -141,7 +143,7 @@ export function Hero() {
               <button
                 key={chip}
                 type="button"
-                className={`inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-2xl border-none px-4 py-2.5 text-base font-medium leading-normal md:px-5 ${
+                className={`inline-flex items-center justify-center whitespace-nowrap rounded-2xl border-none px-4 py-2.5 text-base font-medium leading-normal md:px-5 ${
                   isActive
                     ? "bg-[#F0FDFA] text-teal-brand md:bg-zinc-100 md:text-copy-muted"
                     : "bg-zinc-100 text-copy-muted"

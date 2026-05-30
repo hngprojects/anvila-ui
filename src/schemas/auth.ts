@@ -21,15 +21,13 @@ export const RegisterSchema = z
       .regex(/[A-Z]/, "At least one uppercase letter")
       .regex(/[0-9]/, "At least one number")
       .regex(/[^A-Za-z0-9]/, "At least one special character"),
-    confirmPassword: z.string(),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
     agreed: z.boolean().refine((v) => v === true, "You must accept the terms"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
-
-// ─── Response Schemas ────────────────────────────────────────────────────────
 
 export const UserSchema = z.object({
   id: z.string().uuid(),
