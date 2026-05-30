@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { FileText, Loader2, X } from "lucide-react";
+import { FileText, X, Loader2 } from "lucide-react";
 import { InputPlusIcon, InputArrowUpIcon } from "@/components/icons";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -27,11 +27,10 @@ export default function AgentChatInput({
 
   const canSubmit = prompt.trim().length > 0 && !disabled && !isLoading;
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = prompt.trim();
     if (!trimmed || disabled || isLoading) return;
-
     setError("");
     await onSubmit(trimmed, file);
     setPrompt("");
@@ -40,33 +39,24 @@ export default function AgentChatInput({
 
   function handleFileSelect(nextFile: File | null) {
     setError("");
-
-    if (!nextFile) {
-      setFile(null);
-      return;
-    }
-
+    if (!nextFile) { setFile(null); return; }
     const name = nextFile.name.toLowerCase();
-    const hasAllowedExtension = ALLOWED_EXTENSIONS.some((ext) => name.endsWith(ext));
-
-    if (!hasAllowedExtension) {
+    if (!ALLOWED_EXTENSIONS.some((ext) => name.endsWith(ext))) {
       setError("Only txt, md, pdf, and docx files are supported.");
       return;
     }
-
     if (nextFile.size > MAX_FILE_SIZE) {
       setError("File must be 5MB or smaller.");
       return;
     }
-
     setFile(nextFile);
   }
 
   return (
     <div className="shrink-0 px-[17px] pb-4 pt-2">
       {file && (
-        <div className="mb-2 flex w-fit max-w-full items-center gap-2 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs text-gray-700">
-          <FileText size={14} className="shrink-0 text-[#0C5D56]" />
+        <div className="mb-2 flex w-fit max-w-full items-center gap-2 rounded-lg border border-border-subtle bg-white px-2.5 py-1 font-sans text-xs text-gray-700">
+          <FileText size={14} className="shrink-0 text-teal-brand" />
           <span className="truncate">{file.name}</span>
           <button
             type="button"
@@ -85,22 +75,10 @@ export default function AgentChatInput({
           type="file"
           className="hidden"
           accept=".txt,.md,.pdf,.docx,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          onChange={(event) => {
-            handleFileSelect(event.target.files?.[0] ?? null);
-            event.target.value = "";
-          }}
+          onChange={(e) => { handleFileSelect(e.target.files?.[0] ?? null); e.target.value = ""; }}
         />
 
-        <div
-          className="flex items-center gap-[10px]"
-          style={{
-            borderRadius: 24,
-            border: "1px solid #A1A1AA",
-            background: "rgba(255, 255, 255, 0.10)",
-            boxShadow: "0 6px 18px -2px rgba(0, 0, 0, 0.10)",
-            padding: "16px 24px",
-          }}
-        >
+        <div className="flex items-center gap-[10px] rounded-3xl border border-[#A1A1AA] bg-white/10 px-6 py-4 shadow-[0_6px_18px_-2px_rgba(0,0,0,0.10)]">
           <button
             type="button"
             disabled={disabled || isLoading}
@@ -113,44 +91,31 @@ export default function AgentChatInput({
 
           <input
             value={prompt}
-            onChange={(event) => setPrompt(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                event.currentTarget.form?.requestSubmit();
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                e.currentTarget.form?.requestSubmit();
               }
             }}
             placeholder={placeholder}
             disabled={disabled || isLoading}
-            className="min-w-0 flex-1 bg-transparent outline-none"
-            style={{
-              color: "#9E9F9E",
-              fontFamily: "Inter, sans-serif",
-              fontSize: 20,
-              fontWeight: 500,
-            }}
+            className="min-w-0 flex-1 bg-transparent font-sans text-xl font-medium text-input-placeholder outline-none placeholder:text-input-placeholder disabled:cursor-not-allowed"
           />
 
           <button
             type="submit"
             disabled={!canSubmit}
-            className="flex shrink-0 items-center justify-center transition disabled:cursor-not-allowed"
             aria-label="Send prompt"
-            style={{
-              borderRadius: 100,
-              background: canSubmit ? "#0C5D56" : "#C9C9C9",
-              padding: 12,
-            }}
+            className={`flex shrink-0 items-center justify-center rounded-full p-3 transition disabled:cursor-not-allowed ${
+              canSubmit ? "bg-teal-brand" : "bg-btn-inactive"
+            }`}
           >
-            {isLoading ? (
-              <Loader2 size={18} className="animate-spin text-white" />
-            ) : (
-              <InputArrowUpIcon />
-            )}
+            {isLoading ? <Loader2 size={18} className="animate-spin text-white" /> : <InputArrowUpIcon />}
           </button>
         </div>
 
-        {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+        {error && <p className="mt-2 font-sans text-xs text-red-600">{error}</p>}
       </form>
     </div>
   );

@@ -462,14 +462,10 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
 
   return (
     <div className="relative flex h-full min-h-0 overflow-hidden rounded-2xl border border-gray-200 bg-[#FBFBFB] shadow-sm">
-      <section
-        className="flex min-h-0 flex-col"
-        style={previewOpen ? { width: 457, minWidth: 457, flexShrink: 0 } : { flex: 1, minWidth: 0 }}
-      >
+      <section className={`flex min-h-0 flex-col ${previewOpen ? "w-[457px] min-w-[457px] shrink-0" : "min-w-0 flex-1"}`}>
         <div
           ref={scrollRef}
-          className="flex flex-1 flex-col items-start gap-[18px] overflow-y-auto self-stretch"
-          style={{ padding: "9px 17px" }}
+          className="flex flex-1 flex-col items-start gap-[18px] overflow-y-auto self-stretch px-[17px] py-[9px]"
         >
           {isLoading ? (
             <LoadingMessage text="Loading agent..." />
@@ -532,42 +528,17 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
 
       {(isPublishing || publishSuccess || publishError) && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/90">
-          <div
-            className="flex flex-col items-center gap-6"
-            style={{ padding: "70px 100px" }}
-          >
+          <div className="flex flex-col items-center gap-6 px-[100px] py-[70px]">
             {isPublishing && (
               <>
                 <PublishingSpinnerIcon />
-                <h2
-                  style={{
-                    color: "#000",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: 34,
-                    fontWeight: 700,
-                  }}
-                >
-                  Publishing Agent
-                </h2>
-                <p
-                  style={{
-                    color: "#000",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: 14,
-                    fontWeight: 400,
-                  }}
-                >
+                <h2 className="font-sans text-[34px] font-bold text-black">Publishing Agent</h2>
+                <p className="font-sans text-sm font-normal text-black">
                   Wait while agent is processing, please don&apos;t close this window.
                 </p>
-                <div className="relative" style={{ width: 410, height: 10 }}>
-                  <div
-                    className="absolute inset-0 rounded-full"
-                    style={{ background: "#D1D2D1" }}
-                  />
-                  <div
-                    className="absolute inset-y-0 left-0 rounded-full transition-all"
-                    style={{ background: "#0C5D56", width: 200 }}
-                  />
+                <div className="relative h-2.5 w-[410px]">
+                  <div className="absolute inset-0 rounded-full bg-progress-grey" />
+                  <div className="absolute inset-y-0 left-0 w-[200px] rounded-full bg-teal-brand" />
                 </div>
               </>
             )}
@@ -575,34 +546,11 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
             {publishSuccess && !isPublishing && (
               <>
                 <PublishedSuccessIcon />
-                <h2
-                  style={{
-                    color: "#000",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: 34,
-                    fontWeight: 700,
-                  }}
-                >
-                  Agent Published
-                </h2>
+                <h2 className="font-sans text-[34px] font-bold text-black">Agent Published</h2>
                 <button
                   type="button"
-                  onClick={() => {
-                    setPublishSuccess(false);
-                    router.push("/generator/my-agents");
-                  }}
-                  className="flex items-center justify-center gap-2 self-stretch"
-                  style={{
-                    height: 40,
-                    padding: "12px 20px",
-                    borderRadius: 8,
-                    border: "0.5px solid #9E9F9E",
-                    background: "#0C5D56",
-                    color: "#F6F7F7",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: 14,
-                    fontWeight: 400,
-                  }}
+                  onClick={() => { setPublishSuccess(false); router.push("/generator/my-agents"); }}
+                  className="flex h-10 items-center justify-center gap-2 self-stretch rounded-lg border-[0.5px] border-input-placeholder bg-teal-brand px-5 py-3 font-sans text-sm font-normal text-btn-fg"
                 >
                   Manage Agents
                 </button>
@@ -612,44 +560,14 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
             {publishError && !isPublishing && (
               <>
                 <PublishFailedIcon />
-                <h2
-                  style={{
-                    color: "#000",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: 34,
-                    fontWeight: 700,
-                  }}
-                >
-                  Publish Agent Failed
-                </h2>
-                <p
-                  style={{
-                    color: "#0C0E0D",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: 14,
-                    fontWeight: 400,
-                  }}
-                >
+                <h2 className="font-sans text-[34px] font-bold text-black">Publish Agent Failed</h2>
+                <p className="font-sans text-sm font-normal text-label-dark">
                   We couldn&apos;t generate agent. Please try again.
                 </p>
                 <button
                   type="button"
-                  onClick={() => {
-                    setPublishError("");
-                    handlePublish();
-                  }}
-                  className="flex items-center justify-center gap-2 self-stretch"
-                  style={{
-                    height: 40,
-                    padding: "12px 20px",
-                    borderRadius: 8,
-                    border: "0.5px solid #9E9F9E",
-                    background: "#0C5D56",
-                    color: "#F6F7F7",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: 14,
-                    fontWeight: 500,
-                  }}
+                  onClick={() => { setPublishError(""); handlePublish(); }}
+                  className="flex h-10 items-center justify-center gap-2 self-stretch rounded-lg border-[0.5px] border-input-placeholder bg-teal-brand px-5 py-3 font-sans text-sm font-medium text-btn-fg"
                 >
                   Retry
                 </button>

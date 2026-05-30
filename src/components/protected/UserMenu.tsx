@@ -28,25 +28,9 @@ export default function UserMenu({ collapsed = false }: { collapsed?: boolean })
           onClick={() => setOpen((value) => !value)}
           title={name}
           aria-label="User menu"
-          className="flex items-center justify-center shrink-0"
-          style={{
-            borderRadius: 24,
-            background: "#0C5D56",
-            width: 24,
-            height: 24,
-            padding: "4px 3px",
-          }}
+          className="flex size-6 shrink-0 items-center justify-center rounded-3xl bg-teal-brand px-[3px] py-1"
         >
-          <span
-            style={{
-              color: "#FFF",
-              fontFamily: "Inter, sans-serif",
-              fontSize: 12,
-              fontWeight: 400,
-              lineHeight: "normal",
-              textAlign: "center",
-            }}
-          >
+          <span className="text-center font-sans text-xs font-normal text-white">
             {initials}
           </span>
         </button>

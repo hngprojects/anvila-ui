@@ -1,6 +1,6 @@
 import { CheckCircle2, Loader2 } from "lucide-react";
 
-import { ForgedAgentDocIcon, ChatCopyIcon } from "@/components/icons";
+import { FileIcon, ChatCopyIcon } from "@/components/icons";
 import { type ClarificationAnswer } from "@/components/protected/generator/api";
 import {
   CLARIFICATION_FALLBACK_MESSAGE,
@@ -31,18 +31,9 @@ export function ChatItemView({
 }) {
   if (item.type === "user") {
     return (
-      <div className="flex w-full justify-end gap-5">
-        <div
-          className="flex items-center justify-center gap-5"
-          style={{
-            borderRadius: 16,
-            background: "#F4F4F5",
-            width: 360,
-            minHeight: 62,
-            padding: 10,
-          }}
-        >
-          <span className="flex-1 text-sm leading-6 text-gray-800">{item.text}</span>
+      <div className="flex w-full justify-end">
+        <div className="flex min-h-[62px] w-[360px] items-center gap-5 rounded-2xl bg-user-bubble p-2.5">
+          <span className="flex-1 font-sans text-sm leading-6 text-gray-800">{item.text}</span>
           <button
             type="button"
             onClick={() => navigator.clipboard.writeText(item.text)}
@@ -151,45 +142,16 @@ export function ChatItemView({
   }
 
   return (
-    <div
-      className="flex w-full items-center justify-center self-stretch"
-      style={{
-        padding: "14px 1.25px 13px 0.75px",
-        borderRadius: 15,
-        border: "2.5px solid #B1B5B4",
-        background: "rgba(182, 184, 189, 0.20)",
-        boxShadow: "0 25px 50px -12px rgba(142, 81, 255, 0.10)",
-      }}
-    >
+    <div className="flex w-full items-center justify-center self-stretch rounded-[15px] border-[2.5px] border-tag-border bg-[rgba(182,184,189,0.20)] px-1 py-[14px] shadow-[0_25px_50px_-12px_rgba(142,81,255,0.10)]">
       <div className="flex items-center gap-4 px-4">
-        <ForgedAgentDocIcon />
+        <FileIcon className="size-12 shrink-0" />
         <div className="flex flex-col gap-1">
-          <p
-            style={{
-              color: "#050605",
-              fontFamily: "Inter, sans-serif",
-              fontSize: 12,
-              fontWeight: 600,
-            }}
-          >
-            {item.text}
-          </p>
+          <p className="font-sans text-xs font-semibold text-dark-fg">{item.text}</p>
           {canPreview && (
             <button
               type="button"
               onClick={onPreview}
-              className="flex items-center justify-center"
-              style={{
-                height: 40,
-                borderRadius: 16,
-                border: "1px solid #E4E4E7",
-                background: "#fff",
-                color: "#050605",
-                fontFamily: "Inter, sans-serif",
-                fontSize: 14,
-                fontWeight: 700,
-                padding: "0 16px",
-              }}
+              className="flex h-10 items-center justify-center rounded-2xl border border-border-subtle bg-white px-4 font-sans text-sm font-bold text-dark-fg"
             >
               Preview
             </button>
