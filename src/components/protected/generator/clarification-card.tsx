@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  ArrowRight,
-  Loader2,
-} from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 import type { ClarificationAnswer } from "@/components/protected/generator/api";
 import { ClarificationPayload } from "@/types/agent";
@@ -31,7 +28,7 @@ export default function ClarificationCard({
   const questionCount = payload.questions.length;
   const activeQuestion =
     payload.questions[Math.min(step, Math.max(questionCount - 1, 0))];
-  const selected = activeQuestion ? answers[activeQuestion.id] ?? "" : "";
+  const selected = activeQuestion ? (answers[activeQuestion.id] ?? "") : "";
   const canGoNext = step < questionCount - 1;
   const canMoveNext = Boolean(selected.trim());
 
@@ -42,19 +39,19 @@ export default function ClarificationCard({
     }));
   }
 
-  function skipQuestion(questionId: string) {
-    setAnswers((current) => {
-      const next = { ...current };
-      delete next[questionId];
-      return next;
-    });
-  }
+  // function skipQuestion(questionId: string) {
+  //   setAnswers((current) => {
+  //     const next = { ...current };
+  //     delete next[questionId];
+  //     return next;
+  //   });
+  // }
 
-  function handleSubmit() {
+  function handleSubmit(source: Record<string, string> = answers) {
     const nextAnswers = payload.questions
       .map((question) => ({
         id: question.id,
-        answer: answers[question.id]?.trim() ?? "",
+        answer: source[question.id]?.trim() ?? "",
       }))
       .filter((answer) => answer.answer.length > 0);
 
@@ -62,12 +59,16 @@ export default function ClarificationCard({
   }
 
   function handleSkip() {
-    if (activeQuestion) skipQuestion(activeQuestion.id);
+    // if (activeQuestion) skipQuestion(activeQuestion.id);
+    // if (canGoNext) {
+    const next = { ...answers };
+    if (activeQuestion) delete next[activeQuestion.id];
+    setAnswers(next);
     if (canGoNext) {
       setStep((value) => Math.min(value + 1, questionCount - 1));
       return;
     }
-    handleSubmit();
+    handleSubmit(next);
   }
 
   function handleNext() {
