@@ -1,9 +1,4 @@
-import type {
-  AgentGenerateResult,
-  AgentMessage,
-  AgentPersona,
-  PublishLinks,
-} from "@/lib/personas";
+import type { AgentGenerateResult, AgentPersona, AgentMessage, PublishLinks } from "@/types/agent";
 
 export interface ClarificationAnswer {
   id: string;

@@ -2,56 +2,36 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  AlertCircle,
-  CheckCircle2,
-  FileText,
-  Loader2,
-  Sparkles,
-} from "lucide-react";
 
 import AgentChatInput from "@/components/protected/generator/AgentChatInput";
 import AgentPreviewPanel from "@/components/protected/generator/AgentPreviewPanel";
-import ClarificationCard from "@/components/protected/generator/ClarificationCard";
 import {
   fetchAgent,
   fetchAgentMessages,
   generateAgent,
   publishAgent,
-  readRememberedSession,
   submitClarification,
+  readRememberedSession,
   type ClarificationAnswer,
 } from "@/components/protected/generator/api";
 import {
   PREVIEW_STATUSES,
   STREAM_DONE_STATUSES,
-  friendlyFileLabel,
-  isClarificationPayload,
   normalizeClarificationPayload,
   normalizeFileEvent,
   normalizeSkills,
-  type AgentFileContent,
-  type AgentMessage,
-  type AgentPersona,
-  type AgentSkill,
-  type ClarificationPayload,
 } from "@/lib/personas";
-
-type ChatItem =
-  | { id: string; type: "user"; text: string }
-  | { id: string; type: "assistant"; text: string }
-  | { id: string; type: "status"; text: string }
-  | { id: string; type: "file"; file: AgentFileContent }
-  | { id: string; type: "skills"; skills: AgentSkill[] }
-  | {
-      id: string;
-      type: "clarification";
-      payload: ClarificationPayload;
-      readOnly: boolean;
-      answers?: ClarificationAnswer[];
-    }
-  | { id: string; type: "done"; text: string }
-  | { id: string; type: "error"; text: string };
+import { ChatItemView } from "./chat-view-item";
+import type { AgentFileContent, AgentMessage, AgentPersona, AgentSkill, ChatItem, ClarificationPayload } from "@/types/agent";
+import { LoadingMessage, ErrorMessage } from "./message-primitives";
+import { StatusBadge } from "./status-badge";
+import {
+  messagesToChatItems,
+  mergeFiles,
+  statusCopy,
+  parseEventData,
+  withoutStatus,
+} from "./utils";
 
 interface AgentWorkspaceProps {
   agentId: string;
@@ -107,7 +87,9 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
       try {
         const [nextPersona, messageResult] = await Promise.all([
           fetchAgent(agentId),
-          fetchAgentMessages(agentId).catch(() => ({ data: [] as AgentMessage[] })),
+          fetchAgentMessages(agentId).catch(() => ({
+            data: [] as AgentMessage[],
+          })),
         ]);
 
         if (cancelled) return;
@@ -130,7 +112,9 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
         setItems(chatItems);
       } catch (err) {
         if (!cancelled) {
-          setLoadError(err instanceof Error ? err.message : "Could not load agent");
+          setLoadError(
+            err instanceof Error ? err.message : "Could not load agent",
+          );
         }
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -159,6 +143,20 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!persona?.name || !agentId) return;
+
+    const bc =
+      typeof BroadcastChannel !== "undefined"
+        ? new BroadcastChannel("agent-sessions")
+        : null;
+
+    if (bc) {
+      bc.postMessage({ type: "update-name", agentId, name: persona.name });
+      bc.close();
+    }
+  }, [persona?.name, agentId]);
+
   const refreshPersona = useCallback(async () => {
     const nextPersona = await fetchAgent(agentId);
     setPersona(nextPersona);
@@ -182,7 +180,14 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
   );
 
   useEffect(() => {
-    if (isLoading || loadError || !persona || isTerminal || activeClarificationId) return;
+    if (
+      isLoading ||
+      loadError ||
+      !persona ||
+      isTerminal ||
+      activeClarificationId
+    )
+      return;
 
     const source = new EventSource(`/api/personas/${agentId}/stream`);
     let closed = false;
@@ -200,11 +205,15 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
       if (!file.key) return;
 
       setFiles((current) => mergeFiles(current, [file]));
-      upsertItem({
-        id: `file-${file.key}`,
-        type: "file",
-        file,
-      });
+      upsertItem({ id: `file-${file.key}`, type: "file", file });
+      setTimeout(() => {
+        upsertItem({
+          id: `file-${file.key}`,
+          type: "file",
+          file,
+          completed: true,
+        });
+      }, 800);
     });
 
     source.addEventListener("skills", (event) => {
@@ -212,6 +221,14 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
       const nextSkills = normalizeSkills(data);
       setSkills(nextSkills);
       upsertItem({ id: "skills", type: "skills", skills: nextSkills });
+      setTimeout(() => {
+        upsertItem({
+          id: "skills",
+          type: "skills",
+          skills: nextSkills,
+          completed: true,
+        });
+      }, 800);
     });
 
     source.addEventListener("clarification", (event) => {
@@ -269,7 +286,9 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
       source.close();
       reconnectAttemptsRef.current = 0;
       setActiveClarificationId("");
-      setPersona((current) => (current ? { ...current, status: "failed" } : current));
+      setPersona((current) =>
+        current ? { ...current, status: "failed" } : current,
+      );
       setItems((current) => [
         ...withoutStatus(current),
         { id: `error-${Date.now()}`, type: "error", text: message },
@@ -295,7 +314,9 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
         return;
       }
       reconnectAttemptsRef.current = 0;
-      setPersona((current) => (current ? { ...current, status: "failed" } : current));
+      setPersona((current) =>
+        current ? { ...current, status: "failed" } : current,
+      );
       setItems((current) => [
         ...withoutStatus(current),
         {
@@ -353,7 +374,9 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
         ),
       );
       setActiveClarificationId("");
-      setPersona((current) => (current ? { ...current, status: "generating" } : current));
+      setPersona((current) =>
+        current ? { ...current, status: "generating" } : current,
+      );
       setStreamRun((value) => value + 1);
     } catch (err) {
       setItems((current) => [
@@ -361,7 +384,10 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
         {
           id: `error-${Date.now()}`,
           type: "error",
-          text: err instanceof Error ? err.message : "Could not submit clarification.",
+          text:
+            err instanceof Error
+              ? err.message
+              : "Could not submit clarification.",
         },
       ]);
     } finally {
@@ -380,7 +406,10 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
         {
           id: `error-${Date.now()}`,
           type: "error",
-          text: err instanceof Error ? err.message : "Could not start a fresh agent.",
+          text:
+            err instanceof Error
+              ? err.message
+              : "Could not start a fresh agent.",
         },
       ]);
       setIsStartingFresh(false);
@@ -408,15 +437,20 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
           : current,
       );
     } catch (err) {
-      setPublishError(err instanceof Error ? err.message : "Could not publish agent.");
+      setPublishError(
+        err instanceof Error ? err.message : "Could not publish agent.",
+      );
     } finally {
       setIsPublishing(false);
     }
   }
 
   const title = persona?.name || "Agent";
-  const visibleFiles = useMemo(() => mergeFiles(files, persona?.files ?? []), [files, persona?.files]);
-  const visibleSkills = skills.length > 0 ? skills : persona?.skills ?? [];
+  const visibleFiles = useMemo(
+    () => mergeFiles(files, persona?.files ?? []),
+    [files, persona?.files],
+  );
+  const visibleSkills = skills.length > 0 ? skills : (persona?.skills ?? []);
 
   return (
     <div className="relative flex h-full min-h-0 overflow-hidden rounded-2xl border border-gray-200 bg-[#FBFBFB] shadow-sm">
@@ -427,7 +461,9 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
       >
         <header className="flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-gray-200 bg-white px-4">
           <div className="min-w-0">
-            <h1 className="truncate text-base font-semibold text-gray-950">{title}</h1>
+            <h1 className="truncate text-base font-semibold text-gray-950">
+              {title}
+            </h1>
             <p className="mt-0.5 truncate text-xs text-gray-500">
               {persona?.description || statusCopy(persona?.status)}
             </p>
@@ -446,7 +482,10 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
           </div>
         </header>
 
-        <div ref={scrollRef} className="flex-1 space-y-5 overflow-y-auto px-4 py-5">
+        <div
+          ref={scrollRef}
+          className="flex-1 space-y-5 overflow-y-auto px-4 py-5"
+        >
           {isLoading ? (
             <LoadingMessage text="Loading agent..." />
           ) : loadError ? (
@@ -507,230 +546,4 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
       )}
     </div>
   );
-}
-
-function ChatItemView({
-  item,
-  canPreview,
-  isClarifying,
-  onPreview,
-  onClarificationSubmit,
-}: {
-  item: ChatItem;
-  canPreview: boolean;
-  isClarifying: boolean;
-  onPreview: () => void;
-  onClarificationSubmit: (answers: ClarificationAnswer[]) => void;
-}) {
-  if (item.type === "user") {
-    return (
-      <div className="flex justify-end">
-        <div className="max-w-[85%] rounded-2xl rounded-br-md bg-gray-100 px-4 py-3 text-sm leading-6 text-gray-800">
-          {item.text}
-        </div>
-      </div>
-    );
-  }
-
-  if (item.type === "assistant") {
-    return <AssistantText text={item.text} />;
-  }
-
-  if (item.type === "status") {
-    return <LoadingMessage text={item.text} />;
-  }
-
-  if (item.type === "error") {
-    return <ErrorMessage text={item.text} />;
-  }
-
-  if (item.type === "file") {
-    return (
-      <div className="mr-auto max-w-2xl rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900">
-          <FileText size={16} className="text-[#0C5D56]" />
-          Generating {friendlyFileLabel(item.file.key)} file
-        </div>
-        <p className="line-clamp-3 text-sm leading-6 text-gray-500">
-          {excerpt(item.file.content)}
-        </p>
-      </div>
-    );
-  }
-
-  if (item.type === "skills") {
-    return (
-      <div className="mr-auto max-w-2xl rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-900">
-          <Sparkles size={16} className="text-[#0C5D56]" />
-          Matching skills
-        </div>
-        {item.skills.length > 0 ? (
-          <div className="space-y-2">
-            {item.skills.map((skill) => (
-              <div key={skill.slug || skill.name}>
-                <p className="text-sm font-medium text-gray-900">{skill.name}</p>
-                {skill.description && (
-                  <p className="text-xs leading-5 text-gray-500">{skill.description}</p>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-500">Matching agent skills...</p>
-        )}
-      </div>
-    );
-  }
-
-  if (item.type === "clarification") {
-    return (
-      <ClarificationCard
-        payload={item.payload}
-        readOnly={item.readOnly}
-        // answers={item.answers}
-        isSubmitting={isClarifying}
-        onSubmit={onClarificationSubmit}
-      />
-    );
-  }
-
-  return (
-    <div className="mr-auto max-w-2xl rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="text-sm text-gray-800">{item.text}</p>
-      {canPreview && (
-        <button
-          onClick={onPreview}
-          className="mt-3 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-        >
-          Preview
-        </button>
-      )}
-    </div>
-  );
-}
-
-function AssistantText({ text }: { text: string }) {
-  return (
-    <div className="mr-auto max-w-2xl text-sm italic leading-6 text-gray-600">
-      {text}
-    </div>
-  );
-}
-
-function LoadingMessage({ text }: { text: string }) {
-  return (
-    <div className="mr-auto flex max-w-2xl items-center gap-2 text-sm italic text-gray-600">
-      <span className="flex size-6 items-center justify-center rounded-full bg-[#0C5D56]/10">
-        <Loader2 size={14} className="animate-spin text-[#0C5D56]" />
-      </span>
-      {text}
-    </div>
-  );
-}
-
-function ErrorMessage({ text }: { text: string }) {
-  return (
-    <div className="mr-auto flex max-w-2xl items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-      <AlertCircle size={16} className="mt-0.5 shrink-0" />
-      <span>{text}</span>
-    </div>
-  );
-}
-
-function StatusBadge({ status }: { status?: string }) {
-  const label = status || "loading";
-  const generated = label === "generated" || label === "published";
-  const failed = label === "failed";
-
-  return (
-    <span
-      className={`hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium sm:inline-flex ${
-        generated
-          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-          : failed
-            ? "border-red-200 bg-red-50 text-red-700"
-            : "border-gray-200 bg-gray-50 text-gray-600"
-      }`}
-    >
-      {generated && <CheckCircle2 size={13} />}
-      {label.replace(/_/g, " ")}
-    </span>
-  );
-}
-
-function messagesToChatItems(messages: AgentMessage[]): ChatItem[] {
-  return messages.map((message): ChatItem => {
-    if (message.role === "user") {
-      return { id: message.id, type: "user", text: message.content };
-    }
-
-    if (message.parsedContent && isClarificationPayload(message.parsedContent)) {
-      const payload = normalizeClarificationPayload(message.parsedContent);
-      return {
-        id: message.id,
-        type: "clarification",
-        payload: {
-          ...payload,
-          round: payload.round || message.roundNumber,
-        },
-        readOnly: true,
-        answers: [],
-      };
-    }
-
-    return {
-      id: message.id,
-      type: "assistant",
-      text: message.content,
-    };
-  });
-}
-
-function mergeFiles(
-  current: AgentFileContent[],
-  incoming: AgentFileContent[],
-): AgentFileContent[] {
-  const next = new Map<string, AgentFileContent>();
-  current.forEach((file) => next.set(file.key, file));
-  incoming.forEach((file) => next.set(file.key, file));
-  return Array.from(next.values());
-}
-
-function withoutStatus(items: ChatItem[]) {
-  return items.filter((item) => item.type !== "status");
-}
-
-function parseEventData(event: Event) {
-  const message = event as MessageEvent<string>;
-  try {
-    return JSON.parse(message.data) as unknown;
-  } catch {
-    return {};
-  }
-}
-
-function statusCopy(status?: string) {
-  switch (status) {
-    case "needs_clarification":
-      return "Waiting for clarification...";
-    case "skills_matching":
-      return "Matching agent skills...";
-    case "generated":
-      return "Agent generated.";
-    case "published":
-      return "Agent published.";
-    case "failed":
-      return "Generation failed.";
-    case "draft":
-    case "generating":
-    default:
-      return "Generating agent...";
-  }
-}
-
-function excerpt(content: string) {
-  const compact = content.replace(/\s+/g, " ").trim();
-  if (compact.length <= 180) return compact;
-  return `${compact.slice(0, 180)}...`;
 }

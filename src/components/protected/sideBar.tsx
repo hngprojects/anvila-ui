@@ -5,8 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { Logo, Github } from "@/components/icons";
 import { rememberSession } from "@/components/protected/generator/api";
 import UserMenu from "@/components/protected/UserMenu";
-import type { AgentSession } from "@/lib/personas";
-
 import {
   CirclePlus,
   // Search,
@@ -18,8 +16,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
-
- 
+import type { AgentSession } from "@/types/agent";
 
 const NAV_ITEMS = [
   { icon: CirclePlus, label: "Create Agent", path: "/generator" },
@@ -70,6 +67,45 @@ function RecentSection() {
   const [deletingId, setDeletingId] = useState("");
   const pathname = usePathname();
   const router = useRouter();
+  const [typing, setTyping] = useState<{
+    agentId: string;
+    display: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (typeof BroadcastChannel === "undefined") return;
+    const bc = new BroadcastChannel("agent-sessions");
+    let interval: ReturnType<typeof setInterval> | null = null;
+
+    bc.onmessage = (event) => {
+      const { type, agentId, name } = event.data ?? {};
+      if (type !== "update-name" || !agentId || !name) return;
+      if (interval) clearInterval(interval);
+      let i = 0;
+      setTyping({ agentId, display: "" });
+
+      interval = setInterval(() => {
+        i++;
+        const display = name.slice(0, i);
+        setTyping({ agentId, display });
+
+        if (i >= name.length) {
+          if (interval) clearInterval(interval);
+          setSessions((prev) =>
+            prev.map((s) =>
+              s.agentId === agentId ? { ...s, personaName: name } : s,
+            ),
+          );
+          setTyping(null);
+        }
+      }, 40);
+    };
+
+    return () => {
+      if (interval) clearInterval(interval);
+      bc.close();
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,7 +114,9 @@ function RecentSection() {
       setIsLoading(true);
 
       try {
-        const res = await fetch("/api/chat/sessions?size=5", { cache: "no-store" });
+        const res = await fetch("/api/chat/sessions?size=5", {
+          cache: "no-store",
+        });
         const json = await res.json();
 
         if (!cancelled && res.ok) {
@@ -151,6 +189,10 @@ function RecentSection() {
         !isLoading &&
         sessions.map((session) => {
           const isActive = pathname === `/generator/${session.agentId}`;
+          const displayName =
+            typing?.agentId === session.agentId
+              ? typing.display
+              : session.personaName || "Untitled agent";
 
           return (
             <div
@@ -169,7 +211,10 @@ function RecentSection() {
                     isActive ? "font-medium text-[#1a6b5a]" : "text-gray-600"
                   }`}
                 >
-                  {session.personaName || "Untitled agent"}
+                  {displayName}
+                  {typing?.agentId === session.agentId && (
+                    <span className="animate-pulse">|</span>
+                  )}
                 </span>
                 <button
                   type="button"
@@ -184,11 +229,6 @@ function RecentSection() {
                   <Trash2 size={13} />
                 </button>
               </div>
-              {session.lastMessagePreview && (
-                <p className="mt-0.5 truncate text-xs text-gray-400">
-                  {session.lastMessagePreview}
-                </p>
-              )}
             </div>
           );
         })}
@@ -319,7 +359,9 @@ function isNavActive(pathname: string, path: string) {
   if (path !== "/generator") return false;
 
   const reservedRoutes = new Set(
-    NAV_ITEMS.filter((item) => item.path !== "/generator").map((item) => item.path),
+    NAV_ITEMS.filter((item) => item.path !== "/generator").map(
+      (item) => item.path,
+    ),
   );
 
   return pathname.startsWith("/generator/") && !reservedRoutes.has(pathname);
