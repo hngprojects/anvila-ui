@@ -11,7 +11,6 @@ import { ClarificationPayload } from "@/types/agent";
 
 interface ClarificationCardProps {
   payload: ClarificationPayload;
-  readOnly?: boolean;
   answers?: ClarificationAnswer[];
   isSubmitting?: boolean;
   onSubmit?: (answers: ClarificationAnswer[]) => void;

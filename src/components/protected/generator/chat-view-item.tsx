@@ -113,7 +113,6 @@ export function ChatItemView({
         />
         <ClarificationCard
           payload={item.payload}
-          readOnly={item.readOnly}
           answers={item.answers}
           isSubmitting={isClarifying}
           onSubmit={onClarificationSubmit}
