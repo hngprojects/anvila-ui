@@ -28,9 +28,27 @@ export default function UserMenu({ collapsed = false }: { collapsed?: boolean })
           onClick={() => setOpen((value) => !value)}
           title={name}
           aria-label="User menu"
-          className="w-8 h-8 rounded-full bg-[#1a6b5a] flex items-center justify-center shrink-0"
+          className="flex items-center justify-center shrink-0"
+          style={{
+            borderRadius: 24,
+            background: "#0C5D56",
+            width: 24,
+            height: 24,
+            padding: "4px 3px",
+          }}
         >
-          <span className="text-white text-[11px] font-semibold">{initials}</span>
+          <span
+            style={{
+              color: "#FFF",
+              fontFamily: "Inter, sans-serif",
+              fontSize: 12,
+              fontWeight: 400,
+              lineHeight: "normal",
+              textAlign: "center",
+            }}
+          >
+            {initials}
+          </span>
         </button>
 
         {open && (

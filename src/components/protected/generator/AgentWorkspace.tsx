@@ -6,6 +6,11 @@ import { useRouter } from "next/navigation";
 import AgentChatInput from "@/components/protected/generator/AgentChatInput";
 import AgentPreviewPanel from "@/components/protected/generator/AgentPreviewPanel";
 import {
+  PublishingSpinnerIcon,
+  PublishedSuccessIcon,
+  PublishFailedIcon,
+} from "@/components/icons";
+import {
   fetchAgent,
   fetchAgentMessages,
   generateAgent,
@@ -54,6 +59,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState("");
+  const [publishSuccess, setPublishSuccess] = useState(false);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const [streamReconnectNonce, setStreamReconnectNonce] = useState(0);
@@ -421,6 +427,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
 
     setIsPublishing(true);
     setPublishError("");
+    setPublishSuccess(false);
 
     try {
       const result = await publishAgent(agentId);
@@ -436,6 +443,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
             }
           : current,
       );
+      setPublishSuccess(true);
     } catch (err) {
       setPublishError(
         err instanceof Error ? err.message : "Could not publish agent.",
@@ -455,36 +463,13 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
   return (
     <div className="relative flex h-full min-h-0 overflow-hidden rounded-2xl border border-gray-200 bg-[#FBFBFB] shadow-sm">
       <section
-        className={`flex min-h-0 flex-col transition-[width] ${
-          previewOpen ? "w-full md:w-[340px] xl:w-[380px]" : "w-full"
-        }`}
+        className="flex min-h-0 flex-col"
+        style={previewOpen ? { width: 457, minWidth: 457, flexShrink: 0 } : { flex: 1, minWidth: 0 }}
       >
-        <header className="flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-gray-200 bg-white px-4">
-          <div className="min-w-0">
-            <h1 className="truncate text-base font-semibold text-gray-950">
-              {title}
-            </h1>
-            <p className="mt-0.5 truncate text-xs text-gray-500">
-              {persona?.description || statusCopy(persona?.status)}
-            </p>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-2">
-            <StatusBadge status={persona?.status} />
-            {canPreview && (
-              <button
-                onClick={() => setPreviewOpen(true)}
-                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Preview
-              </button>
-            )}
-          </div>
-        </header>
-
         <div
           ref={scrollRef}
-          className="flex-1 space-y-5 overflow-y-auto px-4 py-5"
+          className="flex flex-1 flex-col items-start gap-[18px] overflow-y-auto self-stretch"
+          style={{ padding: "9px 17px" }}
         >
           {isLoading ? (
             <LoadingMessage text="Loading agent..." />
@@ -543,6 +528,135 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
             />
           </div>
         </>
+      )}
+
+      {(isPublishing || publishSuccess || publishError) && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/90">
+          <div
+            className="flex flex-col items-center gap-6"
+            style={{ padding: "70px 100px" }}
+          >
+            {isPublishing && (
+              <>
+                <PublishingSpinnerIcon />
+                <h2
+                  style={{
+                    color: "#000",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 34,
+                    fontWeight: 700,
+                  }}
+                >
+                  Publishing Agent
+                </h2>
+                <p
+                  style={{
+                    color: "#000",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 14,
+                    fontWeight: 400,
+                  }}
+                >
+                  Wait while agent is processing, please don&apos;t close this window.
+                </p>
+                <div className="relative" style={{ width: 410, height: 10 }}>
+                  <div
+                    className="absolute inset-0 rounded-full"
+                    style={{ background: "#D1D2D1" }}
+                  />
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-full transition-all"
+                    style={{ background: "#0C5D56", width: 200 }}
+                  />
+                </div>
+              </>
+            )}
+
+            {publishSuccess && !isPublishing && (
+              <>
+                <PublishedSuccessIcon />
+                <h2
+                  style={{
+                    color: "#000",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 34,
+                    fontWeight: 700,
+                  }}
+                >
+                  Agent Published
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPublishSuccess(false);
+                    router.push("/generator/my-agents");
+                  }}
+                  className="flex items-center justify-center gap-2 self-stretch"
+                  style={{
+                    height: 40,
+                    padding: "12px 20px",
+                    borderRadius: 8,
+                    border: "0.5px solid #9E9F9E",
+                    background: "#0C5D56",
+                    color: "#F6F7F7",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 14,
+                    fontWeight: 400,
+                  }}
+                >
+                  Manage Agents
+                </button>
+              </>
+            )}
+
+            {publishError && !isPublishing && (
+              <>
+                <PublishFailedIcon />
+                <h2
+                  style={{
+                    color: "#000",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 34,
+                    fontWeight: 700,
+                  }}
+                >
+                  Publish Agent Failed
+                </h2>
+                <p
+                  style={{
+                    color: "#0C0E0D",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 14,
+                    fontWeight: 400,
+                  }}
+                >
+                  We couldn&apos;t generate agent. Please try again.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPublishError("");
+                    handlePublish();
+                  }}
+                  className="flex items-center justify-center gap-2 self-stretch"
+                  style={{
+                    height: 40,
+                    padding: "12px 20px",
+                    borderRadius: 8,
+                    border: "0.5px solid #9E9F9E",
+                    background: "#0C5D56",
+                    color: "#F6F7F7",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 14,
+                    fontWeight: 500,
+                  }}
+                >
+                  Retry
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import { CheckCircle2, Loader2 } from "lucide-react";
 
+import { ForgedAgentDocIcon, ChatCopyIcon } from "@/components/icons";
 import { type ClarificationAnswer } from "@/components/protected/generator/api";
 import {
   CLARIFICATION_FALLBACK_MESSAGE,
@@ -30,9 +31,26 @@ export function ChatItemView({
 }) {
   if (item.type === "user") {
     return (
-      <div className="flex justify-end">
-        <div className="max-w-[85%] rounded-2xl rounded-br-md bg-gray-100 px-4 py-3 text-sm leading-6 text-gray-800">
-          {item.text}
+      <div className="flex w-full justify-end gap-5">
+        <div
+          className="flex items-center justify-center gap-5"
+          style={{
+            borderRadius: 16,
+            background: "#F4F4F5",
+            width: 360,
+            minHeight: 62,
+            padding: 10,
+          }}
+        >
+          <span className="flex-1 text-sm leading-6 text-gray-800">{item.text}</span>
+          <button
+            type="button"
+            onClick={() => navigator.clipboard.writeText(item.text)}
+            className="shrink-0"
+            aria-label="Copy message"
+          >
+            <ChatCopyIcon />
+          </button>
         </div>
       </div>
     );
@@ -133,16 +151,51 @@ export function ChatItemView({
   }
 
   return (
-    <div className="mr-auto max-w-2xl rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="text-sm text-gray-800">{item.text}</p>
-      {canPreview && (
-        <button
-          onClick={onPreview}
-          className="mt-3 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-        >
-          Preview
-        </button>
-      )}
+    <div
+      className="flex w-full items-center justify-center self-stretch"
+      style={{
+        padding: "14px 1.25px 13px 0.75px",
+        borderRadius: 15,
+        border: "2.5px solid #B1B5B4",
+        background: "rgba(182, 184, 189, 0.20)",
+        boxShadow: "0 25px 50px -12px rgba(142, 81, 255, 0.10)",
+      }}
+    >
+      <div className="flex items-center gap-4 px-4">
+        <ForgedAgentDocIcon />
+        <div className="flex flex-col gap-1">
+          <p
+            style={{
+              color: "#050605",
+              fontFamily: "Inter, sans-serif",
+              fontSize: 12,
+              fontWeight: 600,
+            }}
+          >
+            {item.text}
+          </p>
+          {canPreview && (
+            <button
+              type="button"
+              onClick={onPreview}
+              className="flex items-center justify-center"
+              style={{
+                height: 40,
+                borderRadius: 16,
+                border: "1px solid #E4E4E7",
+                background: "#fff",
+                color: "#050605",
+                fontFamily: "Inter, sans-serif",
+                fontSize: 14,
+                fontWeight: 700,
+                padding: "0 16px",
+              }}
+            >
+              Preview
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

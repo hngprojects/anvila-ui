@@ -2,28 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Logo, Github } from "@/components/icons";
+import {
+  Logo,
+  SidebarPanelIcon,
+  NavPlusIcon,
+  NavExploreIcon,
+  NavMyAgentsIcon,
+  NavGithubCatIcon,
+  Github,
+} from "@/components/icons";
 import { rememberSession } from "@/components/protected/generator/api";
 import UserMenu from "@/components/protected/UserMenu";
-import {
-  CirclePlus,
-  // Search,
-  Globe,
-  Bot,
-  ChevronDown,
-  Trash2,
-  X,
-  PanelLeftClose,
-  PanelLeftOpen,
-} from "lucide-react";
+import { ChevronDown, Trash2, X } from "lucide-react";
 import type { AgentSession } from "@/types/agent";
 
 const NAV_ITEMS = [
-  { icon: CirclePlus, label: "Create Agent", path: "/generator" },
-  // { icon: Search, label: "Search", path: "/agents/search" },
-  { icon: Globe, label: "Explore", path: "/generator/explore" },
-  { icon: Bot, label: "My Agents", path: "/generator/my-agents" },
-  { icon: Github, label: "GitHub", path: "/generator/github" },
+  { icon: NavPlusIcon, label: "Create Agent", path: "/generator" },
+  { icon: NavExploreIcon, label: "Explore", path: "/generator/explore" },
+  { icon: NavMyAgentsIcon, label: "My Agents", path: "/generator/my-agents" },
+  { icon: NavGithubCatIcon, label: "GitHub", path: "/generator/github" },
 ];
 
 function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
@@ -31,7 +28,7 @@ function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
   const router = useRouter();
 
   return (
-    <nav className="px-3 space-y-1">
+    <nav className="flex flex-col items-start gap-1 self-stretch px-0">
       {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
         const isActive = isNavActive(pathname, path);
         return (
@@ -41,13 +38,14 @@ function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
               router.push(path);
               if (onNavigate) onNavigate();
             }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
+            aria-label={label}
+            className={`flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
               isActive
-                ? "bg-[#1a6b5a] text-white"
+                ? "bg-[#0C5D56] text-white"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            <Icon size={15} />
+            <Icon />
             {label}
           </button>
         );
@@ -56,10 +54,6 @@ function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* RECENT ITEMS                                */
-/* -------------------------------------------------------------------------- */
-
 function RecentSection() {
   const [recentOpen, setRecentOpen] = useState(true);
   const [sessions, setSessions] = useState<AgentSession[]>([]);
@@ -67,10 +61,7 @@ function RecentSection() {
   const [deletingId, setDeletingId] = useState("");
   const pathname = usePathname();
   const router = useRouter();
-  const [typing, setTyping] = useState<{
-    agentId: string;
-    display: string;
-  } | null>(null);
+  const [typing, setTyping] = useState<{ agentId: string; display: string } | null>(null);
 
   useEffect(() => {
     if (typeof BroadcastChannel === "undefined") return;
@@ -92,9 +83,7 @@ function RecentSection() {
         if (i >= name.length) {
           if (interval) clearInterval(interval);
           setSessions((prev) =>
-            prev.map((s) =>
-              s.agentId === agentId ? { ...s, personaName: name } : s,
-            ),
+            prev.map((s) => (s.agentId === agentId ? { ...s, personaName: name } : s)),
           );
           setTyping(null);
         }
@@ -112,13 +101,9 @@ function RecentSection() {
 
     async function loadSessions() {
       setIsLoading(true);
-
       try {
-        const res = await fetch("/api/chat/sessions?size=5", {
-          cache: "no-store",
-        });
+        const res = await fetch("/api/chat/sessions?size=5", { cache: "no-store" });
         const json = await res.json();
-
         if (!cancelled && res.ok) {
           setSessions(Array.isArray(json.data) ? json.data : []);
         }
@@ -130,10 +115,7 @@ function RecentSection() {
     }
 
     loadSessions();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [pathname]);
 
   async function handleDeleteSession(session: AgentSession) {
@@ -143,10 +125,7 @@ function RecentSection() {
     setDeletingId(session.sessionId);
 
     try {
-      const res = await fetch(`/api/chat/sessions/${session.sessionId}`, {
-        method: "DELETE",
-      });
-
+      const res = await fetch(`/api/chat/sessions/${session.sessionId}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Could not delete session");
 
       setSessions((current) =>
@@ -171,9 +150,7 @@ function RecentSection() {
         Recent
         <ChevronDown
           size={13}
-          className={`ml-auto transition-transform ${
-            recentOpen ? "" : "-rotate-90"
-          }`}
+          className={`ml-auto transition-transform ${recentOpen ? "" : "-rotate-90"}`}
         />
       </button>
 
@@ -202,13 +179,13 @@ function RecentSection() {
                 router.push(`/generator/${session.agentId}`);
               }}
               className={`group w-full cursor-pointer rounded-lg px-3 py-2 text-left transition ${
-                isActive ? "bg-[#1a6b5a]/10" : "hover:bg-gray-100"
+                isActive ? "bg-[#0C5D56]/10" : "hover:bg-gray-100"
               }`}
             >
               <div className="flex items-center justify-between gap-2">
                 <span
                   className={`truncate text-sm ${
-                    isActive ? "font-medium text-[#1a6b5a]" : "text-gray-600"
+                    isActive ? "font-medium text-[#0C5D56]" : "text-gray-600"
                   }`}
                 >
                   {displayName}
@@ -236,76 +213,81 @@ function RecentSection() {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* COLLAPSED SIDEBAR                             */
-/* -------------------------------------------------------------------------- */
-
 function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
 
   return (
-    <aside className="hidden md:flex flex-col items-center w-[56px] min-w-[56px] shrink-0 rounded-2xl bg-white border border-gray-200 shadow-sm py-4 gap-2">
+    <aside
+      className="hidden md:flex flex-col items-start w-[72px] min-w-[72px] shrink-0 rounded-3xl bg-[#FBFBFB] border border-[#E7E8EA] py-4 px-4 gap-2"
+      style={{ borderRadius: 24 }}
+    >
       <button
         onClick={onExpand}
-        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100"
+        className="flex items-center justify-center mb-1"
+        aria-label="Expand sidebar"
       >
-        <PanelLeftOpen size={15} />
+        <SidebarPanelIcon />
       </button>
 
-      <div className="w-full flex flex-col items-center gap-1">
+      <div className="flex flex-col items-start gap-1 self-stretch">
         {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
           const isActive = isNavActive(pathname, path);
           return (
             <button
               key={label}
               title={label}
+              aria-label={label}
               onClick={() => router.push(path)}
-              className={`w-8 h-8 flex items-center justify-center rounded-lg ${
+              className={`flex shrink-0 items-center justify-center transition ${
                 isActive
-                  ? "bg-[#1a6b5a] text-white"
-                  : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+                  ? "self-stretch rounded-lg bg-[#0C5D56] h-12 px-[10px] gap-[10px]"
+                  : "w-10 h-10 rounded-lg hover:bg-gray-100 text-[#27272A]"
               }`}
             >
-              <Icon size={15} />
+              <Icon />
             </button>
           );
         })}
       </div>
 
       <div className="flex-1" />
-      <UserMenu collapsed />
+
+      <div
+        className="flex h-20 w-full flex-col items-start justify-between self-stretch border-t border-[#E4E4E7] px-[10px] pt-[10px] pb-[10px]"
+      >
+        <UserMenu collapsed />
+      </div>
     </aside>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* EXPANDED SIDEBAR                             */
-/* -------------------------------------------------------------------------- */
-
 function ExpandedSidebar({ onCollapse }: { onCollapse: () => void }) {
   return (
-    <aside className="hidden md:flex flex-col w-[224px] min-w-[224px] shrink-0 rounded-2xl bg-[#FBFBFB] border border-gray-200 shadow-sm overflow-hidden">
+    <aside
+      className="hidden md:flex flex-col w-[224px] min-w-[224px] shrink-0 bg-[#FBFBFB] border border-[#E7E8EA] overflow-hidden"
+      style={{ borderRadius: 24 }}
+    >
       <div className="flex items-center justify-between px-4 pt-5 pb-4">
         <Logo />
         <button
           onClick={onCollapse}
-          className="text-gray-400 hover:text-gray-600"
+          className="text-[#A1A1AA] hover:text-gray-600"
+          aria-label="Collapse sidebar"
         >
-          <PanelLeftClose size={15} />
+          <SidebarPanelIcon />
         </button>
       </div>
 
       <NavigationItems />
       <RecentSection />
-      <UserMenu />
+
+      <div className="flex h-20 flex-col items-start justify-between self-stretch border-t border-[#E4E4E7] px-[10px] pt-[10px] pb-[10px]">
+        <UserMenu />
+      </div>
     </aside>
   );
 }
-
-/* -------------------------------------------------------------------------- */
-/* MOBILE DRAWER                              */
-/* -------------------------------------------------------------------------- */
 
 function MobileDrawer({ onClose }: { onClose: () => void }) {
   return (
@@ -315,7 +297,7 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
       <div className="relative w-64 h-full bg-white shadow-xl flex flex-col">
         <div className="flex items-center justify-between px-4 pt-5 pb-4">
           <Logo />
-          <button onClick={onClose}>
+          <button onClick={onClose} aria-label="Close menu">
             <X size={18} />
           </button>
         </div>
@@ -328,10 +310,6 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* SIDEBAR                                  */
-/* -------------------------------------------------------------------------- */
-
 export default function Sidebar({
   mobileOpen,
   onMobileClose,
@@ -339,7 +317,7 @@ export default function Sidebar({
   mobileOpen: boolean;
   onMobileClose: () => void;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   return (
     <>
@@ -359,9 +337,7 @@ function isNavActive(pathname: string, path: string) {
   if (path !== "/generator") return false;
 
   const reservedRoutes = new Set(
-    NAV_ITEMS.filter((item) => item.path !== "/generator").map(
-      (item) => item.path,
-    ),
+    NAV_ITEMS.filter((item) => item.path !== "/generator").map((item) => item.path),
   );
 
   return pathname.startsWith("/generator/") && !reservedRoutes.has(pathname);

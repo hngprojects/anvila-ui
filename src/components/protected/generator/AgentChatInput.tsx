@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
-import { ArrowUp, FileText, Loader2, Paperclip, X } from "lucide-react";
+import React, { useRef, useState } from "react";
+import { FileText, Loader2, X } from "lucide-react";
+import { InputPlusIcon, InputArrowUpIcon } from "@/components/icons";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = [".txt", ".md", ".pdf", ".docx"];
@@ -16,7 +17,7 @@ interface AgentChatInputProps {
 export default function AgentChatInput({
   disabled,
   isLoading,
-  placeholder = "Start a fresh agent...",
+  placeholder = "Describe your agent...",
   onSubmit,
 }: AgentChatInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -26,7 +27,7 @@ export default function AgentChatInput({
 
   const canSubmit = prompt.trim().length > 0 && !disabled && !isLoading;
 
-  async function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = prompt.trim();
     if (!trimmed || disabled || isLoading) return;
@@ -62,60 +63,90 @@ export default function AgentChatInput({
   }
 
   return (
-    <div className="shrink-0 border-t border-gray-100 bg-[#FBFBFB] px-3 py-2.5">
-      <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
-        {file && (
-          <div className="mb-2 flex w-fit max-w-full items-center gap-2 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs text-gray-700">
-            <FileText size={14} className="shrink-0 text-[#0C5D56]" />
-            <span className="truncate">{file.name}</span>
-            <button
-              type="button"
-              onClick={() => setFile(null)}
-              className="flex size-5 items-center justify-center rounded text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-              aria-label="Remove file"
-            >
-              <X size={13} />
-            </button>
-          </div>
-        )}
+    <div className="shrink-0 px-[17px] pb-4 pt-2">
+      {file && (
+        <div className="mb-2 flex w-fit max-w-full items-center gap-2 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs text-gray-700">
+          <FileText size={14} className="shrink-0 text-[#0C5D56]" />
+          <span className="truncate">{file.name}</span>
+          <button
+            type="button"
+            onClick={() => setFile(null)}
+            className="flex size-5 items-center justify-center rounded text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+            aria-label="Remove file"
+          >
+            <X size={13} />
+          </button>
+        </div>
+      )}
 
-        <div className="flex min-h-12 items-center gap-1.5 rounded-full border border-gray-300 bg-white px-2.5 py-1.5 shadow-sm focus-within:border-[#0C5D56]">
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="hidden"
-            accept=".txt,.md,.pdf,.docx,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            onChange={(event) => {
-              handleFileSelect(event.target.files?.[0] ?? null);
-              event.target.value = "";
-            }}
-          />
+      <form onSubmit={handleSubmit}>
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="hidden"
+          accept=".txt,.md,.pdf,.docx,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          onChange={(event) => {
+            handleFileSelect(event.target.files?.[0] ?? null);
+            event.target.value = "";
+          }}
+        />
 
+        <div
+          className="flex items-center gap-[10px]"
+          style={{
+            borderRadius: 24,
+            border: "1px solid #A1A1AA",
+            background: "rgba(255, 255, 255, 0.10)",
+            boxShadow: "0 6px 18px -2px rgba(0, 0, 0, 0.10)",
+            padding: "16px 24px",
+          }}
+        >
           <button
             type="button"
             disabled={disabled || isLoading}
             onClick={() => fileInputRef.current?.click()}
-            className="flex size-8 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
-            title="Attach file"
+            className="flex shrink-0 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label="Attach file"
           >
-            <Paperclip size={16} />
+            <InputPlusIcon />
           </button>
 
           <input
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                event.currentTarget.form?.requestSubmit();
+              }
+            }}
             placeholder={placeholder}
             disabled={disabled || isLoading}
-            className="min-w-0 flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
+            className="min-w-0 flex-1 bg-transparent outline-none"
+            style={{
+              color: "#9E9F9E",
+              fontFamily: "Inter, sans-serif",
+              fontSize: 20,
+              fontWeight: 500,
+            }}
           />
 
           <button
             type="submit"
             disabled={!canSubmit}
-            className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#0C5D56] text-white transition hover:bg-[#094a45] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
-            title="Send prompt"
+            className="flex shrink-0 items-center justify-center transition disabled:cursor-not-allowed"
+            aria-label="Send prompt"
+            style={{
+              borderRadius: 100,
+              background: canSubmit ? "#0C5D56" : "#C9C9C9",
+              padding: 12,
+            }}
           >
-            {isLoading ? <Loader2 size={15} className="animate-spin" /> : <ArrowUp size={15} />}
+            {isLoading ? (
+              <Loader2 size={18} className="animate-spin text-white" />
+            ) : (
+              <InputArrowUpIcon />
+            )}
           </button>
         </div>
 
