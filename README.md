@@ -13,7 +13,7 @@ Next.js 16 + React 19 + Tailwind v4 + shadcn (radix-maia). Validated env, typed 
 
 ```bash
 pnpm install
-cp .env.example .env.local   # fill in values
+cp .env.example .env.local    
 pnpm dev
 ```
 
