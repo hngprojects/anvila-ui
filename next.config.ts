@@ -6,10 +6,11 @@ const nextConfig: NextConfig = {
     authInterrupts: true,
   },
   async rewrites() {
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.staging.anvila.hng14.com';
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
+        destination: `${backendUrl}/api/:path*`,
       },
     ];
   },
