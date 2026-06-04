@@ -38,6 +38,7 @@
   --color-folder-fg: #18181B;
   --color-card-outline: #E7E7E7;
   --color-btn-fg: #F6F7F7;
+  --color-chat-input-border: #A1A1AA;
 }
 @layer base {
   ::selection {

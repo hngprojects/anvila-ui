@@ -78,7 +78,7 @@ export default function AgentChatInput({
           onChange={(e) => { handleFileSelect(e.target.files?.[0] ?? null); e.target.value = ""; }}
         />
 
-        <div className="flex items-center gap-[10px] rounded-3xl border border-[#A1A1AA] bg-white/10 px-6 py-4 shadow-[0_6px_18px_-2px_rgba(0,0,0,0.10)]">
+        <div className="flex items-center gap-[10px] rounded-3xl border border-chat-input-border bg-white/10 px-6 py-4 shadow-[0_6px_18px_-2px_rgba(0,0,0,0.10)]">
           <button
             type="button"
             disabled={disabled || isLoading}

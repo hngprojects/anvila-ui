@@ -62,7 +62,7 @@ export default function UserMenu({ collapsed = false }: { collapsed?: boolean })
         onClick={() => setOpen((value) => !value)}
         className="flex w-full items-center gap-3 px-4 py-4 border-t border-gray-100 text-left"
       >
-        <div className="w-8 h-8 rounded-full bg-[#1a6b5a] flex items-center justify-center shrink-0">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-teal-brand">
           <span className="text-white text-[11px] font-semibold">{initials}</span>
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
