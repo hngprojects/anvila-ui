@@ -422,6 +422,15 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     }
   }
 
+  async function handleRefreshPreview() {
+    try {
+      const nextPersona = await fetchAgent(agentId);
+      setPersona(nextPersona);
+    } catch {
+      // silently ignore — stale data stays visible
+    }
+  }
+
   async function handlePublish() {
     if (!persona || persona.status === "published") return;
 
@@ -509,6 +518,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
               isPublishing={isPublishing}
               publishError={publishError}
               onClose={() => setPreviewOpen(false)}
+              onRefresh={handleRefreshPreview}
               onPublish={handlePublish}
             />
           </div>
@@ -520,6 +530,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
               isPublishing={isPublishing}
               publishError={publishError}
               onClose={() => setPreviewOpen(false)}
+              onRefresh={handleRefreshPreview}
               onPublish={handlePublish}
             />
           </div>
@@ -527,7 +538,12 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
       )}
 
       {(isPublishing || publishSuccess || publishError) && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/90">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={isPublishing ? "Publishing Agent" : publishSuccess ? "Agent Published" : "Publish Agent Failed"}
+          className="absolute inset-0 z-50 flex items-center justify-center bg-white/90"
+        >
           <div className="flex flex-col items-center gap-6 px-[100px] py-[70px]">
             {isPublishing && (
               <>

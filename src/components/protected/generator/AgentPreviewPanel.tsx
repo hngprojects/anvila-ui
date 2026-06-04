@@ -22,6 +22,7 @@ interface AgentPreviewPanelProps {
   isPublishing: boolean;
   publishError: string;
   onClose: () => void;
+  onRefresh?: () => void;
   onPublish: () => Promise<void>;
   onSaveAsPrivate?: () => void;
 }
@@ -33,6 +34,7 @@ export default function AgentPreviewPanel({
   isPublishing,
   publishError,
   onClose,
+  onRefresh,
   onPublish,
   onSaveAsPrivate,
 }: AgentPreviewPanelProps) {
@@ -71,7 +73,7 @@ export default function AgentPreviewPanel({
       <TopNav
         isPublished={isPublished}
         isPublishing={isPublishing}
-        onRefresh={onClose}
+        onRefresh={onRefresh}
         onSaveAsPrivate={onSaveAsPrivate}
         onPublish={onPublish}
       />
@@ -133,13 +135,13 @@ function TopNav({
 }: {
   isPublished: boolean;
   isPublishing: boolean;
-  onRefresh: () => void;
+  onRefresh?: () => void;
   onSaveAsPrivate?: () => void;
   onPublish: () => Promise<void>;
 }) {
   return (
     <nav className="flex shrink-0 items-center justify-end gap-[10px] px-7 py-3">
-      <button type="button" onClick={onRefresh} className="flex items-center justify-center" aria-label="Refresh">
+      <button type="button" onClick={onRefresh} disabled={!onRefresh} className="flex items-center justify-center disabled:opacity-40" aria-label="Refresh">
         <PreviewRefreshIcon />
       </button>
 
@@ -252,7 +254,9 @@ function FileBrowserCard({
 
       <div className="min-h-[120px] self-stretch rounded-[14px] border border-card-outline px-2 pb-6 pt-0">
         {showSkillsFolder
-          ? <MarkdownPreview content={skillContent} />
+          ? skills.length === 0
+            ? <p className="p-4 text-xs text-gray-400">No skills matched yet.</p>
+            : <MarkdownPreview content={skillContent} />
           : activeFile
             ? <MarkdownPreview content={activeFile.content} />
             : <p className="p-4 text-xs text-gray-400">No preview available yet.</p>}
