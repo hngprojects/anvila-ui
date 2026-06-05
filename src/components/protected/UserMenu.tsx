@@ -34,7 +34,7 @@ export default function UserMenu({ collapsed = false }: { collapsed?: boolean })
         </button>
 
         {open && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-xl border border-gray-200 bg-white p-3 shadow-lg">
+          <div className="absolute bottom-full mb-2 w-56 rounded-xl border border-gray-200 bg-white p-3 shadow-lg">
             <div className="border-b border-gray-100 pb-3">
               <p className="text-sm font-semibold text-gray-900">{name}</p>
               <p className="mt-1 truncate text-xs text-gray-500">{email}</p>
