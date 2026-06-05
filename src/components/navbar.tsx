@@ -49,7 +49,6 @@ function AuthButtons({
   onNavigate?: () => void;
 }) {
   const { user, isLoading } = useAuth();
-
   const baseLink =
     "inline-flex items-center justify-center rounded-lg font-medium text-base transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
 
@@ -81,7 +80,12 @@ function AuthButtons({
 
   if (user) {
     return (
-      <Link href="/generator" className={primaryLink} onClick={onNavigate} aria-label="Open generator">
+      <Link
+        href="/generator"
+        className={primaryLink}
+        onClick={onNavigate}
+        aria-label="Open generator"
+      >
         Open Generator
       </Link>
     );

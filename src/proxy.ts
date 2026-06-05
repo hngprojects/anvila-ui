@@ -20,7 +20,7 @@ const PUBLIC_PATHS = new Set([
   '/privacy_policy',
   '/terms',
   '/explore',
-  '/generator',
+  // '/generator',
   '/404',
   '/coming-soon',
 ])
