@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 import {
   FolderBreadcrumbIcon,
@@ -54,9 +54,13 @@ export default function AgentPreviewPanel({
   );
 
   const isPublished = persona?.status === "published";
-  const hasPublishLinks = Boolean(persona?.githubRepoUrl || persona?.githubCloneUrl || persona?.githubZipUrl);
+  const hasPublishLinks = Boolean(
+    persona?.githubRepoUrl || persona?.githubCloneUrl || persona?.githubZipUrl,
+  );
   const agentName = persona?.name ?? "Agent";
-  const skillContent = activeSkill ? `# ${activeSkill.name}\n\n${activeSkill.description ?? ""}` : "";
+  const skillContent = activeSkill
+    ? `# ${activeSkill.name}\n\n${activeSkill.description ?? ""}`
+    : "";
 
   function handleRootFolderClick() {
     setShowSkillsFolder(false);
@@ -76,9 +80,12 @@ export default function AgentPreviewPanel({
         onRefresh={onRefresh}
         onSaveAsPrivate={onSaveAsPrivate}
         onPublish={onPublish}
+        onClose={onClose}
+        hasPublishLinks={hasPublishLinks}
+        onViewLinks={() => setShowLinks(true)}
       />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 pb-6">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 pb-6 scrollbar-thin-custom">
         {publishError && <ErrorBanner message={publishError} />}
 
         <AgentHeader name={agentName} description={persona?.description} />
@@ -108,7 +115,7 @@ export default function AgentPreviewPanel({
             onClick={() => setShowLinks(true)}
             className="self-start text-xs text-teal-brand underline"
           >
-            View GitHub links
+            Links
           </button>
         )}
       </div>
@@ -125,23 +132,45 @@ export default function AgentPreviewPanel({
     </section>
   );
 }
-
 function TopNav({
   isPublished,
   isPublishing,
   onRefresh,
   onSaveAsPrivate,
   onPublish,
+  onClose,
+  hasPublishLinks,
+  onViewLinks,
 }: {
   isPublished: boolean;
   isPublishing: boolean;
   onRefresh?: () => void;
   onSaveAsPrivate?: () => void;
   onPublish: () => Promise<void>;
+  onClose?: () => void;
+  hasPublishLinks: boolean;
+  onViewLinks: () => void;
 }) {
   return (
     <nav className="flex shrink-0 items-center justify-end gap-[10px] px-7 py-3">
-      <button type="button" onClick={onRefresh} disabled={!onRefresh} className="flex items-center justify-center disabled:opacity-40" aria-label="Refresh">
+      {onClose && (
+        <button
+          type="button"
+          onClick={onClose}
+          className="mr-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          aria-label="Close preview"
+        >
+          <X size={18} />
+        </button>
+      )}
+
+      <button
+        type="button"
+        onClick={onRefresh}
+        disabled={!onRefresh}
+        className="flex items-center justify-center disabled:opacity-40"
+        aria-label="Refresh"
+      >
         <PreviewRefreshIcon />
       </button>
 
@@ -154,16 +183,33 @@ function TopNav({
         Save as Private
       </button>
 
-      <button
-        type="button"
-        onClick={isPublished ? undefined : onPublish}
-        disabled={isPublished || isPublishing}
-        className="flex items-center gap-2 rounded-lg border-[0.5px] border-teal-brand bg-teal-brand px-5 py-3 font-sans text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-70"
-      >
-        {isPublishing ? (
-          <><Loader2 size={14} className="animate-spin" />Publishing</>
-        ) : isPublished ? "Published" : "Publish"}
-      </button>
+      {isPublished ? (
+        hasPublishLinks && (
+          <button
+            type="button"
+            onClick={onViewLinks}
+            className="flex h-10 items-center justify-center rounded-lg border border-[#9E9F9E] px-4 font-sans text-sm font-bold text-dark-fg hover:bg-gray-50 transition"
+          >
+            Links
+          </button>
+        )
+      ) : (
+        <button
+          type="button"
+          onClick={onPublish}
+          disabled={isPublishing}
+          className="flex items-center gap-2 rounded-lg border-[0.5px] border-teal-brand bg-teal-brand px-5 py-3 font-sans text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {isPublishing ? (
+            <>
+              <Loader2 size={14} className="animate-spin" />
+              Publishing
+            </>
+          ) : (
+            "Publish"
+          )}
+        </button>
+      )}
     </nav>
   );
 }
@@ -176,7 +222,13 @@ function ErrorBanner({ message }: { message: string }) {
   );
 }
 
-function AgentHeader({ name, description }: { name: string; description?: string }) {
+function AgentHeader({
+  name,
+  description,
+}: {
+  name: string;
+  description?: string;
+}) {
   return (
     <div>
       <h1 className="truncate font-sans text-lg font-semibold leading-7 text-dark-fg">
@@ -217,18 +269,38 @@ function FileBrowserCard({
   return (
     <div className="flex flex-col gap-2 self-stretch rounded-lg border border-border-subtle px-4 pb-0 pt-2">
       <div className="flex items-center gap-3 py-1">
-        <button type="button" onClick={onRootClick} className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={onRootClick}
+          className="flex items-center gap-1"
+        >
           <FolderBreadcrumbIcon />
-          <span className="font-sans text-xs font-semibold leading-4 text-folder-fg">{agentName}</span>
-          {showSkillsFolder ? <BreadcrumbChevronRight /> : <BreadcrumbChevronDown />}
+          <span className="font-sans text-xs font-semibold leading-4 text-folder-fg">
+            {agentName}
+          </span>
+          {showSkillsFolder ? (
+            <BreadcrumbChevronRight />
+          ) : (
+            <BreadcrumbChevronDown />
+          )}
         </button>
 
         <span className="text-border-subtle">|</span>
 
-        <button type="button" onClick={onSkillsClick} className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={onSkillsClick}
+          className="flex items-center gap-1"
+        >
           <SkillsFolderIcon />
-          <span className="font-sans text-xs font-normal leading-4 text-folder-fg">Skills</span>
-          {showSkillsFolder ? <BreadcrumbChevronDown /> : <BreadcrumbChevronRight />}
+          <span className="font-sans text-xs font-normal leading-4 text-folder-fg">
+            Skills
+          </span>
+          {showSkillsFolder ? (
+            <BreadcrumbChevronDown />
+          ) : (
+            <BreadcrumbChevronRight />
+          )}
         </button>
       </div>
 
@@ -253,19 +325,31 @@ function FileBrowserCard({
       </div>
 
       <div className="min-h-[120px] self-stretch rounded-[14px] border border-card-outline px-2 pb-6 pt-0">
-        {showSkillsFolder
-          ? skills.length === 0
-            ? <p className="p-4 text-xs text-gray-400">No skills matched yet.</p>
-            : <MarkdownPreview content={skillContent} />
-          : activeFile
-            ? <MarkdownPreview content={activeFile.content} />
-            : <p className="p-4 text-xs text-gray-400">No preview available yet.</p>}
+        {showSkillsFolder ? (
+          skills.length === 0 ? (
+            <p className="p-4 text-xs text-gray-400">No skills matched yet.</p>
+          ) : (
+            <MarkdownPreview content={skillContent} />
+          )
+        ) : activeFile ? (
+          <MarkdownPreview content={activeFile.content} />
+        ) : (
+          <p className="p-4 text-xs text-gray-400">No preview available yet.</p>
+        )}
       </div>
     </div>
   );
 }
 
-function FileTab({ label, isActive, onClick }: { label: string; isActive: boolean; onClick: () => void }) {
+function FileTab({
+  label,
+  isActive,
+  onClick,
+}: {
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
@@ -282,15 +366,33 @@ function FileTab({ label, isActive, onClick }: { label: string; isActive: boolea
   );
 }
 
-function ManifestCard({ persona, fileCount }: { persona: AgentPersona | null; fileCount: number }) {
+function ManifestCard({
+  persona,
+  fileCount,
+}: {
+  persona: AgentPersona | null;
+  fileCount: number;
+}) {
   return (
     <div className="flex h-52 w-[292px] shrink-0 flex-col gap-3 rounded-xl border border-card-outline bg-white p-4">
       <p className="font-sans text-xs font-medium text-label-dark">Manifest</p>
       <dl className="flex flex-col gap-2">
-        <ManifestRow label="Name" value={persona?.manifest?.name ?? persona?.name ?? "Untitled"} />
-        <ManifestRow label="Version" value={persona?.manifest?.version ?? "0.1.0"} />
-        <ManifestRow label="Model" value={persona?.manifest?.model ?? "gemini-3-flash"} />
-        <ManifestRow label="License" value={persona?.manifest?.license ?? "MIT"} />
+        <ManifestRow
+          label="Name"
+          value={persona?.manifest?.name ?? persona?.name ?? "Untitled"}
+        />
+        <ManifestRow
+          label="Version"
+          value={persona?.manifest?.version ?? "0.1.0"}
+        />
+        <ManifestRow
+          label="Model"
+          value={persona?.manifest?.model ?? "gemini-3-flash"}
+        />
+        <ManifestRow
+          label="License"
+          value={persona?.manifest?.license ?? "MIT"}
+        />
         <ManifestRow label="Files" value={String(fileCount)} />
       </dl>
     </div>
@@ -300,8 +402,12 @@ function ManifestCard({ persona, fileCount }: { persona: AgentPersona | null; fi
 function ManifestRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <dt className="font-sans text-xs font-medium leading-4 text-label-dark">{label}</dt>
-      <dd className="truncate font-sans text-xs font-medium leading-4 text-label-mid">{value}</dd>
+      <dt className="font-sans text-xs font-medium leading-4 text-label-dark">
+        {label}
+      </dt>
+      <dd className="truncate font-sans text-xs font-medium leading-4 text-label-mid">
+        {value}
+      </dd>
     </div>
   );
 }
@@ -309,7 +415,9 @@ function ManifestRow({ label, value }: { label: string; value: string }) {
 function SkillsCard({ skills }: { skills: AgentSkill[] }) {
   return (
     <div className="flex flex-1 flex-col gap-[10px] self-stretch rounded-xl border border-card-outline bg-white p-4">
-      <p className="font-sans text-xs font-medium text-label-dark">Skills & Capabilities</p>
+      <p className="font-sans text-xs font-medium text-label-dark">
+        Skills & Capabilities
+      </p>
       <div className="flex flex-wrap gap-2">
         {skills.length > 0 ? (
           skills.map((skill) => (

@@ -49,7 +49,9 @@ export default function AgentDirectory({ mode, framed }: AgentDirectoryProps) {
         setResult(json.data);
       } catch (err) {
         if (!controller.signal.aborted) {
-          setError(err instanceof Error ? err.message : "Could not load agents");
+          setError(
+            err instanceof Error ? err.message : "Could not load agents",
+          );
         }
       } finally {
         if (!controller.signal.aborted) setIsLoading(false);
@@ -75,12 +77,36 @@ export default function AgentDirectory({ mode, framed }: AgentDirectoryProps) {
           : "min-h-screen bg-white"
       }
     >
-      <section className={framed ? "shrink-0 border-b border-gray-200 bg-white px-5 py-5" : "bg-white px-6 py-14 md:py-20"}>
-        <div className={framed ? "mx-auto max-w-6xl" : "mx-auto max-w-5xl text-center"}>
-          <h1 className={framed ? "text-2xl font-semibold text-gray-950" : "text-4xl font-semibold text-logo md:text-5xl"}>
-            {mode === "search" ? "Search Published Agents" : "Explore Published Agents"}
+      <section
+        className={
+          framed
+            ? "shrink-0 border-b border-gray-200 bg-white px-5 py-5"
+            : "bg-white px-6 py-14 md:py-20"
+        }
+      >
+        <div
+          className={
+            framed ? "mx-auto max-w-6xl" : "mx-auto max-w-5xl text-center"
+          }
+        >
+          <h1
+            className={
+              framed
+                ? "text-2xl font-semibold text-gray-950"
+                : "text-4xl font-semibold text-logo md:text-5xl"
+            }
+          >
+            {mode === "search"
+              ? "Search Published Agents"
+              : "Explore Published Agents"}
           </h1>
-          <p className={framed ? "mt-2 max-w-2xl text-sm text-gray-500" : "mx-auto mt-4 max-w-2xl text-sm leading-6 text-copy-muted"}>
+          <p
+            className={
+              framed
+                ? "mt-2 max-w-2xl text-sm text-gray-500"
+                : "mx-auto mt-4 max-w-2xl text-sm leading-6 text-copy-muted"
+            }
+          >
             {mode === "search"
               ? "Find public personas by name, skill, category, or description."
               : "Browse public agent packages, inspect their skills, and open their GitHub repositories."}
@@ -88,7 +114,11 @@ export default function AgentDirectory({ mode, framed }: AgentDirectoryProps) {
 
           <form
             onSubmit={handleSearch}
-            className={framed ? "mt-5 flex max-w-2xl gap-2" : "mx-auto mt-8 flex max-w-2xl gap-2"}
+            className={
+              framed
+                ? "mt-5 flex max-w-2xl gap-2"
+                : "mx-auto mt-8 flex max-w-2xl gap-2"
+            }
           >
             <div className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-lg border border-gray-300 bg-white px-3">
               <Search size={17} className="shrink-0 text-gray-400" />
@@ -106,7 +136,13 @@ export default function AgentDirectory({ mode, framed }: AgentDirectoryProps) {
         </div>
       </section>
 
-      <section className={framed ? "min-h-0 flex-1 overflow-y-auto px-5 py-5" : "bg-background px-6 py-12"}>
+      <section
+        className={
+          framed
+            ? "min-h-0 flex-1 overflow-y-auto px-5 py-5"
+            : "bg-background px-6 py-12"
+        }
+      >
         <div className="mx-auto max-w-6xl">
           {mode === "explore" && categories.length > 0 && (
             <div className="mb-6 flex gap-2 overflow-x-auto border-b border-gray-200 pb-2">
@@ -141,7 +177,10 @@ export default function AgentDirectory({ mode, framed }: AgentDirectoryProps) {
           {isLoading ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="h-64 animate-pulse rounded-xl border border-gray-200 bg-white" />
+                <div
+                  key={index}
+                  className="h-64 animate-pulse rounded-xl border border-gray-200 bg-white"
+                />
               ))}
             </div>
           ) : result?.personas.length ? (
@@ -161,8 +200,12 @@ export default function AgentDirectory({ mode, framed }: AgentDirectoryProps) {
             </>
           ) : (
             <div className="rounded-xl border border-gray-200 bg-white px-6 py-12 text-center">
-              <p className="text-sm font-medium text-gray-900">No agents found</p>
-              <p className="mt-1 text-sm text-gray-500">Try a different search or category.</p>
+              <p className="text-sm font-medium text-gray-900">
+                No agents found
+              </p>
+              <p className="mt-1 text-sm text-gray-500">
+                Try a different search or category.
+              </p>
             </div>
           )}
         </div>
@@ -207,7 +250,9 @@ function ExploreAgentCard({ persona }: { persona: ExplorePersona }) {
 
         <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4">
           <span className="text-xs text-gray-400">
-            {persona.publishedAt ? new Date(persona.publishedAt).toLocaleDateString() : "Published"}
+            {persona.publishedAt
+              ? new Date(persona.publishedAt).toLocaleDateString()
+              : "Published"}
           </span>
           {persona.githubRepoUrl ? (
             <a
@@ -219,7 +264,10 @@ function ExploreAgentCard({ persona }: { persona: ExplorePersona }) {
               View
             </a>
           ) : (
-            <button disabled className="rounded-lg bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-500">
+            <button
+              disabled
+              className="rounded-lg bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-500"
+            >
               View
             </button>
           )}

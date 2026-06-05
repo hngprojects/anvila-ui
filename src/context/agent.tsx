@@ -130,7 +130,6 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
             githubRepoUrl: String(item.github_repo_url ?? ""),
             publishedAt: String(item.published_at ?? ""),
             clone: 0,
-            owners: [],
             created: item.created_at
               ? new Date(String(item.created_at)).toLocaleDateString("en-US", {
                   month: "short",
@@ -200,13 +199,6 @@ export function AgentProvider({ children }: { children: React.ReactNode }) {
           day: "numeric",
         }),
         clone: 0,
-        owners: [
-          {
-            initials: "ME",
-            username: "@current_user",
-            color: "bg-blue-100 text-blue-700",
-          },
-        ],
       };
       setAgents((prev) => [newAgent, ...prev]);
     } catch (err) {

@@ -27,7 +27,14 @@ import {
   normalizeSkills,
 } from "@/lib/personas";
 import { ChatItemView } from "./chat-view-item";
-import type { AgentFileContent, AgentMessage, AgentPersona, AgentSkill, ChatItem, ClarificationPayload } from "@/types/agent";
+import type {
+  AgentFileContent,
+  AgentMessage,
+  AgentPersona,
+  AgentSkill,
+  ChatItem,
+  ClarificationPayload,
+} from "@/types/agent";
 import { LoadingMessage, ErrorMessage } from "./message-primitives";
 import { StatusBadge } from "./status-badge";
 import {
@@ -426,9 +433,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     try {
       const nextPersona = await fetchAgent(agentId);
       setPersona(nextPersona);
-    } catch {
-      // silently ignore — stale data stays visible
-    }
+    } catch {}
   }
 
   async function handlePublish() {
@@ -471,7 +476,15 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
 
   return (
     <div className="relative flex h-full min-h-0 overflow-hidden rounded-2xl border border-gray-200 bg-[#FBFBFB] shadow-sm">
-      <section className={`flex min-h-0 flex-col ${previewOpen ? "w-[457px] min-w-[457px] shrink-0" : "min-w-0 flex-1"}`}>
+      <section
+        className={`flex min-h-0 flex-col ${previewOpen ? "md:w-[457px] md:min-w-[457px] md:shrink-0 w-full" : "min-w-0 flex-1"}`}
+      >
+        <div className="flex shrink-0 items-center border-b border-border-subtle bg-white px-5 py-[18px] h-[64px]">
+          <h1 className="font-sans text-[16px] font-semibold text-dark-fg truncate">
+            {title}
+          </h1>
+        </div>
+
         <div
           ref={scrollRef}
           className="flex flex-1 flex-col items-start gap-[18px] overflow-y-auto self-stretch px-[17px] py-[9px]"
@@ -541,16 +554,25 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label={isPublishing ? "Publishing Agent" : publishSuccess ? "Agent Published" : "Publish Agent Failed"}
+          aria-label={
+            isPublishing
+              ? "Publishing Agent"
+              : publishSuccess
+                ? "Agent Published"
+                : "Publish Agent Failed"
+          }
           className="absolute inset-0 z-50 flex items-center justify-center bg-white/90"
         >
           <div className="flex flex-col items-center gap-6 px-[100px] py-[70px]">
             {isPublishing && (
               <>
                 <PublishingSpinnerIcon />
-                <h2 className="font-sans text-[34px] font-bold text-black">Publishing Agent</h2>
+                <h2 className="font-sans text-[34px] font-bold text-black">
+                  Publishing Agent
+                </h2>
                 <p className="font-sans text-sm font-normal text-black">
-                  Wait while agent is processing, please don&apos;t close this window.
+                  Wait while agent is processing, please don&apos;t close this
+                  window.
                 </p>
                 <div className="relative h-2.5 w-[410px]">
                   <div className="absolute inset-0 rounded-full bg-progress-grey" />
@@ -562,10 +584,15 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
             {publishSuccess && !isPublishing && (
               <>
                 <PublishedSuccessIcon />
-                <h2 className="font-sans text-[34px] font-bold text-black">Agent Published</h2>
+                <h2 className="font-sans text-[34px] font-bold text-black">
+                  Agent Published
+                </h2>
                 <button
                   type="button"
-                  onClick={() => { setPublishSuccess(false); router.push("/generator/my-agents"); }}
+                  onClick={() => {
+                    setPublishSuccess(false);
+                    router.push("/generator/my-agents");
+                  }}
                   className="flex h-10 items-center justify-center gap-2 self-stretch rounded-lg border-[0.5px] border-input-placeholder bg-teal-brand px-5 py-3 font-sans text-sm font-normal text-btn-fg"
                 >
                   Manage Agents
@@ -576,13 +603,18 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
             {publishError && !isPublishing && (
               <>
                 <PublishFailedIcon />
-                <h2 className="font-sans text-[34px] font-bold text-black">Publish Agent Failed</h2>
+                <h2 className="font-sans text-[34px] font-bold text-black">
+                  Publish Agent Failed
+                </h2>
                 <p className="font-sans text-sm font-normal text-label-dark">
                   We couldn&apos;t generate agent. Please try again.
                 </p>
                 <button
                   type="button"
-                  onClick={() => { setPublishError(""); handlePublish(); }}
+                  onClick={() => {
+                    setPublishError("");
+                    handlePublish();
+                  }}
                   className="flex h-10 items-center justify-center gap-2 self-stretch rounded-lg border-[0.5px] border-input-placeholder bg-teal-brand px-5 py-3 font-sans text-sm font-medium text-btn-fg"
                 >
                   Retry

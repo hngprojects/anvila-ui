@@ -77,3 +77,11 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+.scrollbar-thin-custom::-webkit-scrollbar {
+  width: 2px;
+  height: 1px;
+}
+.scrollbar-thin-custom {
+  scrollbar-width: thin;
+}

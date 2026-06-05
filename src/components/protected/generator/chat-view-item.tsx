@@ -33,10 +33,14 @@ export function ChatItemView({
     return (
       <div className="flex w-full justify-end">
         <div className="flex min-h-[62px] w-[360px] items-center gap-5 rounded-2xl bg-user-bubble p-2.5">
-          <span className="flex-1 font-sans text-sm leading-6 text-gray-800">{item.text}</span>
+          <span className="flex-1 font-sans text-sm leading-6 text-gray-800">
+            {item.text}
+          </span>
           <button
             type="button"
-            onClick={() => navigator.clipboard?.writeText(item.text).catch(() => {})}
+            onClick={() =>
+              navigator.clipboard?.writeText(item.text).catch(() => {})
+            }
             className="shrink-0"
             aria-label="Copy message"
           >
@@ -142,16 +146,20 @@ export function ChatItemView({
   }
 
   return (
-    <div className="flex w-full items-center justify-center self-stretch rounded-[15px] border-[2.5px] border-tag-border bg-[rgba(182,184,189,0.20)] px-1 py-[14px] shadow-[0_25px_50px_-12px_rgba(142,81,255,0.10)]">
-      <div className="flex items-center gap-4 px-4">
-        <FileIcon className="size-12 shrink-0" />
-        <div className="flex flex-col gap-1">
-          <p className="font-sans text-xs font-semibold text-dark-fg">{item.text}</p>
+    <div className="flex w-full items-center justify-between rounded-[15px] border-[2.5px] border-tag-border bg-[#F4F4F5] px-1 py-[14px] shadow-[0_25px_50px_-12px_rgba(142,81,255,0.10)] max-w-[685px]">
+      <div className="flex items-center justify-between px-4 w-full">
+        <div className="flex items-center gap-2">
+          <FileIcon className="size-12 shrink-0" />
+          <p className="font-sans text-xs font-semibold text-dark-fg">
+            {item.text}
+          </p>
+        </div>
+        <div className="flex flex-row justify-end items-center">
           {canPreview && (
             <button
               type="button"
               onClick={onPreview}
-              className="flex h-10 items-center justify-center rounded-2xl border border-border-subtle bg-white px-4 font-sans text-sm font-bold text-dark-fg"
+              className="flex h-10 items-center justify-center rounded-lg border border-[0.5px] border-[#9E9F9E] px-4 font-sans text-sm font-bold text-dark-fg"
             >
               Preview
             </button>
