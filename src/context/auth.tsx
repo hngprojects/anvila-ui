@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   createContext,
@@ -7,61 +7,52 @@ import {
   useCallback,
   useEffect,
   ReactNode,
-} from 'react'
-import { useRouter } from 'next/navigation'
-import type { AuthUser } from '@/schemas/auth'
+} from "react";
+import { useRouter } from "next/navigation";
+import type { AuthUser } from "@/schemas/auth";
 
 interface AuthContextValue {
-  user: AuthUser | null
-  isLoading: boolean
-  setUser: (user: AuthUser | null) => void
-  logout: () => Promise<void>
+  user: AuthUser | null;
+  isLoading: boolean;
+  setUser: (user: AuthUser | null) => void;
+  logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextValue | null>(null)
+const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({
-  children,
-  initialUser = null,
-}: {
-  children: ReactNode
-  initialUser?: AuthUser | null
-}) {
-  const [user, setUser] = useState<AuthUser | null>(initialUser)
-  const [isLoading, setIsLoading] = useState(!initialUser)
-  const router = useRouter()
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user) return
-
-    fetch('/api/auth/me')
+    fetch("/api/auth/me")
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data?.user) setUser(data.user)
+        setUser(data?.user ?? null);
       })
       .catch(() => {})
-      .finally(() => setIsLoading(false))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+      .finally(() => setIsLoading(false));
+  }, []);
 
   const logout = useCallback(async () => {
-     setUser(null)
+    setUser(null);
     try {
-      await fetch('/api/auth/logout', { method: 'POST', keepalive: true })
+      await fetch("/api/auth/logout", { method: "POST", keepalive: true });
     } finally {
-      router.replace('/')
+      window.location.replace("/");
     }
-  }, [router])
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, isLoading, setUser, logout }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>')
-  return ctx
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
+  return ctx;
 }
+
