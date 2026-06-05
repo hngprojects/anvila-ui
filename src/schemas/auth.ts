@@ -57,12 +57,19 @@ export const AuthResponseSchema = z.object({
 });
 
 export const ForgotPasswordSchema = z.object({
-  email: z.string().regex(emailRegex),
+  email: z
+    .string()
+    .regex(emailRegex, { message: "Please enter a valid email" }),
 });
 
 export const ResetPasswordSchema = z.object({
   token: z.string(),
-  new_password: z.string().min(8),
+  new_password: z
+    .string()
+    .min(8, "At least 8 characters")
+    .regex(/[A-Z]/, "At least one uppercase letter")
+    .regex(/[0-9]/, "At least one number")
+    .regex(/[^A-Za-z0-9]/, "At least one special character"),
 });
 
 export const OttExchangeResponseSchema = AuthResponseSchema;

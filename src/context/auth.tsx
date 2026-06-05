@@ -35,12 +35,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    setUser(null);
-    try {
-      await fetch("/api/auth/logout", { method: "POST", keepalive: true });
-    } finally {
-      window.location.replace("/");
+    const response = await fetch("/api/auth/logout", {
+      method: "POST",
+      keepalive: true,
+    });
+    if (!response.ok) {
+      throw new Error("Logout failed");
     }
+    setUser(null);
+    window.location.replace("/");
   }, []);
 
   return (
@@ -55,4 +58,3 @@ export function useAuth() {
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
   return ctx;
 }
-

@@ -54,8 +54,6 @@ export default function SetNewPasswordForm() {
       );
       return;
     }
-    console.log(value.password);
-
     setIsLoading(true);
     setApiError(null);
     try {
@@ -64,7 +62,7 @@ export default function SetNewPasswordForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           token: token,
-          new_password: value.password.trim(),
+          new_password: value.password,
         }),
       });
       const data = await res.json();
@@ -80,6 +78,7 @@ export default function SetNewPasswordForm() {
       }
     } catch {
       setApiError("Network error. Please check your connection and try again.");
+      setIsLoading(false);
     }
   };
 
@@ -209,4 +208,3 @@ export default function SetNewPasswordForm() {
     </div>
   );
 }
-
