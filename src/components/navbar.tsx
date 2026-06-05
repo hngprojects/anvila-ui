@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/icons";
 import { NavLinkProps } from "@/types";
@@ -49,8 +49,6 @@ function AuthButtons({
   onNavigate?: () => void;
 }) {
   const { user, isLoading } = useAuth();
-  const router = useRouter();
-
   const baseLink =
     "inline-flex items-center justify-center rounded-lg font-medium text-base transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
 
@@ -82,11 +80,12 @@ function AuthButtons({
 
   if (user) {
     return (
-      <Link href="/generator" className={primaryLink}  onClick={() => {
-          if (!user) return        
-          onNavigate?.()
-          router.push('/generator')
-        }} aria-label="Open generator">
+      <Link
+        href="/generator"
+        className={primaryLink}
+        onClick={onNavigate}
+        aria-label="Open generator"
+      >
         Open Generator
       </Link>
     );
