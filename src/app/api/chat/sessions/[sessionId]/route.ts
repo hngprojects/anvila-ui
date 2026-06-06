@@ -13,7 +13,7 @@ export async function DELETE(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   const { sessionId } = await params;
-  const result = await authFetch(req, `/api/v1/chat/session/${sessionId}`, {
+  const result = await authFetch(req, `/api/v1/chat/sessions/${sessionId}`, {
     method: "DELETE",
   });
 
