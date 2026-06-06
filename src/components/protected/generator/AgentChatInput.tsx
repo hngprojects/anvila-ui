@@ -9,6 +9,7 @@ const ALLOWED_EXTENSIONS = [".txt", ".md", ".pdf", ".docx"];
 
 interface AgentChatInputProps {
   disabled?: boolean;
+  disableFileAttachment?: boolean;
   isLoading?: boolean;
   placeholder?: string;
   onSubmit: (prompt: string, file: File | null) => Promise<void> | void;
@@ -16,6 +17,7 @@ interface AgentChatInputProps {
 
 export default function AgentChatInput({
   disabled,
+  disableFileAttachment = false,
   isLoading,
   placeholder = "Describe your agent...",
   onSubmit,
@@ -26,19 +28,27 @@ export default function AgentChatInput({
   const [error, setError] = useState("");
 
   const canSubmit = prompt.trim().length > 0 && !disabled && !isLoading;
+  const fileControlsDisabled = disabled || disableFileAttachment || isLoading;
+  const visibleFile = disableFileAttachment ? null : file;
+  const visibleError = disableFileAttachment ? "" : error;
 
   async function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = prompt.trim();
     if (!trimmed || disabled || isLoading) return;
     setError("");
-    await onSubmit(trimmed, file);
+    await onSubmit(trimmed, disableFileAttachment ? null : file);
     setPrompt("");
     setFile(null);
   }
 
   function handleFileSelect(nextFile: File | null) {
     setError("");
+    if (disableFileAttachment) {
+      setFile(null);
+      return;
+    }
+
     if (!nextFile) {
       setFile(null);
       return;
@@ -61,11 +71,11 @@ export default function AgentChatInput({
         onSubmit={handleSubmit}
         className="rounded-[28px] border border-gray-200 bg-white p-3 shadow-sm"
       >
-        {file && (
+        {visibleFile && (
           <div className="mb-3 flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm">
             <div className="flex min-w-0 items-center gap-2 text-gray-700">
               <FileText size={16} className="shrink-0 text-[#0C5D56]" />
-              <span className="truncate">{file.name}</span>
+              <span className="truncate">{visibleFile.name}</span>
             </div>
             <button
               type="button"
@@ -95,9 +105,13 @@ export default function AgentChatInput({
             variant="ghost"
             size="icon"
             onClick={() => fileInputRef.current?.click()}
-            disabled={disabled || isLoading}
+            disabled={fileControlsDisabled}
             className="shrink-0 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
-            title="Attach file"
+            title={
+              disableFileAttachment
+                ? "Files are not supported while refining"
+                : "Attach file"
+            }
           >
             <Paperclip size={18} />
           </Button>
@@ -133,7 +147,9 @@ export default function AgentChatInput({
         </div>
       </form>
 
-      {error && <p className="mt-2 font-sans text-xs text-red-600">{error}</p>}
+      {visibleError && (
+        <p className="mt-2 font-sans text-xs text-red-600">{visibleError}</p>
+      )}
     </div>
   );
 }

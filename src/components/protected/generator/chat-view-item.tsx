@@ -1,6 +1,6 @@
 import { CheckCircle2, Loader2 } from "lucide-react";
 
-import { FileIcon, ChatCopyIcon } from "@/components/icons";
+import { FileIcon } from "@/components/icons";
 import { type ClarificationAnswer } from "@/components/protected/generator/api";
 import {
   CLARIFICATION_FALLBACK_MESSAGE,

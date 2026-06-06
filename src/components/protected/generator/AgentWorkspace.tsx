@@ -15,13 +15,16 @@ import {
   fetchAgentMessages,
   generateAgent,
   publishAgent,
+  refineAgent,
   submitClarification,
   readRememberedSession,
   type ClarificationAnswer,
+  type RefineStreamEvent,
 } from "@/components/protected/generator/api";
 import {
   PREVIEW_STATUSES,
   STREAM_DONE_STATUSES,
+  friendlyFileName,
   normalizeClarificationPayload,
   normalizeFileEvent,
   normalizeSkills,
@@ -36,7 +39,6 @@ import type {
   ClarificationPayload,
 } from "@/types/agent";
 import { LoadingMessage, ErrorMessage } from "./message-primitives";
-import { StatusBadge } from "./status-badge";
 import {
   messagesToChatItems,
   mergeFiles,
@@ -47,6 +49,33 @@ import {
 
 interface AgentWorkspaceProps {
   agentId: string;
+}
+
+const STREAM_STATUS_ID = "stream-status";
+
+function refineStatusCopy(event: RefineStreamEvent) {
+  const state = typeof event.state === "string" ? event.state : "";
+
+  switch (state) {
+    case "regenerating":
+      return "Regenerating agent...";
+    default:
+      return state ? `${state.replace(/_/g, " ")}...` : "Refining agent...";
+  }
+}
+
+function refineErrorCopy(event: RefineStreamEvent) {
+  const message = event.message;
+  const detail = event.detail;
+
+  if (typeof message === "string") return message;
+  if (typeof detail === "string") return detail;
+  if (detail && typeof detail === "object" && "message" in detail) {
+    const detailMessage = (detail as Record<string, unknown>).message;
+    if (typeof detailMessage === "string") return detailMessage;
+  }
+
+  return "Refinement failed. Please try again.";
 }
 
 export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
@@ -60,6 +89,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [isStartingFresh, setIsStartingFresh] = useState(false);
+  const [isRefining, setIsRefining] = useState(false);
   const [isClarifying, setIsClarifying] = useState(false);
   const [activeClarificationId, setActiveClarificationId] = useState("");
   const [streamRun, setStreamRun] = useState(0);
@@ -73,9 +103,13 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
 
   const canPreview = PREVIEW_STATUSES.has(persona?.status ?? "");
   const isTerminal = STREAM_DONE_STATUSES.has(persona?.status ?? "");
+  const canRefine = PREVIEW_STATUSES.has(persona?.status ?? "");
   const isInputDisabled = !isTerminal || Boolean(activeClarificationId);
-  const inputPlaceholder = isTerminal
-    ? "Start a fresh agent..."
+  const isPromptSubmitting = isStartingFresh || isRefining;
+  const inputPlaceholder = canRefine
+    ? "Ask for changes to this agent..."
+    : isTerminal
+      ? "Start a fresh agent..."
     : activeClarificationId
       ? "Answer the clarification questions to continue"
       : "Generation in progress...";
@@ -178,6 +212,34 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     return nextPersona;
   }, [agentId]);
 
+  const refreshConversation = useCallback(async () => {
+    const [nextPersona, messageResult] = await Promise.all([
+      fetchAgent(agentId),
+      fetchAgentMessages(agentId).catch(() => ({
+        data: [] as AgentMessage[],
+      })),
+    ]);
+
+    setPersona(nextPersona);
+    setFiles((current) => mergeFiles(current, nextPersona.files));
+    setSkills(nextPersona.skills);
+
+    const chatItems = messagesToChatItems(messageResult.data);
+    if (PREVIEW_STATUSES.has(nextPersona.status)) {
+      chatItems.push({
+        id: `done-${agentId}`,
+        type: "done",
+        text:
+          nextPersona.status === "published"
+            ? `${nextPersona.name || "Agent"} is published and ready to preview.`
+            : `Done. Successfully created ${nextPersona.name || "agent"}.`,
+      });
+    }
+    setItems(chatItems);
+
+    return nextPersona;
+  }, [agentId]);
+
   const upsertItem = useCallback((nextItem: ChatItem) => {
     setItems((current) => {
       const withoutExisting = current.filter((item) => item.id !== nextItem.id);
@@ -190,6 +252,81 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
       upsertItem({ id, type: "status", text });
     },
     [upsertItem],
+  );
+
+  const appendAssistantChunk = useCallback((id: string, text: string) => {
+    if (!text) return;
+
+    setItems((current) => {
+      const index = current.findIndex((item) => item.id === id);
+      if (index === -1) {
+        const statusIndex = current.findIndex(
+          (item) => item.id === STREAM_STATUS_ID,
+        );
+        if (statusIndex === -1) {
+          return [...current, { id, type: "assistant", text }];
+        }
+
+        return [
+          ...current.slice(0, statusIndex),
+          { id, type: "assistant", text },
+          ...current.slice(statusIndex),
+        ];
+      }
+
+      const next = [...current];
+      const item = next[index];
+      if (item.type === "assistant") {
+        next[index] = { ...item, text: `${item.text}${text}` };
+      }
+      return next;
+    });
+  }, []);
+
+  const handleRefineStreamEvent = useCallback(
+    (event: RefineStreamEvent, assistantId: string) => {
+      switch (event.type) {
+        case "status":
+          upsertStatus(STREAM_STATUS_ID, refineStatusCopy(event));
+          return;
+        case "token":
+          appendAssistantChunk(
+            assistantId,
+            typeof event.text === "string" ? event.text : "",
+          );
+          return;
+        case "file": {
+          const file = normalizeFileEvent(event);
+          if (!file.key) return;
+
+          setFiles((current) => mergeFiles(current, [file]));
+          upsertStatus(
+            STREAM_STATUS_ID,
+            `Generating ${friendlyFileName(file.key)}...`,
+          );
+          return;
+        }
+        case "skills": {
+          const nextSkills = normalizeSkills(event);
+          setSkills(nextSkills);
+          upsertStatus(STREAM_STATUS_ID, "Matching skills...");
+          return;
+        }
+        case "error":
+          setItems((current) => [
+            ...withoutStatus(current),
+            { id: `error-${Date.now()}`, type: "error", text: refineErrorCopy(event) },
+          ]);
+          return;
+        case "done":
+        case "complete":
+          setItems((current) => withoutStatus(current));
+          return;
+        default:
+          return;
+      }
+    },
+    [appendAssistantChunk, upsertStatus],
   );
 
   useEffect(() => {
@@ -205,11 +342,11 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     const source = new EventSource(`/api/personas/${agentId}/stream`);
     let closed = false;
 
-    upsertStatus("stream-status", statusCopy(persona.status));
+    upsertStatus(STREAM_STATUS_ID, statusCopy(persona.status));
 
     source.addEventListener("start", () => {
       reconnectAttemptsRef.current = 0;
-      upsertStatus("stream-status", "Starting generation...");
+      upsertStatus(STREAM_STATUS_ID, "Starting generation...");
     });
 
     source.addEventListener("file", (event) => {
@@ -218,30 +355,17 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
       if (!file.key) return;
 
       setFiles((current) => mergeFiles(current, [file]));
-      upsertItem({ id: `file-${file.key}`, type: "file", file });
-      setTimeout(() => {
-        upsertItem({
-          id: `file-${file.key}`,
-          type: "file",
-          file,
-          completed: true,
-        });
-      }, 800);
+      upsertStatus(
+        STREAM_STATUS_ID,
+        `Generating ${friendlyFileName(file.key)}...`,
+      );
     });
 
     source.addEventListener("skills", (event) => {
       const data = parseEventData(event);
       const nextSkills = normalizeSkills(data);
       setSkills(nextSkills);
-      upsertItem({ id: "skills", type: "skills", skills: nextSkills });
-      setTimeout(() => {
-        upsertItem({
-          id: "skills",
-          type: "skills",
-          skills: nextSkills,
-          completed: true,
-        });
-      }, 800);
+      upsertStatus(STREAM_STATUS_ID, "Matching skills...");
     });
 
     source.addEventListener("clarification", (event) => {
@@ -318,7 +442,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
         reconnectAttemptsRef.current = nextAttempt;
         const delay = nextAttempt * 1500;
         upsertStatus(
-          "stream-status",
+          STREAM_STATUS_ID,
           `Connection lost. Reconnecting (${nextAttempt}/3)...`,
         );
         reconnectTimerRef.current = setTimeout(() => {
@@ -409,6 +533,11 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
   }
 
   async function handleFreshPrompt(prompt: string, file: File | null) {
+    if (canRefine) {
+      await handleRefinePrompt(prompt);
+      return;
+    }
+
     setIsStartingFresh(true);
     try {
       const result = await generateAgent(prompt, file);
@@ -426,6 +555,44 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
         },
       ]);
       setIsStartingFresh(false);
+    }
+  }
+
+  async function handleRefinePrompt(prompt: string) {
+    const assistantId = `refine-assistant-${Date.now()}`;
+    let streamFailed = false;
+
+    setIsRefining(true);
+    setItems((current) => [
+      ...withoutStatus(current),
+      { id: `refine-user-${Date.now()}`, type: "user", text: prompt },
+      { id: STREAM_STATUS_ID, type: "status", text: "Refining agent..." },
+    ]);
+
+    try {
+      await refineAgent(agentId, prompt, {
+        onEvent: (event) => {
+          if (event.type === "error") streamFailed = true;
+          handleRefineStreamEvent(event, assistantId);
+        },
+      });
+      if (!streamFailed) {
+        await refreshConversation();
+      }
+    } catch (err) {
+      setItems((current) => [
+        ...withoutStatus(current),
+        {
+          id: `error-${Date.now()}`,
+          type: "error",
+          text:
+            err instanceof Error
+              ? err.message
+              : "Could not refine this agent.",
+        },
+      ]);
+    } finally {
+      setIsRefining(false);
     }
   }
 
@@ -515,7 +682,8 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
 
         <AgentChatInput
           disabled={isInputDisabled}
-          isLoading={isStartingFresh}
+          disableFileAttachment={canRefine}
+          isLoading={isPromptSubmitting}
           placeholder={inputPlaceholder}
           onSubmit={handleFreshPrompt}
         />
@@ -607,7 +775,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
                   Publish Agent Failed
                 </h2>
                 <p className="font-sans text-sm font-normal text-label-dark">
-                  We couldn&apos;t generate agent. Please try again.
+                  {publishError}
                 </p>
                 <button
                   type="button"
