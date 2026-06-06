@@ -93,6 +93,14 @@ export async function publishAgentPrivate(agentId: string) {
   return json.data;
 }
 
+export async function getGithubConnectUrl() {
+  const json = await requestJson<{ data: { redirectUrl: string } }>(
+    "/api/auth/github/connect",
+  );
+
+  return json.data.redirectUrl;
+}
+
 export async function refineAgent(
   agentId: string,
   message: string,

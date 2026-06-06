@@ -1,5 +1,7 @@
-import { BACKEND_URL } from "@/lib/consts";
+import { getGithubConnectUrl } from "@/components/protected/generator/api";
 
 export async function startGithubConnect() {
-  window.location.href = `${BACKEND_URL}/api/v1/auth/github/connect`;
+  const redirectUrl = await getGithubConnectUrl();
+  if (!redirectUrl) throw new Error("Could not start GitHub connection.");
+  window.location.href = redirectUrl;
 }
