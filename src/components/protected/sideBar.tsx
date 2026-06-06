@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo, Github } from "@/components/icons";
-import { rememberSession } from "@/components/protected/generator/api";
+import {
+  forgetRememberedSession,
+  rememberSession,
+} from "@/components/protected/generator/api";
 import UserMenu from "@/components/protected/UserMenu";
 import {
   CirclePlus,
@@ -152,6 +155,7 @@ function RecentSection() {
       setSessions((current) =>
         current.filter((item) => item.sessionId !== session.sessionId),
       );
+      forgetRememberedSession(session.agentId, session.sessionId);
 
       if (pathname === `/generator/${session.agentId}`) {
         router.push("/generator");
