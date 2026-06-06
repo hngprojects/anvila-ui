@@ -32,18 +32,10 @@ export function ChatItemView({
   if (item.type === "user") {
     return (
       <div className="flex w-full justify-end">
-        <div className="flex min-h-[62px] w-[360px] items-center gap-5 rounded-2xl bg-user-bubble p-2.5">
-          <span className="flex-1 font-sans text-sm leading-6 text-gray-800">
+        <div className="flex min-h-12 w-fit max-w-[min(82%,560px)] items-center rounded-2xl bg-user-bubble px-4 py-3">
+          <span className="min-w-0 whitespace-pre-wrap break-words font-sans text-sm leading-6 text-gray-800">
             {item.text}
           </span>
-          <button
-            type="button"
-            onClick={() =>
-              navigator.clipboard?.writeText(item.text).catch(() => {})
-            }
-            className="shrink-0"
-            aria-label="Copy message"
-          ></button>
         </div>
       </div>
     );
@@ -125,6 +117,7 @@ export function ChatItemView({
         <ClarificationCard
           payload={item.payload}
           answers={item.answers}
+          readOnly={item.readOnly}
           isSubmitting={isClarifying}
           onSubmit={onClarificationSubmit}
         />
@@ -144,20 +137,20 @@ export function ChatItemView({
   }
 
   return (
-    <div className="flex w-full items-center justify-between rounded-[15px] border-[2.5px] border-tag-border bg-[#F4F4F5] px-1 py-[14px] shadow-[0_25px_50px_-12px_rgba(142,81,255,0.10)] max-w-[685px]">
-      <div className="flex items-center justify-between px-4 w-full">
+    <div className="mr-auto flex w-full max-w-[520px] items-center justify-between rounded-xl border border-tag-border bg-white px-4 py-3 shadow-sm">
+      <div className="flex w-full items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <FileIcon className="size-12 shrink-0" />
-          <p className="font-sans text-xs font-semibold text-dark-fg">
+          <FileIcon className="size-9 shrink-0" />
+          <p className="font-sans text-xs font-semibold leading-5 text-dark-fg">
             {item.text}
           </p>
         </div>
-        <div className="flex flex-row justify-end items-center">
+        <div className="flex shrink-0 flex-row items-center justify-end">
           {canPreview && (
             <button
               type="button"
               onClick={onPreview}
-              className="flex h-10 items-center justify-center rounded-lg border border-[0.5px] border-[#9E9F9E] px-4 font-sans text-sm font-bold text-dark-fg"
+              className="flex h-8 items-center justify-center rounded-lg border border-[#9E9F9E] px-3 font-sans text-xs font-semibold text-dark-fg hover:bg-gray-50"
             >
               Preview
             </button>
