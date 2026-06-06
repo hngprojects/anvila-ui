@@ -1,19 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Loader2 } from "lucide-react";
 import {
-  CheckCircle2,
-  ChevronDown,
-  ChevronRight,
-  Copy,
-  Download,
-  ExternalLink,
-  FileText,
-  Loader2,
-  X,
-} from "lucide-react";
-
-import { Github } from "@/components/icons";
+  FolderBreadcrumbIcon,
+  SkillsFolderIcon,
+  BreadcrumbChevronDown,
+  BreadcrumbChevronRight,
+  FileTabDashIcon,
+  PreviewRefreshIcon,
+} from "@/components/icons";
 import MarkdownPreview from "@/components/create-agent/MarkDownPreview";
 import { GithubPublishModal } from "@/components/publish-modal";
 import type { AgentPersona, AgentFileContent, AgentSkill } from "@/types/agent";
@@ -26,6 +22,8 @@ interface AgentPreviewPanelProps {
   publishError: string;
   onClose: () => void;
   onPublish: () => Promise<void>;
+  onRefresh?: () => void;
+  onSaveAsPrivate?: () => void;
 }
 
 export default function AgentPreviewPanel({
@@ -36,187 +34,146 @@ export default function AgentPreviewPanel({
   publishError,
   onClose,
   onPublish,
+  onRefresh,
+  onSaveAsPrivate,
 }: AgentPreviewPanelProps) {
   const [activeFileId, setActiveFileId] = useState(files[0]?.id ?? "");
+  const [showSkillsFolder, setShowSkillsFolder] = useState(false);
+  const [activeSkillSlug, setActiveSkillSlug] = useState(skills[0]?.slug ?? "");
   const [showLinks, setShowLinks] = useState(false);
-  const [fileTreeOpen, setFileTreeOpen] = useState(false);
 
-  const activeFile = useMemo(
-    () => files.find((file) => file.id === activeFileId) ?? files[0],
-    [activeFileId, files],
-  );
+  const activeFile = useMemo(() => files.find((f) => f.id === activeFileId) ?? files[0], [activeFileId, files]);
+  const activeSkill = useMemo(() => skills.find((s) => s.slug === activeSkillSlug) ?? skills[0], [activeSkillSlug, skills]);
+
   const isPublished = persona?.status === "published";
-  const hasPublishLinks = Boolean(
-    persona?.githubRepoUrl || persona?.githubCloneUrl || persona?.githubZipUrl,
-  );
+  const hasPublishLinks = Boolean(persona?.githubRepoUrl || persona?.githubCloneUrl || persona?.githubZipUrl);
+  const agentName = persona?.name ?? "Agent";
+  const skillContent = activeSkill ? `# ${activeSkill.name}\n\n${activeSkill.description ?? ""}` : "";
 
   return (
-    <section className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-[#FBFBFB] md:border-l md:border-gray-200">
-      <div className="flex min-h-14 shrink-0 items-center justify-between border-b border-gray-200 px-4">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-gray-950">
-            {persona?.name || "Agent preview"}
-          </p>
-          <p className="truncate text-xs text-gray-500">
-            {persona?.description || persona?.category || "Generated persona files"}
-          </p>
-        </div>
-        <button
-          onClick={onClose}
-          className="ml-3 flex size-8 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-          aria-label="Close preview"
-        >
-          <X size={18} />
+    <section className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
+      <nav className="flex shrink-0 items-center justify-end gap-[10px] px-7 py-3">
+        <button type="button" onClick={onRefresh ?? onClose} className="flex items-center justify-center text-copy-muted" aria-label="Refresh">
+          <PreviewRefreshIcon />
         </button>
-      </div>
+        <button
+          type="button"
+          onClick={onSaveAsPrivate}
+          disabled={!onSaveAsPrivate}
+          className="flex self-stretch items-center justify-center gap-2 rounded-lg border border-save-private-border px-5 py-3 font-sans text-sm font-normal text-save-private outline-none disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Save as Private
+        </button>
+        <button
+          type="button"
+          onClick={isPublished ? undefined : onPublish}
+          disabled={isPublished || isPublishing}
+          className="flex self-stretch items-center justify-center gap-2 rounded-lg border-[0.5px] border-teal-brand bg-teal-brand px-5 py-3 font-sans text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {isPublishing ? <><Loader2 size={14} className="animate-spin" />Publishing</> : isPublished ? "Published" : "Publish"}
+        </button>
+      </nav>
 
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-4 py-3">
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <span className="rounded-full border border-gray-200 bg-white px-2.5 py-1">
-            {persona?.manifest.version || "0.1.0"}
-          </span>
-          <span className="rounded-full border border-gray-200 bg-white px-2.5 py-1">
-            {persona?.manifest.model || "gemini-3-flash"}
-          </span>
-          <span className="rounded-full border border-gray-200 bg-white px-2.5 py-1">
-            {persona?.manifest.license || "MIT"}
-          </span>
+      <div className="scrollbar-hide flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 pb-6">
+        {publishError && (
+          <div className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{publishError}</div>
+        )}
+
+        <div>
+          <h1 className="truncate font-sans text-lg font-semibold leading-7 text-dark-fg">{agentName}</h1>
+          <p className="mt-0.5 truncate font-sans text-xs font-normal leading-4 text-dark-fg">{persona?.description ?? "Generated agent"}</p>
         </div>
 
-        <div className="flex items-center gap-2">
-          {hasPublishLinks && (
-            <button
-              onClick={() => setShowLinks(true)}
-              className="inline-flex h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              <ExternalLink size={15} />
-              Links
+        <div className="flex flex-col gap-2 self-stretch rounded-lg border border-border-subtle px-4 pb-0 pt-2">
+          <div className="flex items-center gap-3 py-1">
+            <button type="button" onClick={() => { setShowSkillsFolder(false); if (files.length > 0) setActiveFileId(files[0].id); }} className="flex items-center gap-1">
+              <FolderBreadcrumbIcon />
+              <span className="font-sans text-xs font-semibold leading-4 text-folder-fg">{agentName}</span>
+              {showSkillsFolder ? <BreadcrumbChevronRight /> : <BreadcrumbChevronDown />}
             </button>
-          )}
-          <button
-            onClick={isPublished ? undefined : onPublish}
-            disabled={isPublished || isPublishing}
-            className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#0C5D56] px-4 text-sm font-semibold text-white hover:bg-[#094a45] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
-          >
-            {isPublished ? (
-              <>
-                <CheckCircle2 size={15} />
-                Published
-              </>
-            ) : isPublishing ? (
-              <>
-                <Loader2 size={15} className="animate-spin" />
-                Publishing
-              </>
-            ) : (
-              <>
-                <Github size={15} />
-                Publish
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {publishError && (
-        <div className="shrink-0 border-b border-red-100 bg-red-50 px-4 py-2 text-sm text-red-700">
-          {publishError}
-        </div>
-      )}
-
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <aside className="shrink-0 border-b border-gray-100 bg-white px-3 py-3 lg:w-52 lg:border-b-0 lg:border-r">
-          <button
-            type="button"
-            onClick={() => setFileTreeOpen((open) => !open)}
-            className="mb-2 flex w-full items-center gap-2 rounded-lg px-2 py-1 text-xs font-semibold uppercase text-gray-500 hover:bg-gray-50 lg:pointer-events-none"
-          >
-            <FileText size={13} />
-            Files
-            <span className="ml-auto lg:hidden">
-              {fileTreeOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-            </span>
-          </button>
-          <div className={`${fileTreeOpen ? "block" : "hidden"} max-h-48 space-y-1 overflow-y-auto lg:block lg:max-h-none`}>
-            {files.map((file) => (
-              <button
-                key={file.id}
-                onClick={() => {
-                  setActiveFileId(file.id);
-                  setFileTreeOpen(false);
-                }}
-                className={`flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm ${
-                  activeFile?.id === file.id
-                    ? "bg-[#0C5D56]/10 font-medium text-[#0C5D56]"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
-              >
-                <FileText size={14} className="shrink-0" />
-                <span className="truncate">{file.name}</span>
-              </button>
-            ))}
+            <span className="text-border-subtle">|</span>
+            <button type="button" onClick={() => { setShowSkillsFolder(true); if (skills.length > 0) setActiveSkillSlug(skills[0]?.slug ?? ""); }} className="flex items-center gap-1">
+              <SkillsFolderIcon />
+              <span className="font-sans text-xs font-normal leading-4 text-folder-fg">Skills</span>
+              {showSkillsFolder ? <BreadcrumbChevronDown /> : <BreadcrumbChevronRight />}
+            </button>
           </div>
-        </aside>
 
-        <div className="min-w-0 flex-1 overflow-y-auto bg-white px-5 py-5">
-          {activeFile ? (
-            <MarkdownPreview content={activeFile.content} />
-          ) : (
-            <p className="text-sm text-gray-500">No preview files are available yet.</p>
-          )}
+          <div className="scrollbar-hide flex items-center gap-4 overflow-x-auto px-6">
+            {showSkillsFolder
+              ? skills.map((skill) => (
+                  <button
+                    key={skill.slug}
+                    type="button"
+                    onClick={() => setActiveSkillSlug(skill.slug)}
+                    className={`flex w-[110px] shrink-0 items-center gap-1 rounded px-1 py-2 ${activeSkillSlug === skill.slug ? "border border-teal-accent bg-file-active" : "border border-border-subtle"}`}
+                  >
+                    <FileTabDashIcon />
+                    <span className="truncate text-[10px] text-label-mid">{skill.name}.ts</span>
+                  </button>
+                ))
+              : files.map((file) => (
+                  <button
+                    key={file.id}
+                    type="button"
+                    onClick={() => setActiveFileId(file.id)}
+                    className={`flex w-[110px] shrink-0 items-center gap-1 rounded px-1 py-2 ${activeFile?.id === file.id ? "border border-teal-accent bg-file-active" : "border border-border-subtle"}`}
+                  >
+                    <FileTabDashIcon />
+                    <span className="truncate text-[10px] text-label-mid">{file.name}</span>
+                  </button>
+                ))}
+          </div>
+
+          <div className="min-h-[120px] self-stretch rounded-[14px] border border-card-outline px-2 pb-6 pt-0">
+            {showSkillsFolder
+              ? skills.length === 0
+                ? <p className="p-4 text-xs text-gray-400">No skills matched yet.</p>
+                : <MarkdownPreview content={skillContent} />
+              : activeFile
+                ? <MarkdownPreview content={activeFile.content} />
+                : <p className="p-4 text-xs text-gray-400">No preview available yet.</p>}
+          </div>
         </div>
 
-        <aside className="min-h-0 shrink-0 overflow-y-auto border-t border-gray-100 bg-[#FBFBFB] p-4 lg:w-72 lg:border-l lg:border-t-0">
-          <div className="rounded-xl border border-gray-200 bg-white p-4">
-            <p className="mb-3 text-sm font-semibold text-gray-900">Manifest</p>
-            <dl className="space-y-3 text-sm">
-              <Info label="Name" value={persona?.manifest.name || persona?.name || "Untitled agent"} />
-              <Info label="Version" value={persona?.manifest.version || "0.1.0"} />
-              <Info label="Model" value={persona?.manifest.model || "gemini-3-flash"} />
-              <Info label="License" value={persona?.manifest.license || "MIT"} />
-              <Info label="Files" value={String(files.length)} />
+        <div className="flex gap-4 self-stretch">
+          <div className="flex h-52 w-[292px] shrink-0 flex-col gap-3 rounded-xl border border-card-outline bg-white p-4">
+            <p className="font-sans text-xs font-medium text-label-dark">Manifest</p>
+            <dl className="flex flex-col gap-2">
+              {[
+                ["Name", persona?.manifest?.name ?? persona?.name ?? "Untitled"],
+                ["Version", persona?.manifest?.version ?? "0.1.0"],
+                ["Model", persona?.manifest?.model ?? "gemini-3-flash"],
+                ["License", persona?.manifest?.license ?? "MIT"],
+                ["Files", String(files.length)],
+              ].map(([label, value]) => (
+                <div key={label} className="flex items-center justify-between gap-2">
+                  <dt className="font-sans text-xs font-medium leading-4 text-label-dark">{label}</dt>
+                  <dd className="truncate font-sans text-xs font-medium leading-4 text-label-mid">{value}</dd>
+                </div>
+              ))}
             </dl>
           </div>
 
-          <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4">
-            <p className="mb-3 text-sm font-semibold text-gray-900">Skills</p>
-            {skills.length > 0 ? (
-              <div className="space-y-3">
-                {skills.map((skill) => (
-                  <div key={skill.slug || skill.name}>
-                    <p className="text-sm font-medium text-gray-900">{skill.name}</p>
-                    {skill.description && (
-                      <p className="mt-0.5 text-xs leading-5 text-gray-500">{skill.description}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500">No skills matched yet.</p>
-            )}
-          </div>
-
-          {hasPublishLinks && persona && (
-            <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4">
-              <p className="mb-3 text-sm font-semibold text-gray-900">GitHub</p>
-              <div className="space-y-3">
-                <PublishedLink label="Repo" value={persona.githubRepoUrl} href={persona.githubRepoUrl} />
-                <PublishedLink label="Clone" value={persona.githubCloneUrl} />
-                <PublishedLink label="ZIP" value={persona.githubZipUrl} href={persona.githubZipUrl} />
-              </div>
+          <div className="flex flex-1 flex-col gap-[10px] self-stretch rounded-xl border border-card-outline bg-white p-4">
+            <p className="font-sans text-xs font-medium text-label-dark">Skills & Capabilities</p>
+            <div className="flex flex-wrap gap-2">
+              {skills.length > 0
+                ? skills.map((skill) => (
+                    <span key={skill.slug} className="flex h-[30px] items-center rounded-2xl border border-tag-border px-3 py-1.5 font-sans text-[11px] text-folder-fg">
+                      {skill.name}
+                    </span>
+                  ))
+                : <p className="text-xs text-gray-400">No skills matched yet.</p>}
             </div>
-          )}
+          </div>
+        </div>
 
-          {persona?.githubZipUrl && (
-            <a
-              href={persona.githubZipUrl}
-              className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              <Download size={15} />
-              Download ZIP
-            </a>
-          )}
-        </aside>
+        {hasPublishLinks && (
+          <button type="button" onClick={() => setShowLinks(true)} className="self-start text-xs text-teal-brand underline">
+            View GitHub links
+          </button>
+        )}
       </div>
 
       {showLinks && persona && (
@@ -229,53 +186,5 @@ export default function AgentPreviewPanel({
         />
       )}
     </section>
-  );
-}
-
-function Info({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-xs text-gray-500">{label}</dt>
-      <dd className="mt-0.5 break-words text-sm font-medium text-gray-900">{value}</dd>
-    </div>
-  );
-}
-
-function PublishedLink({
-  label,
-  value,
-  href,
-}: {
-  label: string;
-  value: string;
-  href?: string;
-}) {
-  if (!value) return null;
-
-  const content = (
-    <span className="block truncate text-xs text-[#0C5D56]">{value}</span>
-  );
-
-  return (
-    <div>
-      <p className="mb-1 text-xs font-medium text-gray-500">{label}</p>
-      <div className="flex min-w-0 items-center gap-2 rounded-lg bg-gray-50 px-2 py-2">
-        {href ? (
-          <a href={href} target="_blank" rel="noreferrer" className="min-w-0 flex-1 overflow-hidden">
-            {content}
-          </a>
-        ) : (
-          <div className="min-w-0 flex-1 overflow-hidden">{content}</div>
-        )}
-        <button
-          type="button"
-          onClick={() => navigator.clipboard.writeText(value)}
-          className="flex size-7 shrink-0 items-center justify-center rounded-md text-gray-500 hover:bg-white hover:text-gray-900"
-          aria-label={`Copy ${label}`}
-        >
-          <Copy size={14} />
-        </button>
-      </div>
-    </div>
   );
 }
