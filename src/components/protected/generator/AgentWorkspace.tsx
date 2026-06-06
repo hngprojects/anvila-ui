@@ -167,8 +167,8 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
   }, [agentId]);
 
   const handleRefreshPreview = useCallback(async () => {
-    try { const next = await fetchAgent(agentId); setPersona(next); } catch {}
-  }, [agentId]);
+    try { await refreshPersona(); } catch {}
+  }, [refreshPersona]);
 
   const upsertItem = useCallback((nextItem: ChatItem) => {
     setItems((current) => {
@@ -571,6 +571,13 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
                   className="flex h-10 items-center justify-center gap-2 self-stretch rounded-lg border-[0.5px] border-input-placeholder bg-teal-brand px-5 py-3 font-sans text-sm font-medium text-btn-fg"
                 >
                   Retry
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPublishError("")}
+                  className="font-sans text-sm font-normal text-copy-muted underline"
+                >
+                  Dismiss
                 </button>
               </>
             )}

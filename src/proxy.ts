@@ -34,6 +34,10 @@ function isPublic(pathname: string): boolean {
 }
 
 export function proxy(req: NextRequest) {
+  if (process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === 'true') {
+    return NextResponse.next()
+  }
+
   const { pathname } = req.nextUrl
   const { accessToken } = getTokensFromRequest(req)
 
