@@ -20,6 +20,14 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 import type { AgentSession } from "@/types/agent";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const NAV_ITEMS = [
   { icon: CirclePlus, label: "Create Agent", path: "/generator" },
@@ -68,6 +76,10 @@ function RecentSection() {
   const [sessions, setSessions] = useState<AgentSession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState("");
+  const [sessionToDelete, setSessionToDelete] = useState<AgentSession | null>(
+    null,
+  );
+  const [deleteError, setDeleteError] = useState("");
   const pathname = usePathname();
   const router = useRouter();
   const [typing, setTyping] = useState<{
@@ -140,10 +152,8 @@ function RecentSection() {
   }, [pathname]);
 
   async function handleDeleteSession(session: AgentSession) {
-    const confirmed = window.confirm("Delete this chat session?");
-    if (!confirmed) return;
-
     setDeletingId(session.sessionId);
+    setDeleteError("");
 
     try {
       const res = await fetch(`/api/chat/sessions/${session.sessionId}`, {
@@ -160,83 +170,147 @@ function RecentSection() {
       if (pathname === `/generator/${session.agentId}`) {
         router.push("/generator");
       }
-    } catch {
+      setSessionToDelete(null);
+    } catch (err) {
+      setDeleteError(
+        err instanceof Error ? err.message : "Could not delete session.",
+      );
     } finally {
       setDeletingId("");
     }
   }
 
   return (
-    <div className="mt-5 px-3 flex-1 overflow-y-auto">
-      <button
-        onClick={() => setRecentOpen((o) => !o)}
-        className="w-full flex items-center text-xs text-gray-400 uppercase tracking-wide mb-2"
-      >
-        Recent
-        <ChevronDown
-          size={13}
-          className={`ml-auto transition-transform ${
-            recentOpen ? "" : "-rotate-90"
-          }`}
-        />
-      </button>
+    <>
+      <div className="mt-5 px-3 flex-1 overflow-y-auto">
+        <button
+          onClick={() => setRecentOpen((o) => !o)}
+          className="w-full flex items-center text-xs text-gray-400 uppercase tracking-wide mb-2"
+        >
+          Recent
+          <ChevronDown
+            size={13}
+            className={`ml-auto transition-transform ${
+              recentOpen ? "" : "-rotate-90"
+            }`}
+          />
+        </button>
 
-      {recentOpen && isLoading && (
-        <div className="px-3 py-2 text-sm text-gray-400">Loading...</div>
-      )}
+        {recentOpen && isLoading && (
+          <div className="px-3 py-2 text-sm text-gray-400">Loading...</div>
+        )}
 
-      {recentOpen && !isLoading && sessions.length === 0 && (
-        <div className="px-3 py-2 text-sm text-gray-400">No recent agents</div>
-      )}
+        {recentOpen && !isLoading && sessions.length === 0 && (
+          <div className="px-3 py-2 text-sm text-gray-400">No recent agents</div>
+        )}
 
-      {recentOpen &&
-        !isLoading &&
-        sessions.map((session) => {
-          const isActive = pathname === `/generator/${session.agentId}`;
-          const displayName =
-            typing?.agentId === session.agentId
-              ? typing.display
-              : session.personaName || "Untitled agent";
+        {recentOpen &&
+          !isLoading &&
+          sessions.map((session) => {
+            const isActive = pathname === `/generator/${session.agentId}`;
+            const displayName =
+              typing?.agentId === session.agentId
+                ? typing.display
+                : session.personaName || "Untitled agent";
 
-          return (
-            <div
-              key={session.sessionId}
-              onClick={() => {
-                rememberSession(session.agentId, session.sessionId);
-                router.push(`/generator/${session.agentId}`);
-              }}
-              className={`group w-full cursor-pointer rounded-lg px-3 py-2 text-left transition ${
-                isActive ? "bg-[#1a6b5a]/10" : "hover:bg-gray-100"
-              }`}
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span
-                  className={`truncate text-sm ${
-                    isActive ? "font-medium text-[#1a6b5a]" : "text-gray-600"
-                  }`}
-                >
-                  {displayName}
-                  {typing?.agentId === session.agentId && (
-                    <span className="animate-pulse">|</span>
-                  )}
-                </span>
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleDeleteSession(session);
-                  }}
-                  disabled={deletingId === session.sessionId}
-                  className="flex size-6 shrink-0 items-center justify-center rounded-md text-gray-300 opacity-0 transition hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
-                  aria-label="Delete chat session"
-                >
-                  <Trash2 size={13} />
-                </button>
+            return (
+              <div
+                key={session.sessionId}
+                onClick={() => {
+                  rememberSession(session.agentId, session.sessionId);
+                  router.push(`/generator/${session.agentId}`);
+                }}
+                className={`group w-full cursor-pointer rounded-lg px-3 py-2 text-left transition ${
+                  isActive ? "bg-[#1a6b5a]/10" : "hover:bg-gray-100"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span
+                    className={`truncate text-sm ${
+                      isActive ? "font-medium text-[#1a6b5a]" : "text-gray-600"
+                    }`}
+                  >
+                    {displayName}
+                    {typing?.agentId === session.agentId && (
+                      <span className="animate-pulse">|</span>
+                    )}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setDeleteError("");
+                      setSessionToDelete(session);
+                    }}
+                    disabled={deletingId === session.sessionId}
+                    className="flex size-6 shrink-0 items-center justify-center rounded-md text-gray-300 opacity-0 transition hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    aria-label="Delete chat session"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
               </div>
-            </div>
-          );
-        })}
-    </div>
+            );
+          })}
+      </div>
+
+      <Dialog
+        open={Boolean(sessionToDelete)}
+        onOpenChange={(open) => {
+          if (!open && !deletingId) {
+            setSessionToDelete(null);
+            setDeleteError("");
+          }
+        }}
+      >
+        <DialogContent className="rounded-2xl bg-white p-6 sm:max-w-sm">
+          <div className="flex size-10 items-center justify-center rounded-full bg-red-50 text-red-600">
+            <Trash2 size={18} />
+          </div>
+          <div className="space-y-2">
+            <DialogTitle className="text-base font-semibold text-gray-950">
+              Delete chat session
+            </DialogTitle>
+            <DialogDescription className="text-sm leading-6 text-gray-500">
+              Delete{" "}
+              <span className="font-medium text-gray-700">
+                {sessionToDelete?.personaName || "this chat session"}
+              </span>
+              ? This cannot be undone.
+            </DialogDescription>
+            {deleteError && (
+              <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                {deleteError}
+              </p>
+            )}
+          </div>
+          <DialogFooter className="gap-2 sm:justify-stretch">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={Boolean(deletingId)}
+              onClick={() => {
+                setSessionToDelete(null);
+                setDeleteError("");
+              }}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              disabled={!sessionToDelete || Boolean(deletingId)}
+              onClick={() => {
+                if (sessionToDelete) handleDeleteSession(sessionToDelete);
+              }}
+              className="flex-1 border border-red-600 bg-white text-red-600 hover:bg-red-50"
+            >
+              {deletingId ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
