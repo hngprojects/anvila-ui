@@ -16,6 +16,7 @@ export interface AgentSkill {
   slug: string;
   name: string;
   description: string;
+  content: string;
   tags: string[];
 }
 

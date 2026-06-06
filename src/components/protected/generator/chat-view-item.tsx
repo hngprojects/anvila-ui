@@ -1,5 +1,6 @@
 import { CheckCircle2, Loader2 } from "lucide-react";
 
+import { FileIcon } from "@/components/icons";
 import { type ClarificationAnswer } from "@/components/protected/generator/api";
 import {
   CLARIFICATION_FALLBACK_MESSAGE,
@@ -30,9 +31,11 @@ export function ChatItemView({
 }) {
   if (item.type === "user") {
     return (
-      <div className="flex justify-end">
-        <div className="max-w-[85%] rounded-2xl rounded-br-md bg-gray-100 px-4 py-3 text-sm leading-6 text-gray-800">
-          {item.text}
+      <div className="flex w-full justify-end">
+        <div className="flex min-h-12 w-fit max-w-[min(82%,560px)] items-center rounded-2xl bg-user-bubble px-4 py-3">
+          <span className="min-w-0 whitespace-pre-wrap break-words font-sans text-sm leading-6 text-gray-800">
+            {item.text}
+          </span>
         </div>
       </div>
     );
@@ -114,6 +117,7 @@ export function ChatItemView({
         <ClarificationCard
           payload={item.payload}
           answers={item.answers}
+          readOnly={item.readOnly}
           isSubmitting={isClarifying}
           onSubmit={onClarificationSubmit}
         />
@@ -133,16 +137,26 @@ export function ChatItemView({
   }
 
   return (
-    <div className="mr-auto max-w-2xl rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="text-sm text-gray-800">{item.text}</p>
-      {canPreview && (
-        <button
-          onClick={onPreview}
-          className="mt-3 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-        >
-          Preview
-        </button>
-      )}
+    <div className="mr-auto flex w-full max-w-[520px] items-center justify-between rounded-xl border border-tag-border bg-white px-4 py-3 shadow-sm">
+      <div className="flex w-full items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <FileIcon className="size-9 shrink-0" />
+          <p className="font-sans text-xs font-semibold leading-5 text-dark-fg">
+            {item.text}
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-row items-center justify-end">
+          {canPreview && (
+            <button
+              type="button"
+              onClick={onPreview}
+              className="flex h-8 items-center justify-center rounded-lg border border-[#9E9F9E] px-3 font-sans text-xs font-semibold text-dark-fg hover:bg-gray-50"
+            >
+              Preview
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

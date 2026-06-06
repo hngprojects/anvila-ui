@@ -101,6 +101,10 @@ export function getBackendMessage(raw: unknown, fallback = "Request failed") {
   const message = data.message;
 
   if (typeof detail === "string") return detail;
+  if (detail && typeof detail === "object" && "message" in detail) {
+    const detailMessage = (detail as Record<string, unknown>).message;
+    if (typeof detailMessage === "string") return detailMessage;
+  }
   if (typeof message === "string") return message;
 
   return fallback;

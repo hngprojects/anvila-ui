@@ -39,6 +39,9 @@ export const UserSchema = z.object({
   is_active: z.boolean(),
   created_at: z.string(),
   plan: z.string().optional(),
+  github_username: z.string().nullable().optional(),
+  github_subject: z.string().nullable().optional(),
+  github_connected: z.boolean().optional(),
 });
 
 export const TokensSchema = z.object({

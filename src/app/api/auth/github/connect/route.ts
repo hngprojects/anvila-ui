@@ -8,13 +8,9 @@ import {
   unauthorized,
 } from "@/lib/auth/proxy";
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ sessionId: string }> },
-) {
-  const { sessionId } = await params;
-  const result = await authFetch(req, `/api/v1/chat/sessions/${sessionId}`, {
-    method: "DELETE",
+export async function GET(req: NextRequest) {
+  const result = await authFetch(req, "/api/v1/auth/github/connect", {
+    headers: { Accept: "application/json" },
   });
 
   if (!result.res) return unauthorized();
@@ -22,13 +18,15 @@ export async function DELETE(
   const raw = await parseBackendJson(result.res);
   if (!result.res.ok) {
     const res = NextResponse.json(
-      { message: getBackendMessage(raw) },
+      { message: getBackendMessage(raw, "Could not start GitHub connection") },
       { status: result.res.status },
     );
     return applyAuthCookies(res, result);
   }
 
-  const res = NextResponse.json({ data: true });
+  const data = raw && typeof raw === "object" ? raw as Record<string, unknown> : {};
+  const redirectUrl = typeof data.url === "string" ? data.url : "";
 
+  const res = NextResponse.json({ data: { redirectUrl } });
   return applyAuthCookies(res, result);
 }
