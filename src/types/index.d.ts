@@ -58,11 +58,13 @@ export interface PricingTier {
 export interface FooterLink {
   label: string;
   href: string;
+   isExternal?: boolean;
 }
 
 export interface FooterColumn {
   title: string;
   links: FooterLink[];
+  
 }
 
 export interface ContactCard {

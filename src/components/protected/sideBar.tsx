@@ -1,74 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo, Github } from "@/components/icons";
-import { useAuth } from "@/context/auth";
-
+import {
+  forgetRememberedSession,
+  rememberSession,
+} from "@/components/protected/generator/api";
+import UserMenu from "@/components/protected/UserMenu";
 import {
   CirclePlus,
-  Search,
+  // Search,
   Globe,
   Bot,
   ChevronDown,
-  MoreHorizontal,
+  Trash2,
   X,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
-
- 
+import type { AgentSession } from "@/types/agent";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const NAV_ITEMS = [
   { icon: CirclePlus, label: "Create Agent", path: "/generator" },
-  { icon: Search, label: "Search", path: "/generator/search" },
+  // { icon: Search, label: "Search", path: "/agents/search" },
   { icon: Globe, label: "Explore", path: "/generator/explore" },
   { icon: Bot, label: "My Agents", path: "/generator/my-agents" },
   { icon: Github, label: "GitHub", path: "/generator/github" },
 ];
-
-const RECENT_ITEMS = [
-  "Real estate marketing ca...",
-  "7 days of social media...",
-  "Business plan outline...",
-  "Landing page copy for...",
-];
-
-
-
-function UserAvatar({
-  name,
-  plan,
-  showName,
-}: {
-  name: string;
-  plan: string;
-  showName?: boolean;
-}) {
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
-  return showName ? (
-    <div className="flex items-center gap-3 px-4 py-4 border-t border-gray-100">
-      <div className="w-8 h-8 rounded-full bg-[#1a6b5a] flex items-center justify-center shrink-0">
-        <span className="text-white text-[11px] font-semibold">{initials}</span>
-      </div>
-      <div className="flex flex-col min-w-0">
-        <span className="text-sm font-medium text-gray-800 truncate">{name}</span>
-        <span className="text-xs text-gray-400 truncate capitalize">{plan}</span>
-      </div>
-    </div>
-  ) : (
-    <div className="w-7 h-7 rounded-full bg-[#1a6b5a] flex items-center justify-center">
-      <span className="text-white text-[10px] font-semibold">{initials}</span>
-    </div>
-  );
-}
- 
 
 function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -77,7 +44,7 @@ function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <nav className="px-3 space-y-1">
       {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
-        const isActive = pathname === path || (path === "/generator" && pathname === "/generator/agent-screen");
+        const isActive = isNavActive(pathname, path);
         return (
           <button
             key={label}
@@ -106,36 +73,244 @@ function NavigationItems({ onNavigate }: { onNavigate?: () => void }) {
 
 function RecentSection() {
   const [recentOpen, setRecentOpen] = useState(true);
+  const [sessions, setSessions] = useState<AgentSession[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState("");
+  const [sessionToDelete, setSessionToDelete] = useState<AgentSession | null>(
+    null,
+  );
+  const [deleteError, setDeleteError] = useState("");
+  const pathname = usePathname();
+  const router = useRouter();
+  const [typing, setTyping] = useState<{
+    agentId: string;
+    display: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (typeof BroadcastChannel === "undefined") return;
+    const bc = new BroadcastChannel("agent-sessions");
+    let interval: ReturnType<typeof setInterval> | null = null;
+
+    bc.onmessage = (event) => {
+      const { type, agentId, name } = event.data ?? {};
+      if (type !== "update-name" || !agentId || !name) return;
+      if (interval) clearInterval(interval);
+      let i = 0;
+      setTyping({ agentId, display: "" });
+
+      interval = setInterval(() => {
+        i++;
+        const display = name.slice(0, i);
+        setTyping({ agentId, display });
+
+        if (i >= name.length) {
+          if (interval) clearInterval(interval);
+          setSessions((prev) =>
+            prev.map((s) =>
+              s.agentId === agentId ? { ...s, personaName: name } : s,
+            ),
+          );
+          setTyping(null);
+        }
+      }, 40);
+    };
+
+    return () => {
+      if (interval) clearInterval(interval);
+      bc.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSessions() {
+      setIsLoading(true);
+
+      try {
+        const res = await fetch("/api/chat/sessions?size=5", {
+          cache: "no-store",
+        });
+        const json = await res.json();
+
+        if (!cancelled && res.ok) {
+          setSessions(Array.isArray(json.data) ? json.data : []);
+        }
+      } catch {
+        if (!cancelled) setSessions([]);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    loadSessions();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
+
+  async function handleDeleteSession(session: AgentSession) {
+    setDeletingId(session.sessionId);
+    setDeleteError("");
+
+    try {
+      const res = await fetch(`/api/chat/sessions/${session.sessionId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Could not delete session");
+
+      setSessions((current) =>
+        current.filter((item) => item.sessionId !== session.sessionId),
+      );
+      forgetRememberedSession(session.agentId, session.sessionId);
+
+      if (pathname === `/generator/${session.agentId}`) {
+        router.push("/generator");
+      }
+      setSessionToDelete(null);
+    } catch (err) {
+      setDeleteError(
+        err instanceof Error ? err.message : "Could not delete session.",
+      );
+    } finally {
+      setDeletingId("");
+    }
+  }
 
   return (
-    <div className="mt-5 px-3 flex-1 overflow-y-auto">
-      <button
-        onClick={() => setRecentOpen((o) => !o)}
-        className="w-full flex items-center text-xs text-gray-400 uppercase tracking-wide mb-2"
-      >
-        Recent
-        <ChevronDown
-          size={13}
-          className={`ml-auto transition-transform ${
-            recentOpen ? "" : "-rotate-90"
-          }`}
-        />
-      </button>
+    <>
+      <div className="mt-5 px-3 flex-1 overflow-y-auto">
+        <button
+          onClick={() => setRecentOpen((o) => !o)}
+          className="w-full flex items-center text-xs text-gray-400 uppercase tracking-wide mb-2"
+        >
+          Recent
+          <ChevronDown
+            size={13}
+            className={`ml-auto transition-transform ${
+              recentOpen ? "" : "-rotate-90"
+            }`}
+          />
+        </button>
 
-      {recentOpen &&
-        RECENT_ITEMS.map((item) => (
-          <div
-            key={item}
-            className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer group"
-          >
-            <span className="text-sm text-gray-600 truncate">{item}</span>
-            <MoreHorizontal
-              size={14}
-              className="text-gray-300 group-hover:text-gray-500"
-            />
+        {recentOpen && isLoading && (
+          <div className="px-3 py-2 text-sm text-gray-400">Loading...</div>
+        )}
+
+        {recentOpen && !isLoading && sessions.length === 0 && (
+          <div className="px-3 py-2 text-sm text-gray-400">No recent agents</div>
+        )}
+
+        {recentOpen &&
+          !isLoading &&
+          sessions.map((session) => {
+            const isActive = pathname === `/generator/${session.agentId}`;
+            const displayName =
+              typing?.agentId === session.agentId
+                ? typing.display
+                : session.personaName || "Untitled agent";
+
+            return (
+              <div
+                key={session.sessionId}
+                onClick={() => {
+                  rememberSession(session.agentId, session.sessionId);
+                  router.push(`/generator/${session.agentId}`);
+                }}
+                className={`group w-full cursor-pointer rounded-lg px-3 py-2 text-left transition ${
+                  isActive ? "bg-[#1a6b5a]/10" : "hover:bg-gray-100"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span
+                    className={`truncate text-sm ${
+                      isActive ? "font-medium text-[#1a6b5a]" : "text-gray-600"
+                    }`}
+                  >
+                    {displayName}
+                    {typing?.agentId === session.agentId && (
+                      <span className="animate-pulse">|</span>
+                    )}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setDeleteError("");
+                      setSessionToDelete(session);
+                    }}
+                    disabled={deletingId === session.sessionId}
+                    className="flex size-6 shrink-0 items-center justify-center rounded-md text-gray-300 opacity-0 transition hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    aria-label="Delete chat session"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+      </div>
+
+      <Dialog
+        open={Boolean(sessionToDelete)}
+        onOpenChange={(open) => {
+          if (!open && !deletingId) {
+            setSessionToDelete(null);
+            setDeleteError("");
+          }
+        }}
+      >
+        <DialogContent className="rounded-2xl bg-white p-6 sm:max-w-sm">
+          <div className="flex size-10 items-center justify-center rounded-full bg-red-50 text-red-600">
+            <Trash2 size={18} />
           </div>
-        ))}
-    </div>
+          <div className="space-y-2">
+            <DialogTitle className="text-base font-semibold text-gray-950">
+              Delete chat session
+            </DialogTitle>
+            <DialogDescription className="text-sm leading-6 text-gray-500">
+              Delete{" "}
+              <span className="font-medium text-gray-700">
+                {sessionToDelete?.personaName || "this chat session"}
+              </span>
+              ? This cannot be undone.
+            </DialogDescription>
+            {deleteError && (
+              <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                {deleteError}
+              </p>
+            )}
+          </div>
+          <DialogFooter className="gap-2 sm:justify-stretch">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={Boolean(deletingId)}
+              onClick={() => {
+                setSessionToDelete(null);
+                setDeleteError("");
+              }}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              disabled={!sessionToDelete || Boolean(deletingId)}
+              onClick={() => {
+                if (sessionToDelete) handleDeleteSession(sessionToDelete);
+              }}
+              className="flex-1 border border-red-600 bg-white text-red-600 hover:bg-red-50"
+            >
+              {deletingId ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -144,11 +319,8 @@ function RecentSection() {
 /* -------------------------------------------------------------------------- */
 
 function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
-  const { user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const displayName = user?.display_name ?? user?.email ?? "User";
-  const plan = user?.plan ?? "Free";
 
   return (
     <aside className="hidden md:flex flex-col items-center w-[56px] min-w-[56px] shrink-0 rounded-2xl bg-white border border-gray-200 shadow-sm py-4 gap-2">
@@ -161,7 +333,7 @@ function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
 
       <div className="w-full flex flex-col items-center gap-1">
         {NAV_ITEMS.map(({ icon: Icon, label, path }) => {
-          const isActive = pathname === path || (path === "/generator" && pathname === "/generator/agent-screen");
+          const isActive = isNavActive(pathname, path);
           return (
             <button
               key={label}
@@ -180,7 +352,7 @@ function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
       </div>
 
       <div className="flex-1" />
-      <UserAvatar name={displayName} plan={plan} />
+      <UserMenu collapsed />
     </aside>
   );
 }
@@ -190,10 +362,6 @@ function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
 /* -------------------------------------------------------------------------- */
 
 function ExpandedSidebar({ onCollapse }: { onCollapse: () => void }) {
-  const { user } = useAuth();
-  const displayName = user?.display_name ?? user?.email ?? "User";
-  const plan = user?.plan ?? "Free";
-
   return (
     <aside className="hidden md:flex flex-col w-[224px] min-w-[224px] shrink-0 rounded-2xl bg-[#FBFBFB] border border-gray-200 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-5 pb-4">
@@ -208,7 +376,7 @@ function ExpandedSidebar({ onCollapse }: { onCollapse: () => void }) {
 
       <NavigationItems />
       <RecentSection />
-      <UserAvatar name={displayName} plan={plan} showName />
+      <UserMenu />
     </aside>
   );
 }
@@ -218,10 +386,6 @@ function ExpandedSidebar({ onCollapse }: { onCollapse: () => void }) {
 /* -------------------------------------------------------------------------- */
 
 function MobileDrawer({ onClose }: { onClose: () => void }) {
-  const { user } = useAuth();
-  const displayName = user?.display_name ?? user?.email ?? "User";
-  const plan = user?.plan ?? "Free";
-
   return (
     <div className="fixed inset-0 z-50 flex md:hidden">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
@@ -236,7 +400,7 @@ function MobileDrawer({ onClose }: { onClose: () => void }) {
 
         <NavigationItems onNavigate={onClose} />
         <RecentSection />
-        <UserAvatar name={displayName} plan={plan} showName />
+        <UserMenu />
       </div>
     </div>
   );
@@ -265,5 +429,19 @@ export default function Sidebar({
 
       {mobileOpen && <MobileDrawer onClose={onMobileClose} />}
     </>
+  );
+}
+
+function isNavActive(pathname: string, path: string) {
+  if (pathname === path) return true;
+  if (path !== "/generator") return false;
+
+  const reservedPrefixes = NAV_ITEMS
+    .filter((item) => item.path !== "/generator")
+    .map((item) => item.path);
+
+  return (
+    pathname.startsWith("/generator/") &&
+    !reservedPrefixes.some((r) => pathname === r || pathname.startsWith(r + "/"))
   );
 }

@@ -27,8 +27,8 @@ export function PricingPage() {
 
   return (
     <main className="min-h-screen bg-white">
-      <section className="w-full bg-background py-16 sm:py-20">
-        <div className="w-full px-6 pb-20 pt-16 md:px-10 xl:px-20">
+      <section className="w-full bg-background py-10 sm:py-14">
+        <div className="w-full px-6 pb-14 pt-4 md:px-10 xl:px-20">
           <div className="flex flex-col items-center gap-4 text-center">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-copy-muted/30">
               <span className="w-1.5 h-1.5 rounded-full bg-warning shrink-0" />
@@ -42,12 +42,12 @@ export function PricingPage() {
             </h1>
 
             <p className="text-copy-muted text-sm sm:text-base leading-6 max-w-lg">
-              Public agents are always free. Pay once to go private. No
-              subscriptions, no surprises.
+              Public agents are always free. Upgrade monthly when private
+              publishing and registry controls are ready.
             </p>
           </div>
 
-          <div className="flex flex-col gap-10 w-full md:flex-row md:items-stretch md:gap-5 max-w-3xl mx-auto">
+          <div className="flex flex-col gap-10 w-full md:flex-row md:items-stretch md:gap-5 max-w-3xl mx-auto mt-15">
             {PRICING_TIERS.map((tier) => (
               <PricingCard key={tier.id} tier={tier} />
             ))}
@@ -114,12 +114,13 @@ export function PricingPage() {
         </div>
 
         <div className="w-full flex justify-center px-5 pb-16 sm:pb-20">
-          <Link href="/faq">
-            <button className="w-[358px] h-[48px] rounded-lg border border-teal-brand flex items-center justify-center transition-opacity hover:opacity-80">
-              <span className="text-teal-brand font-medium text-[18px] leading-[100%]">
-                See more
-              </span>
-            </button>
+          <Link
+            href="/faq"
+            className="w-[358px] h-[48px] rounded-lg border border-teal-brand flex items-center justify-center transition-opacity hover:opacity-80"
+          >
+            <span className="text-teal-brand font-medium text-[18px] leading-[100%]">
+              See more
+            </span>
           </Link>
         </div>
       </section>

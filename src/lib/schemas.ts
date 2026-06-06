@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+export const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const contactSchema = z.object({
   fullName: z.string().min(2, { message: "Name must be at least 2 characters" }),

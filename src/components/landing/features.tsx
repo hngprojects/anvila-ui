@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 function RobotIcon({ color = "#0C5D56" }: { color?: string }) {
   return (
@@ -117,9 +118,11 @@ export function Features() {
             );
           })}
         </div>
-
-        <Button className="flex h-auto items-center justify-center gap-2.5 rounded-lg border-none bg-teal-brand p-6 text-base font-medium leading-6 text-white transition-opacity hover:opacity-90">
-          Create your first package
+          <Button
+          asChild
+          className="flex h-auto items-center justify-center gap-2.5 rounded-lg border-none bg-teal-brand p-6 text-base font-medium leading-6 text-white transition-opacity hover:opacity-90"
+        >
+          <Link href="/register">Create your first package</Link>
         </Button>
       </div>
     </section>

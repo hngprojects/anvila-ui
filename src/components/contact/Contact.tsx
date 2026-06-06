@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@/lib/validator";
 import { contactSchema, type ContactFormData } from "@/lib/schemas";
@@ -43,12 +44,15 @@ const CONTACT_CARDS: ContactCard[] = [
 ];
 
 export function Contact() {
+  const [submitted, setSubmitted] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -63,9 +67,33 @@ export function Contact() {
   // eslint-disable-next-line react-hooks/incompatible-library
   const enquiryType = watch("enquiryType");
 
-  function onSubmit(data: ContactFormData) {
-    console.log("Form submitted:", data);
-    // Handle submission
+  async function onSubmit(data: ContactFormData) {
+    setServerError(null);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          enquiry_type: data.enquiryType,
+          message: data.message,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        setServerError(json.message ?? "Something went wrong. Please try again.");
+        return;
+      }
+
+      setSubmitted(true);
+    } catch {
+      setServerError("Network error. Please check your connection.");
+    }
   }
 
   // Helper to show error styling
@@ -111,109 +139,140 @@ export function Contact() {
             Get in Touch
           </h2>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col items-center gap-6"
-            noValidate
-          >
-            {/* Row 1 */}
-            <div className="grid w-full max-w-[845px] grid-cols-1 gap-6 sm:grid-cols-2">
-              {/* Full Name */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
-                  Full Name<span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter full name"
-                  className={cn(
-                    "h-[44px] w-full rounded-md border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
-                    inputErrorClass("fullName"),
-                  )}
-                  {...register("fullName")}
-                />
-                {errorText("fullName")}
-              </div>
-
-              {/* Email */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
-                  Email Address<span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  className={cn(
-                    "h-[44px] w-full rounded-md border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
-                    inputErrorClass("email"),
-                  )}
-                  {...register("email")}
-                />
-                {errorText("email")}
-              </div>
+          {submitted ? (
+            <div
+              className="flex flex-col items-center gap-3 py-6 text-center"
+              role="status"
+              aria-live="polite"
+           >
+              <p className="text-2xl font-medium text-logo">Message sent!</p>
+              <p className="text-base text-copy-muted">
+                We&apos;ll get back to you as soon as possible.
+              </p>
             </div>
+          ) : (
+            <>
+              {serverError && (
+                 <div
+                  className="mb-4 rounded-[6px] border border-red-300 bg-red-50 px-3 py-2"
+                  role="alert"
+                  aria-live="assertive"
+                >
+                  <p className="m-0 text-[12px] text-red-600">{serverError}</p>
+                </div>
+              )}
 
-            {/* Row 2 */}
-            <div className="grid w-full max-w-[845px] grid-cols-1 gap-6 sm:grid-cols-2">
-              {/* Phone */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  placeholder="+234- 00000-00000"
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col items-center gap-6"
+                noValidate
+              >
+                {/* Row 1 */}
+                <div className="grid w-full max-w-[845px] grid-cols-1 gap-6 sm:grid-cols-2">
+                  {/* Full Name */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
+                      Full Name<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter full name"
+                      className={cn(
+                        "h-[44px] w-full rounded-md border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
+                        inputErrorClass("fullName"),
+                      )}
+                      {...register("fullName")}
+                    />
+                    {errorText("fullName")}
+                  </div>
+
+                  {/* Email */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
+                      Email Address<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="your@email.com"
+                      className={cn(
+                        "h-[44px] w-full rounded-md border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
+                        inputErrorClass("email"),
+                      )}
+                      {...register("email")}
+                    />
+                    {errorText("email")}
+                  </div>
+                </div>
+
+                {/* Row 2 */}
+                <div className="grid w-full max-w-[845px] grid-cols-1 gap-6 sm:grid-cols-2">
+                  {/* Phone */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="+234- 00000-00000"
+                      className={cn(
+                        "h-[44px] w-full rounded-md border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
+                        inputErrorClass("phone"),
+                      )}
+                      {...register("phone")}
+                    />
+                    {errorText("phone")}
+                  </div>
+
+                  {/* Enquiry Type */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
+                      Enquiry Type<span className="text-red-500">*</span>
+                    </label>
+                    <CustomSelect
+                      options={ENQUIRY_OPTIONS}
+                      value={enquiryType}
+                      onChange={(val) =>
+                        setValue("enquiryType", val, { shouldValidate: true })
+                      }
+                      placeholder="Enquiry"
+                      error={!!errors.enquiryType}
+                    />
+                    {errorText("enquiryType")}
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div className="flex w-full max-w-[845px] flex-col gap-1.5">
+                  <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
+                    How can we help you?<span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    placeholder="Write your message here..."
+                    className={cn(
+                      "h-[200px] w-full resize-none rounded-2xl border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
+                      inputErrorClass("message"),
+                    )}
+                    {...register("message")}
+                  />
+                  {errorText("message")}
+                </div>
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
                   className={cn(
-                    "h-[44px] w-full rounded-md border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
-                    inputErrorClass("phone"),
+                    "h-[48px] w-full max-w-[845px] rounded-lg border border-primary bg-primary px-5 py-3 text-sm font-medium leading-6 text-white transition-opacity sm:text-lg",
+                    isSubmitting
+                      ? "cursor-not-allowed opacity-60"
+                      : "cursor-pointer hover:opacity-90",
                   )}
-                  {...register("phone")}
-                />
-                {errorText("phone")}
-              </div>
-
-              {/* Enquiry Type */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
-                  Enquiry Type<span className="text-red-500">*</span>
-                </label>
-                <CustomSelect
-                  options={ENQUIRY_OPTIONS}
-                  value={enquiryType}
-                  onChange={(val) =>
-                    setValue("enquiryType", val, { shouldValidate: true })
-                  }
-                  placeholder="Enquiry"
-                  error={!!errors.enquiryType}
-                />
-                {errorText("enquiryType")}
-              </div>
-            </div>
-
-            {/* Message */}
-            <div className="flex w-full max-w-[845px] flex-col gap-1.5">
-              <label className="text-sm font-medium leading-6 text-logo sm:text-lg">
-                How can we help you?<span className="text-red-500">*</span>
-              </label>
-              <textarea
-                placeholder="Write your message here..."
-                className={cn(
-                  "h-[200px] w-full resize-none rounded-2xl border bg-white p-[10px] text-sm font-medium leading-6 text-logo placeholder:text-copy-muted/50 focus:outline-none",
-                  inputErrorClass("message"),
-                )}
-                {...register("message")}
-              />
-              {errorText("message")}
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              className="h-[48px] w-full max-w-[845px] rounded-lg border border-primary bg-primary px-5 py-3 text-sm font-medium leading-6 text-white transition-opacity hover:opacity-90 sm:text-lg"
-            >
-              Send Message
-            </button>
-          </form>
+                >
+                  {isSubmitting ? "Sending…" : "Send Message"}
+                </button>
+              </form>
+            </>
+          )}
         </div>
       </section>
 

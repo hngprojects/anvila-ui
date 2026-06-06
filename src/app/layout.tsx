@@ -3,12 +3,11 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { inter } from "@/components/lib/fonts";
 import { AuthProvider } from "@/context/auth";
-import { getServerTokens } from "@/lib/auth/cookies";
-import { BACKEND_URL } from "@/lib/consts";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 const appName = "Anvila";
-const appDescription = "Build reusable AI agent packages from one clear setup. Describe your agent setup in seconds and get a structured package you can publish, share, and reuse.";
+const appDescription =
+  "Build reusable AI agent packages from one clear setup. Describe your agent setup in seconds and get a structured package you can publish, share, and reuse.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
@@ -49,40 +48,19 @@ export const metadata: Metadata = {
   },
 };
 
-async function getInitialUser() {
-  const { accessToken } = await getServerTokens()
-  if (!accessToken) return null
- 
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/v1/auth/me`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-      cache: 'no-store',
-    })
- 
-    if (!res.ok) return null
- 
-    const data = await res.json()
-    return data.data ?? data.user ?? null
-  } catch {
-    return null
-  }
-}
-
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialUser = await getInitialUser()
   return (
     <html
       lang="en"
       className={cn("h-full antialiased", inter.variable, "font-sans")}
     >
       <body className="min-h-full flex flex-col">
-        <AuthProvider initialUser={initialUser}>{children}</AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
 }
-

@@ -3,6 +3,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Plus, ArrowUp, Paperclip, X, FileText } from "lucide-react";
 import { useAuth } from "@/context/auth";
+import { useAgent } from "@/context/agent";
+import { ChatMessage } from "@/interface/agent";
 import {
   UserMessage,
   TextMessage,
@@ -13,22 +15,6 @@ import {
   ForgingDoneCard,
   ChatInput,
 } from "@/components/protected/agent-screen";
-
-interface ChatMessage {
-  id: string;
-  sender: "user" | "assistant";
-  text?: string;
-  type:
-    | "text"
-    | "thinking"
-    | "questionnaire"
-    | "verification-card"
-    | "forging-identity"
-    | "forging-skills"
-    | "forging-personalities"
-    | "forging-done"
-    | "forging-interrupted";
-}
 
 interface RadioQuestion {
   title: string;
@@ -81,41 +67,33 @@ const generateMsgId = (prefix: string): string => {
 };
 
 export default function MainPage() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [prompt, setPrompt] = useState("");
-  const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const { user } = useAuth();
+  const {
+    messages,
+    setMessages,
+    prompt,
+    setPrompt,
+    attachedFile,
+    setAttachedFile,
+    radioStep,
+    setRadioStep,
+    selectedRadioOptions,
+    setSelectedRadioOptions,
+    radioOtherText,
+    setRadioOtherText,
+    textStep,
+    setTextStep,
+    textAnswers,
+    setTextAnswers,
+    identityExpanded,
+    setIdentityExpanded,
+  } = useAgent();
+
   const [showMenu, setShowMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
-
-  // Radio Questionnaire States
-  const [radioStep, setRadioStep] = useState<number>(1);
-  const [selectedRadioOptions, setSelectedRadioOptions] = useState<
-    Record<number, string>
-  >({
-    1: "",
-    2: "",
-    3: "",
-  });
-  const [radioOtherText, setRadioOtherText] = useState<Record<number, string>>({
-    1: "",
-    2: "",
-    3: "",
-  });
-
-  // Short Answer Verification Card States
-  const [textStep, setTextStep] = useState<number>(1);
-  const [textAnswers, setTextAnswers] = useState<Record<number, string>>({
-    1: "",
-    2: "",
-    3: "",
-  });
-
-  // Identity expanded accordion state
-  const [identityExpanded, setIdentityExpanded] = useState(true);
 
   // Forging timer references to allow cancellation
   const forgingTimerRef = useRef<NodeJS.Timeout | null>(null);

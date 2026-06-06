@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getTokensFromRequest, setAuthCookies, clearAuthCookies } from '@/lib/auth/cookies'
-import { authApi } from '@/lib/auth/api'
+import { authApi, extractAuthTokens, extractAuthUser } from '@/lib/auth/api'
 import { BACKEND_URL } from "@/lib/consts";
 
 async function fetchUser(accessToken: string) {
@@ -42,7 +42,21 @@ export async function GET(req: NextRequest) {
     return res
   }
 
-  const { user, tokens } = refreshResult.data.data
+  const tokens = extractAuthTokens(refreshResult.data)
+
+  if (!tokens) {
+    const res = NextResponse.json({ user: null }, { status: 401 })
+    clearAuthCookies(res)
+    return res
+  }
+
+  const user = extractAuthUser(refreshResult.data) ?? await fetchUser(tokens.access_token)
+
+  if (!user) {
+    const res = NextResponse.json({ user: null }, { status: 401 })
+    clearAuthCookies(res)
+    return res
+  }
 
   const res = NextResponse.json({ user }, { status: 200 })
   setAuthCookies(res, tokens)

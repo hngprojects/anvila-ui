@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { getTokensFromRequest } from '@/lib/auth/cookies'
 
 const PUBLIC_PATHS = new Set([
@@ -10,17 +10,21 @@ const PUBLIC_PATHS = new Set([
   '/confirm-email',
   '/forgot-password',
   '/reset-password',
+  '/forgot-password/check-mail',
+  '/reset-password/success',
   '/auth/oauth/callback',
-  '/explore',
-  '/pricing',
   '/faq',
-  '/terms',
-  '/privacy_policy',
+  '/about',
   '/contact',
-  '/cookies-policy'
+  '/pricing',
+  '/privacy_policy',
+  '/terms',
+  '/explore',
+  // '/generator',
+  '/404',
+  '/coming-soon',
 ])
 
- 
 const PUBLIC_PREFIXES = ['/_next', '/favicon', '/api/auth', '/static', '/images']
 
 function isPublic(pathname: string): boolean {
@@ -43,7 +47,6 @@ export function proxy(req: NextRequest) {
 
   if (!accessToken) {
     const loginUrl = new URL('/login', req.url)
-    // Preserve the intended destination so we can redirect after login
     loginUrl.searchParams.set('next', pathname)
     return NextResponse.redirect(loginUrl)
   }
@@ -54,5 +57,3 @@ export function proxy(req: NextRequest) {
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*|api/).*)'],
 }
-
-
