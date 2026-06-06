@@ -174,14 +174,16 @@ function TopNav({
         <PreviewRefreshIcon />
       </button>
 
-      <button
-        type="button"
-        onClick={onSaveAsPrivate}
-        disabled={!onSaveAsPrivate}
-        className="flex h-8 items-center rounded-2xl px-3 font-sans text-sm font-normal text-save-private disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        Save as Private
-      </button>
+      {!isPublished && (
+        <button
+          type="button"
+          onClick={onSaveAsPrivate}
+          disabled={!onSaveAsPrivate}
+          className="flex h-8 items-center rounded-2xl px-3 font-sans text-sm font-normal text-save-private disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Save as Private
+        </button>
+      )}
 
       {isPublished ? (
         hasPublishLinks && (
