@@ -43,9 +43,7 @@ export function ChatItemView({
             }
             className="shrink-0"
             aria-label="Copy message"
-          >
-            <ChatCopyIcon />
-          </button>
+          ></button>
         </div>
       </div>
     );
