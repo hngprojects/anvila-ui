@@ -24,7 +24,7 @@ import {
 import { ChatItemView } from "./chat-view-item";
 import type { AgentFileContent, AgentMessage, AgentPersona, AgentSkill, ChatItem, ClarificationPayload } from "@/types/agent";
 import { LoadingMessage, ErrorMessage } from "./message-primitives";
-import { StatusBadge } from "./status-badge";
+import { PublishingSpinnerIcon, PublishedSuccessIcon, PublishFailedIcon } from "@/components/icons";
 import {
   messagesToChatItems,
   mergeFiles,
@@ -54,6 +54,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState("");
+  const [publishSuccess, setPublishSuccess] = useState(false);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const [streamReconnectNonce, setStreamReconnectNonce] = useState(0);
@@ -163,6 +164,10 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     setFiles((current) => mergeFiles(current, nextPersona.files));
     setSkills(nextPersona.skills);
     return nextPersona;
+  }, [agentId]);
+
+  const handleRefreshPreview = useCallback(async () => {
+    try { const next = await fetchAgent(agentId); setPersona(next); } catch {}
   }, [agentId]);
 
   const upsertItem = useCallback((nextItem: ChatItem) => {
@@ -419,6 +424,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
   async function handlePublish() {
     if (!persona || persona.status === "published") return;
 
+    setPublishSuccess(false);
     setIsPublishing(true);
     setPublishError("");
 
@@ -436,6 +442,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
             }
           : current,
       );
+      setPublishSuccess(true);
     } catch (err) {
       setPublishError(
         err instanceof Error ? err.message : "Could not publish agent.",
@@ -445,7 +452,6 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
     }
   }
 
-  const title = persona?.name || "Agent";
   const visibleFiles = useMemo(
     () => mergeFiles(files, persona?.files ?? []),
     [files, persona?.files],
@@ -455,36 +461,11 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
   return (
     <div className="relative flex h-full min-h-0 overflow-hidden rounded-2xl border border-gray-200 bg-[#FBFBFB] shadow-sm">
       <section
-        className={`flex min-h-0 flex-col transition-[width] ${
-          previewOpen ? "w-full md:w-[340px] xl:w-[380px]" : "w-full"
-        }`}
+        className={`flex min-h-0 flex-col ${previewOpen ? "w-[457px] min-w-[457px] shrink-0" : "min-w-0 flex-1"}`}
       >
-        <header className="flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-gray-200 bg-white px-4">
-          <div className="min-w-0">
-            <h1 className="truncate text-base font-semibold text-gray-950">
-              {title}
-            </h1>
-            <p className="mt-0.5 truncate text-xs text-gray-500">
-              {persona?.description || statusCopy(persona?.status)}
-            </p>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-2">
-            <StatusBadge status={persona?.status} />
-            {canPreview && (
-              <button
-                onClick={() => setPreviewOpen(true)}
-                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Preview
-              </button>
-            )}
-          </div>
-        </header>
-
         <div
           ref={scrollRef}
-          className="flex-1 space-y-5 overflow-y-auto px-4 py-5"
+          className="flex flex-1 flex-col items-start gap-[18px] overflow-y-auto self-stretch px-[17px] py-[9px]"
         >
           {isLoading ? (
             <LoadingMessage text="Loading agent..." />
@@ -529,6 +510,7 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
               publishError={publishError}
               onClose={() => setPreviewOpen(false)}
               onPublish={handlePublish}
+              onRefresh={handleRefreshPreview}
             />
           </div>
           <div className="absolute inset-0 z-30 bg-white md:hidden">
@@ -540,9 +522,60 @@ export default function AgentWorkspace({ agentId }: AgentWorkspaceProps) {
               publishError={publishError}
               onClose={() => setPreviewOpen(false)}
               onPublish={handlePublish}
+              onRefresh={handleRefreshPreview}
             />
           </div>
         </>
+      )}
+
+      {(isPublishing || publishSuccess || publishError) && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={isPublishing ? "Publishing Agent" : publishSuccess ? "Agent Published" : "Publish Agent Failed"}
+          className="absolute inset-0 z-50 flex items-center justify-center bg-white/90"
+        >
+          <div className="flex flex-col items-center gap-6 px-[100px] py-[70px]">
+            {isPublishing && (
+              <>
+                <PublishingSpinnerIcon />
+                <h2 className="font-sans text-[34px] font-bold text-black">Publishing Agent</h2>
+                <p className="font-sans text-sm font-normal text-black">Wait while agent is processing, please don&apos;t close this window.</p>
+                <div className="relative h-2.5 w-[410px]">
+                  <div className="absolute inset-0 rounded-full bg-progress-grey" />
+                  <div className="absolute inset-y-0 left-0 w-[200px] rounded-full bg-teal-brand" />
+                </div>
+              </>
+            )}
+            {publishSuccess && !isPublishing && (
+              <>
+                <PublishedSuccessIcon />
+                <h2 className="font-sans text-[34px] font-bold text-black">Agent Published</h2>
+                <button
+                  type="button"
+                  onClick={() => { setPublishSuccess(false); router.push("/generator/my-agents"); }}
+                  className="flex h-10 items-center justify-center gap-2 self-stretch rounded-lg border-[0.5px] border-input-placeholder bg-teal-brand px-5 py-3 font-sans text-sm font-normal text-btn-fg"
+                >
+                  Manage Agents
+                </button>
+              </>
+            )}
+            {publishError && !isPublishing && (
+              <>
+                <PublishFailedIcon />
+                <h2 className="font-sans text-[34px] font-bold text-black">Publish Agent Failed</h2>
+                <p className="font-sans text-sm font-normal text-label-dark">We couldn&apos;t generate agent. Please try again.</p>
+                <button
+                  type="button"
+                  onClick={() => { setPublishError(""); handlePublish(); }}
+                  className="flex h-10 items-center justify-center gap-2 self-stretch rounded-lg border-[0.5px] border-input-placeholder bg-teal-brand px-5 py-3 font-sans text-sm font-medium text-btn-fg"
+                >
+                  Retry
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
