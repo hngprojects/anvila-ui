@@ -1,12 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Lock, Eye, EyeOff, ChevronLeft, Loader2 } from "lucide-react";
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { authApi } from "@/lib/auth/api";
 import { FieldError } from "@/components/ui/field-error";
 
 const resetPasswordSchema = z
@@ -28,7 +27,7 @@ type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 export default function SetNewPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -48,31 +47,44 @@ export default function SetNewPasswordForm() {
     },
   });
 
-  const onSubmit = async (data: ResetPasswordValues) => {
+  const onSubmit = async (value: ResetPasswordValues) => {
     if (!token) {
-      setApiError("Reset token missing. Please check your email and click the link again.");
+      setApiError(
+        "Reset token missing. Please check your email and click the link again.",
+      );
       return;
     }
-
     setIsLoading(true);
     setApiError(null);
-
-    const result = await authApi.resetPassword({
-      token: token,
-      new_password: data.password.trim(),
-    });
-
-    if (result.ok) {
-      router.push("/reset-password/success");
-    } else {
-      setApiError(result.message);
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: token,
+          new_password: value.password,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApiError(
+          data.message ?? "Failed to send reset link. Please try again.",
+        );
+        setIsLoading(false);
+        return;
+      }
+      if (res.ok) {
+        router.push("/reset-password/success");
+      }
+    } catch {
+      setApiError("Network error. Please check your connection and try again.");
       setIsLoading(false);
     }
   };
 
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-xl border border-[#E6E6E6] bg-[#F6F7F7] p-6 sm:p-8">
-      <Link 
+      <Link
         href="forgot-password/check-mail"
         className="hidden md:flex items-center gap-1 text-sm text-[#667085] mb-6 hover:text-black transition-colors"
       >
@@ -80,11 +92,18 @@ export default function SetNewPasswordForm() {
       </Link>
 
       <div className="text-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#101828] md:mb-2 tracking-tight">Set a new Password</h1>
-        <p className="text-xs md:text-sm text-[#667085]">Choose a strong password for your account</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-[#101828] md:mb-2 tracking-tight">
+          Set a new Password
+        </h1>
+        <p className="text-xs md:text-sm text-[#667085]">
+          Choose a strong password for your account
+        </p>
       </div>
 
-      <form className="space-y-3 md:space-y-5" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="space-y-3 md:space-y-5"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         {/* Token Alert Guard Display */}
         {!token && (
           <div className="p-3 text-xs font-medium text-amber-700 bg-amber-50 rounded-xl border border-amber-200">
@@ -105,12 +124,14 @@ export default function SetNewPasswordForm() {
               {...register("password")}
               placeholder="Enter password"
               aria-invalid={!!errors.password}
-              aria-describedby={errors.password ? "reset-password-error" : undefined}
+              aria-describedby={
+                errors.password ? "reset-password-error" : undefined
+              }
               className={`w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm outline-none transition-all ${
-                errors.password 
-                  ? "border-red-500 focus:ring-red-100" 
+                errors.password
+                  ? "border-red-500 focus:ring-red-100"
                   : "border-[#D0D5DD] focus:ring-2 focus:ring-[#004D4D]/10 focus:border-[#004D4D]"
-              } ${(isLoading || !token) ? "opacity-60 cursor-not-allowed" : ""}`}
+              } ${isLoading || !token ? "opacity-60 cursor-not-allowed" : ""}`}
             />
             <button
               type="button"
@@ -121,12 +142,17 @@ export default function SetNewPasswordForm() {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <FieldError id="reset-password-error" message={errors.password?.message} />
+          <FieldError
+            id="reset-password-error"
+            message={errors.password?.message}
+          />
         </div>
 
         {/* Confirm Password Field */}
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-[#344054]">Confirm password</label>
+          <label className="text-sm font-medium text-[#344054]">
+            Confirm password
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Lock className="h-4 w-4 text-[#98A2B3]" />
@@ -137,12 +163,16 @@ export default function SetNewPasswordForm() {
               {...register("confirmPassword")}
               placeholder="Re-enter password"
               aria-invalid={!!errors.confirmPassword}
-              aria-describedby={errors.confirmPassword ? "reset-confirmPassword-error" : undefined}
+              aria-describedby={
+                errors.confirmPassword
+                  ? "reset-confirmPassword-error"
+                  : undefined
+              }
               className={`w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm outline-none transition-all ${
-                errors.confirmPassword 
-                  ? "border-red-500 focus:ring-red-100" 
+                errors.confirmPassword
+                  ? "border-red-500 focus:ring-red-100"
                   : "border-[#D0D5DD] focus:ring-2 focus:ring-[#004D4D]/10 focus:border-[#004D4D]"
-              } ${(isLoading || !token) ? "opacity-60 cursor-not-allowed" : ""}`}
+              } ${isLoading || !token ? "opacity-60 cursor-not-allowed" : ""}`}
             />
             <button
               type="button"
@@ -153,10 +183,11 @@ export default function SetNewPasswordForm() {
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <FieldError id="reset-confirmPassword-error" message={errors.confirmPassword?.message} />
-          {apiError && (
-            <FieldError id="reset-api-error" message={apiError} />
-          )}
+          <FieldError
+            id="reset-confirmPassword-error"
+            message={errors.confirmPassword?.message}
+          />
+          {apiError && <FieldError id="reset-api-error" message={apiError} />}
         </div>
 
         <button
