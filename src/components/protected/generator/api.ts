@@ -83,6 +83,16 @@ export async function publishAgent(agentId: string) {
   return json.data;
 }
 
+export async function publishAgentPrivate(agentId: string) {
+  const json = await requestJson<{
+    data: PublishLinks & { agentId: string; status: string };
+  }>(`/api/personas/${agentId}/publish/private`, {
+    method: "POST",
+  });
+
+  return json.data;
+}
+
 export async function refineAgent(
   agentId: string,
   message: string,
