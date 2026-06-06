@@ -1,9 +1,18 @@
 import { AlertCircle, Loader2 } from "lucide-react";
+import { ChatCopyIcon } from "@/components/icons";
 
 export function AssistantText({ text }: { text: string }) {
   return (
-    <div className="mr-auto max-w-2xl text-sm italic leading-6 text-gray-600">
-      {text}
+    <div className="mr-auto flex max-w-2xl flex-col gap-1">
+      <p className="text-sm italic leading-6 text-gray-600">{text}</p>
+      <button
+        type="button"
+        onClick={() => navigator.clipboard?.writeText(text)?.catch(() => {})}
+        className="flex w-fit items-center border-0 p-0 text-dark-fg outline-none"
+        aria-label="Copy message"
+      >
+        <ChatCopyIcon />
+      </button>
     </div>
   );
 }
