@@ -59,7 +59,13 @@ export default function AgentPreviewPanel({
   );
   const agentName = persona?.name ?? "Agent";
   const skillContent = activeSkill
-    ? `# ${activeSkill.name}\n\n${activeSkill.description ?? ""}`
+    ? [
+        `# ${activeSkill.name}`,
+        activeSkill.description,
+        activeSkill.content,
+      ]
+        .filter(Boolean)
+        .join("\n\n")
     : "";
 
   function handleRootFolderClick() {
@@ -178,7 +184,7 @@ function TopNav({
         <button
           type="button"
           onClick={onSaveAsPrivate}
-          disabled={!onSaveAsPrivate}
+          disabled={isPublishing || !onSaveAsPrivate}
           className="flex h-8 items-center rounded-2xl px-3 font-sans text-sm font-normal text-save-private disabled:cursor-not-allowed disabled:opacity-40"
         >
           Save as Private
@@ -269,7 +275,7 @@ function FileBrowserCard({
   onSkillSelect: (slug: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-2 self-stretch rounded-lg border border-border-subtle px-4 pb-0 pt-2">
+    <div className="flex flex-col gap-3 self-stretch rounded-lg border border-border-subtle bg-white px-4 pb-4 pt-3">
       <div className="flex items-center gap-3 py-1">
         <button
           type="button"
@@ -306,7 +312,7 @@ function FileBrowserCard({
         </button>
       </div>
 
-      <div className="flex items-center gap-4 overflow-x-auto px-6">
+      <div className="flex items-center gap-3 overflow-x-auto px-1 pb-1">
         {showSkillsFolder
           ? skills.map((skill) => (
               <FileTab
@@ -326,7 +332,7 @@ function FileBrowserCard({
             ))}
       </div>
 
-      <div className="min-h-[120px] self-stretch rounded-[14px] border border-card-outline px-2 pb-6 pt-0">
+      <div className="max-h-[48vh] min-h-[220px] self-stretch overflow-y-auto rounded-xl border border-card-outline bg-[#FCFCFC] p-4">
         {showSkillsFolder ? (
           skills.length === 0 ? (
             <p className="p-4 text-xs text-gray-400">No skills matched yet.</p>
@@ -356,7 +362,7 @@ function FileTab({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-[110px] shrink-0 items-center gap-1 rounded px-1 py-2 ${
+      className={`flex w-[120px] shrink-0 items-center gap-1 rounded-md px-2 py-2 ${
         isActive
           ? "border border-teal-accent bg-file-active"
           : "border border-border-subtle"
@@ -376,16 +382,12 @@ function ManifestCard({
   fileCount: number;
 }) {
   return (
-    <div className="flex h-52 w-[292px] shrink-0 flex-col gap-3 rounded-xl border border-card-outline bg-white p-4">
+    <div className="flex w-[240px] shrink-0 flex-col gap-3 rounded-xl border border-card-outline bg-white p-4">
       <p className="font-sans text-xs font-medium text-label-dark">Manifest</p>
       <dl className="flex flex-col gap-2">
         <ManifestRow
           label="Name"
           value={persona?.manifest?.name ?? persona?.name ?? "Untitled"}
-        />
-        <ManifestRow
-          label="Version"
-          value={persona?.manifest?.version ?? "0.1.0"}
         />
         <ManifestRow
           label="Model"

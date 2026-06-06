@@ -37,9 +37,10 @@ export default function AgentChatInput({
     const trimmed = prompt.trim();
     if (!trimmed || disabled || isLoading) return;
     setError("");
-    await onSubmit(trimmed, disableFileAttachment ? null : file);
+    const submittedFile = disableFileAttachment ? null : file;
     setPrompt("");
     setFile(null);
+    await onSubmit(trimmed, submittedFile);
   }
 
   function handleFileSelect(nextFile: File | null) {
