@@ -31,12 +31,17 @@ export const RegisterSchema = z
 
 export const UserSchema = z.object({
   id: z.string().uuid(),
-  email: z.string().regex(emailRegex, { message: "Please enter a valid email" }),
+  email: z
+    .string()
+    .regex(emailRegex, { message: "Please enter a valid email" }),
   display_name: z.string(),
   email_verified: z.boolean(),
   is_active: z.boolean(),
   created_at: z.string(),
   plan: z.string().optional(),
+  github_username: z.string().nullable().optional(),
+  github_subject: z.string().nullable().optional(),
+  github_connected: z.boolean().optional(),
 });
 
 export const TokensSchema = z.object({
@@ -52,6 +57,22 @@ export const AuthResponseSchema = z.object({
     user: UserSchema,
     tokens: TokensSchema,
   }),
+});
+
+export const ForgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .regex(emailRegex, { message: "Please enter a valid email" }),
+});
+
+export const ResetPasswordSchema = z.object({
+  token: z.string(),
+  new_password: z
+    .string()
+    .min(8, "At least 8 characters")
+    .regex(/[A-Z]/, "At least one uppercase letter")
+    .regex(/[0-9]/, "At least one number")
+    .regex(/[^A-Za-z0-9]/, "At least one special character"),
 });
 
 export const OttExchangeResponseSchema = AuthResponseSchema;

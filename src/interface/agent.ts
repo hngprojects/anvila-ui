@@ -32,6 +32,5 @@ export interface AgentData {
   githubRepoUrl: string;
   publishedAt: string;
   clone: number;
-  owners: AgentOwner[];
   created: string;
 }

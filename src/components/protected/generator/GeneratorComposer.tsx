@@ -60,6 +60,8 @@ export default function GeneratorComposer() {
 
     try {
       clearDraft();
+      setPrompt("");
+      setFile(null);
       const result = await generateAgent(trimmed, file);
       await fetchAgents();
       router.push(`/generator/${result.agentId}`);

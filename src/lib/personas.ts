@@ -192,6 +192,7 @@ function normalizeSkill(raw: unknown): AgentSkill {
     slug: getString(skill.slug),
     name: getString(skill.name, "Untitled skill"),
     description: getString(skill.description),
+    content: getString(skill.content, getString(skill.markdown)),
     tags: getArray(skill.tags).map((tag) => getString(tag)).filter(Boolean),
   };
 }

@@ -22,6 +22,23 @@
   --color-dashboard-border: #2a302e;
   --color-dashboard-surface: #ffffff;
   --color-dashboard-muted: #6b7280;
+
+  --color-sidebar-bg: #FBFBFB;
+  --color-sidebar-border: #E7E8EA;
+  --color-input-placeholder: #9E9F9E;
+  --color-user-bubble: #F4F4F5;
+  --color-tag-border: #B1B5B4;
+  --color-save-private: #515151;
+  --color-progress-grey: #D1D2D1;
+  --color-btn-inactive: #C9C9C9;
+  --color-file-active: #CCFBF1;
+  --color-dark-fg: #050605;
+  --color-label-dark: #0C0E0D;
+  --color-label-mid: #3D3E3D;
+  --color-folder-fg: #18181B;
+  --color-card-outline: #E7E7E7;
+  --color-btn-fg: #F6F7F7;
+  --color-chat-input-border: #A1A1AA;
 }
 @layer base {
   ::selection {
@@ -59,4 +76,24 @@
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.scrollbar-thin-custom::-webkit-scrollbar {
+  width: 2px;
+  height: 1px;
+}
+.scrollbar-thin-custom {
+  scrollbar-width: thin;
+}
+
+@keyframes publish-progress {
+  0% {
+    transform: translateX(-115%);
+  }
+  50% {
+    transform: translateX(40%);
+  }
+  100% {
+    transform: translateX(215%);
+  }
 }
