@@ -248,7 +248,7 @@ function CollapsedSidebar({ onExpand }: { onExpand: () => void }) {
     <aside className="hidden md:flex flex-col items-center w-[56px] min-w-[56px] shrink-0 rounded-2xl bg-white border border-gray-200 shadow-sm py-4 gap-2">
       <button
         onClick={onExpand}
-        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100"
+        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 self-start ml-1"
       >
         <PanelLeftOpen size={15} />
       </button>
