@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Mail, ArrowLeft, CircleCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -8,11 +8,10 @@ import Link from "next/link";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Logo, IconPrefix } from "@/components/icons";
-import { authApi } from "@/lib/auth/api";
 import { FieldError } from "@/components/ui/field-error";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import  {emailRegex}  from "@/lib/schemas";
+import { emailRegex } from "@/lib/schemas";
 
 const formSchema = z.object({
   email: z.string().regex(emailRegex, { message: "Invalid email address" }),
@@ -44,15 +43,27 @@ export default function ForgotPasswordForm() {
     setApiError(null);
 
     const formattedEmail = values.email.trim();
-    const result = await authApi.forgotPassword({ email: formattedEmail });
-
-    if (result.ok) {
-      router.push(
-        `/forgot-password/check-mail?email=${encodeURIComponent(formattedEmail)}`
-      );
-    } else {
-      setApiError(result.message);
-      setIsLoading(false);
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formattedEmail }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApiError(
+          data.message ?? "Failed to send reset link. Please try again.",
+        );
+        setIsLoading(false);
+        return;
+      }
+      if (res.ok) {
+        router.push(
+          `/forgot-password/check-mail?email=${encodeURIComponent(formattedEmail)}`,
+        );
+      }
+    } catch {
+      setApiError("Network error. Please check your connection and try again.");
     }
   };
 
@@ -117,7 +128,7 @@ export default function ForgotPasswordForm() {
                   : emailValid
                     ? "border-[#0F6E56]"
                     : "border-[#D1D5DB]"
-             } ${emailEmpty ? "pl-[34px] pr-[12px]" : emailValid ? "pl-[12px] pr-[30px]" : "pl-[12px] pr-[12px]"}`}
+              } ${emailEmpty ? "pl-[34px] pr-[12px]" : emailValid ? "pl-[12px] pr-[30px]" : "pl-[12px] pr-[12px]"}`}
             />
             {emailValid && (
               <span className="absolute right-[10px] top-1/2 flex -translate-y-1/2 text-[#0F6E56]">
@@ -153,3 +164,4 @@ export default function ForgotPasswordForm() {
     </div>
   );
 }
+
