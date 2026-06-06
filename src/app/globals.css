@@ -13,6 +13,22 @@
 
   --color-warning: #ea580c;
   --color-border-subtle: #e4e4e7;
+  --color-sidebar-bg: #FBFBFB;
+  --color-sidebar-border: #E7E8EA;
+  --color-input-placeholder: #9E9F9E;
+  --color-user-bubble: #F4F4F5;
+  --color-tag-border: #B1B5B4;
+  --color-save-private: #515151;
+  --color-progress-grey: #D1D2D1;
+  --color-btn-inactive: #C9C9C9;
+  --color-file-active: #CCFBF1;
+  --color-dark-fg: #050605;
+  --color-label-dark: #0C0E0D;
+  --color-label-mid: #3D3E3D;
+  --color-folder-fg: #18181B;
+  --color-card-outline: #E7E7E7;
+  --color-btn-fg: #F6F7F7;
+  --color-chat-input-border: #A1A1AA;
 
   --color-footer-bg: #0a4a44;
   --color-footer-text: #e7e7e7;
@@ -22,6 +38,7 @@
   --color-dashboard-border: #2a302e;
   --color-dashboard-surface: #ffffff;
   --color-dashboard-muted: #6b7280;
+  --color-save-private-border: #C1C1C1;
 }
 @layer base {
   ::selection {
