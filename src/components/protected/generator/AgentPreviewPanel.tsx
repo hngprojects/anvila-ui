@@ -48,7 +48,9 @@ export default function AgentPreviewPanel({
   const isPublished = persona?.status === "published";
   const hasPublishLinks = Boolean(persona?.githubRepoUrl || persona?.githubCloneUrl || persona?.githubZipUrl);
   const agentName = persona?.name ?? "Agent";
-  const skillContent = activeSkill ? `# ${activeSkill.name}\n\n${activeSkill.description ?? ""}` : "";
+  const skillContent = activeSkill
+    ? (activeSkill.content || activeSkill.description || "")
+    : "";
 
   return (
     <section className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
