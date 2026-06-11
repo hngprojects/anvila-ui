@@ -13,7 +13,8 @@ export const RegisterSchema = z
   .object({
     display_name: z
       .string()
-      .min(5, "Display name must be at least 5 characters")
+      .min(3, "Display name must be at least 3 characters")
+      .regex(/^\D/, "Cannot start with a number")   
       .regex(/[a-zA-Z]/, "Must contain at least one letter")
       .regex(/^[\p{L}\p{N}\s_-]+$/u, "Only letters, numbers, spaces, hyphens and underscores allowed"),
     email: z
