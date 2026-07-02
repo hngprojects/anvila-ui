@@ -195,7 +195,7 @@ export function AuthSignUpForm() {
               htmlFor="display_name"
               className="text-base font-medium text-[color:var(--color-copy-heading)]"
             >
-              Full name
+              Display name
             </label>
             <div className="relative">
               <IconPrefix icon={User} show={nameEmpty} />
