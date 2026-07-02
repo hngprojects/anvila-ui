@@ -11,7 +11,15 @@ export const LoginSchema = z.object({
 
 export const RegisterSchema = z
   .object({
-    display_name: z.string().min(2, "Full name must be at least 2 characters"),
+    display_name: z
+      .string()
+      .min(3, "Display name must be at least 3 characters")
+      .regex(/^\D/, "Cannot start with a number")
+      .regex(/\p{L}/u, "Must contain at least one letter")
+      .regex(
+        /^[\p{L}\p{N} _-]+$/u,
+        "Only letters, numbers, spaces, hyphens and underscores allowed",
+      ),
     email: z
       .string()
       .regex(emailRegex, { message: "Please enter a valid email" }),
