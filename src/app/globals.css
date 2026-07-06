@@ -1,0 +1,99 @@
+@import "tailwindcss";
+@theme {
+  --color-primary: #005f5a;
+  --color-teal-brand: #0c5d56;
+  --color-teal-accent: #0d9488;
+
+  --color-background: #f8fafc;
+  --color-muted-bg: #d5d5d5;
+
+  --color-copy-heading: #000000;
+  --color-copy-muted: #52525b;
+  --color-logo: #0c0e0d;
+
+  --color-warning: #ea580c;
+  --color-border-subtle: #e4e4e7;
+
+  --color-footer-bg: #0a4a44;
+  --color-footer-text: #e7e7e7;
+
+  --color-dashboard-bg: #141918;
+  --color-dashboard-sidebar: #0c0f0e;
+  --color-dashboard-border: #2a302e;
+  --color-dashboard-surface: #ffffff;
+  --color-dashboard-muted: #6b7280;
+
+  --color-sidebar-bg: #FBFBFB;
+  --color-sidebar-border: #E7E8EA;
+  --color-input-placeholder: #9E9F9E;
+  --color-user-bubble: #F4F4F5;
+  --color-tag-border: #B1B5B4;
+  --color-save-private: #515151;
+  --color-progress-grey: #D1D2D1;
+  --color-btn-inactive: #C9C9C9;
+  --color-file-active: #CCFBF1;
+  --color-dark-fg: #050605;
+  --color-label-dark: #0C0E0D;
+  --color-label-mid: #3D3E3D;
+  --color-folder-fg: #18181B;
+  --color-card-outline: #E7E7E7;
+  --color-btn-fg: #F6F7F7;
+  --color-chat-input-border: #A1A1AA;
+}
+@layer base {
+  ::selection {
+    @apply bg-primary text-white;
+  }
+  body {
+    @apply bg-background text-copy-muted antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-copy-heading font-bold;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-muted-bg/30;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-copy-muted/40 rounded-full transition-colors;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary;
+  }
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-thin-custom::-webkit-scrollbar {
+  width: 2px;
+  height: 1px;
+}
+.scrollbar-thin-custom {
+  scrollbar-width: thin;
+}
+
+@keyframes publish-progress {
+  0% {
+    transform: translateX(-115%);
+  }
+  50% {
+    transform: translateX(40%);
+  }
+  100% {
+    transform: translateX(215%);
+  }
+}
